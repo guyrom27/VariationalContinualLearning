@@ -4,9 +4,14 @@
     <inspection_tool class="PyPackageRequirementsInspection" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="ignoredPackages">
         <value>
+<<<<<<< HEAD
           <list size="2">
             <item index="0" class="java.lang.String" itemvalue="tensorflow" />
             <item index="1" class="java.lang.String" itemvalue="matplotlib" />
+=======
+          <list size="1">
+            <item index="0" class="java.lang.String" itemvalue="matplotlib" />
+>>>>>>> 0bed6089cfc30cdd86e2b16d9cfdcf67f97d2731
           </list>
         </value>
       </option>
