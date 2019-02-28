@@ -5,47 +5,6 @@ import torch.nn.functional as F
 np.random.seed(0)
 #tf.set_random_seed(0)
 
-# variable initialization functions
-def weight_variable(shape, init_weights=None):
-    # if init_weights is not None:
-    #     initial = tf.constant(init_weights)
-    # else:
-    #     initial = tf.truncated_normal(shape, stddev=0.1)
-    # return tf.Variable(initial)
-    return
-
-def bias_variable(shape):
-    # initial = tf.constant(0.1, shape=shape)
-    # return tf.Variable(initial)
-    return
-
-def small_variable(shape):
-    # initial = tf.constant(-6.0, shape=shape)
-    # return tf.Variable(initial)
-    return
-
-def zero_variable(shape):
-    # initial = tf.zeros(shape=shape)
-    # return tf.Variable(initial)
-    return
-
-def _create_weights_mf(in_dim, hidden_size, out_dim, init_weights=None, init_variances=None):
-    # size = deepcopy(hidden_size)
-    # size.append(out_dim)
-    # size.insert(0, in_dim)
-    # no_params = 0
-    # for i in range(len(size) - 1):
-    #     no_weights = size[i] * size[i+1]
-    #     no_biases = size[i+1]
-    #     no_params += (no_weights + no_biases)
-    # m_weights = weight_variable([no_params], init_weights)
-    # if init_variances is None:
-    #     v_weights = small_variable([no_params])
-    # else:
-    #     v_weights = tf.Variable(tf.constant(init_variances, dtype=tf.float32))
-    # return no_params, m_weights, v_weights, size
-    return
-
 class Cla_NN(object):
     def train(self, x_train, y_train, task_idx, no_epochs=1000, batch_size=100, display_epoch=5):
         N = x_train.shape[0]
@@ -68,16 +27,19 @@ class Cla_NN(object):
                 end_ind = np.min([(i+1)*batch_size, N])
                 batch_x = cur_x_train[start_ind:end_ind, :]
                 batch_y = cur_y_train[start_ind:end_ind, :]
+                self._prediction()
                 # # Run optimization op (backprop) and cost op (to get loss value)
                 # _, c = sess.run(
                 #     [self.train_step, self.cost],
                 #     feed_dict={self.x: batch_x, self.y: batch_y, self.task_idx: task_idx})
+
                 self.optimizer.zero_grad()
-                self.cost.backward()
+                cost = self.get_loss(batch_x, batch_y, task_idx)
+                cost.backward()
                 self.optimizer.step()
 
                 # Compute average loss
-                avg_cost += costs / total_batch
+                avg_cost += cost / total_batch
             # Display logs per epoch step
             if epoch % display_epoch == 0:
                 print("Epoch:", '%04d' % (epoch+1), "cost=", \
@@ -86,25 +48,15 @@ class Cla_NN(object):
         print("Optimization Finished!")
         return costs
 
-    def prediction(self, x_test, task_idx):
-        # # Test model
-        # prediction = self.sess.run([self.pred], feed_dict={self.x: x_test, self.task_idx: task_idx})[0]
-        # return prediction
-        return
-
     def prediction_prob(self, x_test, task_idx):
-        # prob = self.sess.run([tf.nn.softmax(self.pred)], feed_dict={self.x: x_test, self.task_idx: task_idx})[0]
-        # return prob
-        return
+        prob = torch.nn.softmax(self._prediction(x_test, task_idx, self.no_pred_samples))
+        return prob
+
 
     def get_weights(self):
-        # weights = self.sess.run([self.weights])[0]
-        # return weights
-        return
+        return self.weights
 
-    def close_session(self):
-        # self.sess.close()
-        return
+
 
 """ Neural Network Model """
 class Vanilla_NN(Cla_NN):
@@ -190,9 +142,6 @@ class MFVI_NN(Cla_NN):
     def __init__(self, input_size, hidden_size, output_size, training_size,
         no_train_samples=10, no_pred_samples=100, prev_means=None, prev_log_variances=None, learning_rate=0.001,
         prior_mean=0, prior_var=1):
-
-
-
         m, v, self.size = self.create_weights(
              input_size, hidden_size, output_size, prev_means, prev_log_variances)
         self.W_m, self.b_m, self.W_last_m, self.b_last_m = m[0], m[1], m[2], m[3]
@@ -206,16 +155,16 @@ class MFVI_NN(Cla_NN):
         self.no_layers = len(self.size) - 1
         self.no_train_samples = no_train_samples
         self.no_pred_samples = no_pred_samples
-        self.pred = self._prediction(self.x, self.task_idx, self.no_pred_samples)
-        self.cost = torch.div(self._KL_term(), training_size) - self._logpred(self.x, self.y, self.task_idx)
-
-
+        #self.pred = self._prediction(self.x, self.task_idx, self.no_pred_samples)
+        #self.cost = torch.div(self._KL_term(), training_size) - self._logpred(self.x, self.y, self.task_idx)
+        self.training_size = training_size
         self.optimizer = optim.SGD(self.weights, lr=0.01)
 
+    def get_loss(self, batch_x, batch_y, task_idx):
+        return torch.div(self._KL_term(), self.training_size) - self._logpred(batch_x, batch_y, task_idx)
 
     def _prediction(self, inputs, task_idx, no_samples):
         return self._prediction_layer(inputs, task_idx, no_samples)
-        return
 
     # this samples a layer at a time
     def _prediction_layer(self, inputs, task_idx, no_samples):
@@ -235,25 +184,25 @@ class MFVI_NN(Cla_NN):
         eps_w = torch.normal(torch.zeros((K, din, dout)), torch.ones((K, din, dout)))
         eps_b = torch.normal(torch.zeros((K, 1, dout)), torch.ones((K, 1, dout)))
 
-        Wtask_m = torch.gather(self.W_last_m, task_idx)
-        Wtask_v = torch.gather(self.W_last_v, task_idx)
-        btask_m = torch.gather(self.b_last_m, task_idx)
-        btask_v = torch.gather(self.b_last_v, task_idx)
+        Wtask_m = self.W_last_m[task_idx]
+        Wtask_v = self.W_last_v[task_idx]
+        btask_m = self.b_last_m[task_idx]
+        btask_v = self.b_last_v[task_idx]
         weights = torch.add(torch.mm(eps_w, torch.exp(0.5*Wtask_v)), Wtask_m)
         biases = torch.add(torch.mm(eps_b, torch.exp(0.5*btask_v)), btask_m)
         act = torch.unsqueeze(act, 3)
         weights = torch.unsqueeze(weights, 1)
         pre = torch.add(torch.sum(act * weights, dim = 2), biases)
-
         return pre
 
 
     def _logpred(self, inputs, targets, task_idx):
-        # pred = self._prediction(inputs, task_idx, self.no_train_samples)
-        # targets = tf.tile(tf.expand_dims(targets, 0), [self.no_train_samples, 1, 1])
-        # log_lik = - tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=pred, labels=targets))
-        # return log_lik
-        return
+        pred = self._prediction(inputs, task_idx, self.no_train_samples)
+        targets = torch.unsqueeze(targets, 0).repeat([self.no_train_samples, 1, 1])
+        log_liks = - (torch.nn.CrossEntropyLoss(torch.nn.softmax(pred), targets))
+        log_lik = log_liks.mean(0)
+        return log_lik
+
 
     def _KL_term(self):
         kl = 0
