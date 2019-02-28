@@ -80,7 +80,7 @@ class Vanilla_NN(Cla_NN):
         for i in range(self.no_layers-1):
              pre = torch.add(torch.matmul(act, self.W[i]), self.b[i])
              act = torch.nn.functional.relu(pre)
-        pre = torch.add(torch.matmul(act, torch.gather(self.W_last, task_idx)), torch.gather(self.b_last, task_idx))
+        pre = torch.add(torch.matmul(act, self.W_last[task_idx]), self.b_last[task_idx])
         return pre
 
     def _logpred(self, inputs, targets, task_idx):
@@ -142,6 +142,7 @@ class MFVI_NN(Cla_NN):
     def __init__(self, input_size, hidden_size, output_size, training_size,
         no_train_samples=10, no_pred_samples=100, prev_means=None, prev_log_variances=None, learning_rate=0.001,
         prior_mean=0, prior_var=1):
+        super(MFVI_NN, self).__init__(input_size, hidden_size, output_size, training_size)
         m, v, self.size = self.create_weights(
              input_size, hidden_size, output_size, prev_means, prev_log_variances)
         self.W_m, self.b_m, self.W_last_m, self.b_last_m = m[0], m[1], m[2], m[3]
