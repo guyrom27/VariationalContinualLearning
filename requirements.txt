@@ -1,3 +1,4 @@
+torch
 numpy
 tensorflow==1.4.0
 matplotlib==1.5.3

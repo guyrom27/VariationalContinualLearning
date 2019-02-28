@@ -77,7 +77,7 @@ class Cla_NN(object):
                 self.optimizer.step()
 
                 # Compute average loss
-                avg_cost += c / total_batch
+                avg_cost += costs / total_batch
             # Display logs per epoch step
             if epoch % display_epoch == 0:
                 print("Epoch:", '%04d' % (epoch+1), "cost=", \
@@ -110,30 +110,29 @@ class Cla_NN(object):
 class Vanilla_NN(Cla_NN):
     def __init__(self, input_size, hidden_size, output_size, training_size, prev_weights=None, learning_rate=0.001):
         #
-        # super(Vanilla_NN, self).__init__(input_size, hidden_size, output_size, training_size)
+        super(Vanilla_NN, self).__init__(input_size, hidden_size, output_size, training_size)
         # # init weights and biases
-        # self.W, self.b, self.W_last, self.b_last, self.size = self.create_weights(
-        #         input_size, hidden_size, output_size, prev_weights)
-        # self.no_layers = len(hidden_size) + 1
-        # self.pred = self._prediction(self.x, self.task_idx)
-        # self.cost = - self._logpred(self.x, self.y, self.task_idx)
-        # self.weights = [self.W, self.b, self.W_last, self.b_last]
-        #
-        # self.assign_optimizer(learning_rate)
-        # self.assign_session()
+        self.W, self.b, self.W_last, self.b_last, self.size = self.create_weights(
+                 input_size, hidden_size, output_size, prev_weights)
+        self.no_layers = len(hidden_size) + 1
+        self.pred = self._prediction(self.x, self.task_idx)
+        self.cost = - self._logpred(self.x, self.y, self.task_idx)
+        self.weights = [self.W, self.b, self.W_last, self.b_last]
+
+        self.assign_optimizer(learning_rate)
+        self.assign_session()
         return
 
     def _prediction(self, inputs, task_idx):
-        # act = inputs
-        # for i in range(self.no_layers-1):
-        #     pre = tf.add(tf.matmul(act, self.W[i]), self.b[i])
-        #     act = tf.nn.relu(pre)
-        # pre = tf.add(tf.matmul(act, tf.gather(self.W_last, task_idx)), tf.gather(self.b_last, task_idx))
-        # return pre
-        return
+        act = inputs
+        for i in range(self.no_layers-1):
+             pre = torch.add(torch.matmul(act, self.W[i]), self.b[i])
+             act = torch.nn.functional.relu(pre)
+        pre = torch.add(torch.matmul(act, torch.gather(self.W_last, task_idx)), torch.gather(self.b_last, task_idx))
+        return pre
 
     def _logpred(self, inputs, targets, task_idx):
-        # pred = self._prediction(inputs, task_idx)
+        pred = self._prediction(inputs, task_idx)
         # log_lik = - tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=pred, labels=targets))
         # return log_lik
         return
