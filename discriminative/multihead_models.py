@@ -2,10 +2,21 @@ import torch
 import numpy as np
 import torch.optim as optim
 import torch.nn.functional as F
+from scipy.stats import truncnorm
+from torch.autograd import Variable
+
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
 np.random.seed(0)
 #tf.set_random_seed(0)
 
 # variable initialization functions
+def truncated_normal(size, std=1):
+    values = truncnorm.rvs(-2 * std, 2 * std, size=size)
+    x = torch.from_numpy(values).device(device)
+    return x
+
+
 def weight_variable(shape, init_weights=None):
     # if init_weights is not None:
     #     initial = tf.constant(init_weights)
@@ -194,15 +205,36 @@ class MFVI_NN(Cla_NN):
 
 
 
-        m, v, self.size = self.create_weights(
-             input_size, hidden_size, output_size, prev_means, prev_log_variances)
-        self.W_m, self.b_m, self.W_last_m, self.b_last_m = m[0], m[1], m[2], m[3]
-        self.W_v, self.b_v, self.W_last_v, self.b_last_v = v[0], v[1], v[2], v[3]
-        self.weights = [m, v]
+        m1, v1 = self.create_weights(
+             input_size, hidden_size, output_size)
 
-        m, v = self.create_prior(input_size, hidden_size, output_size, prev_means, prev_log_variances, prior_mean, prior_var)
-        self.prior_W_m, self.prior_b_m, self.prior_W_last_m, self.prior_b_last_m = m[0], m[1], m[2], m[3]
-        self.prior_W_v, self.prior_b_v, self.prior_W_last_v, self.prior_b_last_v = v[0], v[1], v[2], v[3]
+        self.input_size = input_size
+        self.out_size = output_size
+        self.size = hidden_size
+
+        self.W_m, self.b_m = m1[0], m1[1]
+        self.W_v, self.b_v = v1[0], v1[1]
+
+        self.W_last_m, self.b_last_m = [], []
+
+        m2, v2 = self.create_prior(input_size, hidden_size, output_size, prev_means, prev_log_variances, prior_mean, prior_var)
+
+        self.prior_W_m, self.prior_b_m, = m2[0], m2[1]
+        self.prior_W_v, self.prior_b_v = v2[0], v2[1]
+
+        self.prior_W_last_m, self.prior_b_last_m = [], []
+        self.prior_W_last_v, self.prior_b_last_v = [], []
+
+
+        self.create_head()
+
+        ##append the last layers to the general weights to keep track of the gradient easily
+        m1.append(self.W_last_m)
+        m1.append(self.bi_last_m)
+        v1.append(self.W_last_v)
+        v1.append(self.bi_last_v)
+
+        self.weights = [m1, v1]
 
         self.no_layers = len(self.size) - 1
         self.no_train_samples = no_train_samples
@@ -248,7 +280,6 @@ class MFVI_NN(Cla_NN):
 
         return pre
 
-
     def _logpred(self, inputs, targets, task_idx):
         # pred = self._prediction(inputs, task_idx, self.no_train_samples)
         # targets = tf.tile(tf.expand_dims(targets, 0), [self.no_train_samples, 1, 1])
@@ -278,6 +309,7 @@ class MFVI_NN(Cla_NN):
         no_tasks = len(self.W_last_m)
         din = self.size[-2]
         dout = self.size[-1]
+
         for i in range(no_tasks):
             m, v = self.W_last_m[i], self.W_last_v[i]
             m0, v0 = self.prior_W_last_m[i], self.prior_W_last_v[i]
@@ -294,157 +326,85 @@ class MFVI_NN(Cla_NN):
             kl += const_term + log_std_diff + mu_diff_term
         return kl
 
+    def create_weights(self, in_dim, hidden_size, out_dim):
+        hidden_size = deepcopy(hidden_size)
+        hidden_size.append(out_dim)
+        hidden_size.insert(0, in_dim)
 
-    def create_weights(self, in_dim, hidden_size, out_dim, prev_weights, prev_variances):
-        # hidden_size = deepcopy(hidden_size)
-        # hidden_size.append(out_dim)
-        # hidden_size.insert(0, in_dim)
-        # no_params = 0
-        # no_layers = len(hidden_size) - 1
-        # W_m = []
-        # b_m = []
-        # W_last_m = []
-        # b_last_m = []
-        # W_v = []
-        # b_v = []
-        # W_last_v = []
-        # b_last_v = []
-        # for i in range(no_layers-1):
-        #     din = hidden_size[i]
-        #     dout = hidden_size[i+1]
-        #     if prev_weights is None:
-        #         Wi_m_val = tf.truncated_normal([din, dout], stddev=0.1)
-        #         bi_m_val = tf.truncated_normal([dout], stddev=0.1)
-        #         Wi_v_val = tf.constant(-6.0, shape=[din, dout])
-        #         bi_v_val = tf.constant(-6.0, shape=[dout])
-        #     else:
-        #         Wi_m_val = prev_weights[0][i]
-        #         bi_m_val = prev_weights[1][i]
-        #         if prev_variances is None:
-        #             Wi_v_val = tf.constant(-6.0, shape=[din, dout])
-        #             bi_v_val = tf.constant(-6.0, shape=[dout])
-        #         else:
-        #             Wi_v_val = prev_variances[0][i]
-        #             bi_v_val = prev_variances[1][i]
-        #
-        #     Wi_m = tf.Variable(Wi_m_val)
-        #     bi_m = tf.Variable(bi_m_val)
-        #     Wi_v = tf.Variable(Wi_v_val)
-        #     bi_v = tf.Variable(bi_v_val)
-        #     W_m.append(Wi_m)
-        #     b_m.append(bi_m)
-        #     W_v.append(Wi_v)
-        #     b_v.append(bi_v)
-        #
-        # # if there are previous tasks
-        # if prev_weights is not None and prev_variances is not None:
-        #     prev_Wlast_m = prev_weights[2]
-        #     prev_blast_m = prev_weights[3]
-        #     prev_Wlast_v = prev_variances[2]
-        #     prev_blast_v = prev_variances[3]
-        #     no_prev_tasks = len(prev_Wlast_m)
-        #     for i in range(no_prev_tasks):
-        #         W_i_m = prev_Wlast_m[i]
-        #         b_i_m = prev_blast_m[i]
-        #         Wi_m = tf.Variable(W_i_m)
-        #         bi_m = tf.Variable(b_i_m)
-        #
-        #         W_i_v = prev_Wlast_v[i]
-        #         b_i_v = prev_blast_v[i]
-        #         Wi_v = tf.Variable(W_i_v)
-        #         bi_v = tf.Variable(b_i_v)
-        #
-        #         W_last_m.append(Wi_m)
-        #         b_last_m.append(bi_m)
-        #         W_last_v.append(Wi_v)
-        #         b_last_v.append(bi_v)
-        #
-        # din = hidden_size[-2]
-        # dout = hidden_size[-1]
-        #
-        # # if point estimate is supplied
-        # if prev_weights is not None and prev_variances is None:
-        #     Wi_m_val = prev_weights[2][0]
-        #     bi_m_val = prev_weights[3][0]
-        # else:
-        #     Wi_m_val = tf.truncated_normal([din, dout], stddev=0.1)
-        #     bi_m_val = tf.truncated_normal([dout], stddev=0.1)
-        # Wi_v_val = tf.constant(-6.0, shape=[din, dout])
-        # bi_v_val = tf.constant(-6.0, shape=[dout])
-        #
-        # Wi_m = tf.Variable(Wi_m_val)
-        # bi_m = tf.Variable(bi_m_val)
-        # Wi_v = tf.Variable(Wi_v_val)
-        # bi_v = tf.Variable(bi_v_val)
-        # W_last_m.append(Wi_m)
-        # b_last_m.append(bi_m)
-        # W_last_v.append(Wi_v)
-        # b_last_v.append(bi_v)
-        #
-        # return [W_m, b_m, W_last_m, b_last_m], [W_v, b_v, W_last_v, b_last_v], hidden_size
+        no_layers = len(hidden_size) - 1
+        W_m = []
+        b_m = []
+
+        W_v = []
+        b_v = []
+
+        for i in range(no_layers-1):
+            din = hidden_size[i]
+            dout = hidden_size[i+1]
+
+            #Initializiation values of means
+            W_m_val = truncated_normal([din, dout], stddev=0.1)
+            bi_m_val = truncated_normal([dout], stddev=0.1)
+
+            #Initializiation values of variances
+            W_v_val = torch.Tensor(-6.0, shape=[din, dout], requires_grad = False).device(device)
+            bi_v_val = torch.Tensor(-6.0, shape=[dout], requires_grad = False).device(device)
+
+            W_m = Variable(W_m_val)
+            bi_m = Variable(bi_m_val)
+            W_v = Variable(W_v_val)
+            bi_v = Variable(bi_v_val)
+
+            #Append to list weights
+            W_m.append(W_m)
+            b_m.append(bi_m)
+            W_v.append(W_v)
+            b_v.append(bi_v)
+        return [W_m, b_m], [W_v, b_v]
+
+    def create_head(self, head = None):
+        ##TODO: check how heads of the prior are initialized
+        din = self.size[-1]
+        dout = self.out_dim
+
+        if head == None:
+            W_m_val = truncated_normal([din, dout], stddev=0.1)
+            bi_m_val = truncated_normal([dout], stddev=0.1)
+            W_v_val = torch.Tensor(-6.0, shape=[din, dout], requires_grad=False).device(device)
+            bi_v_val = torch.Tensor(-6.0, shape=[dout], requires_grad=False).device(device)
+
+        else:
+
+            W_m_val = self.W_last_m[0].data
+            bi_m_val = self.bi_last_m[0].data
+            W_v_val =  self.W_last_m[0].data
+            bi_v_val = self.bi_last_v[0].data
+
+        self.W_last_m.append(Variable(W_m_val))
+        self.W_last_v.append(Variable(W_v_val))
+        self.bi_last_m.append(Variable(bi_m_val))
+        self.bi_last_v.append(Variable(bi_v_val))
+
+        self.prior_W_last_m.append(W_m_val)
+        self.prior_W_last_v.append(W_v_val)
+        self.prior_bi_last_m.append(bi_m_val)
+        self.prior_bi_last_v.append(bi_v_val)
+
+
         return
 
-    def create_prior(self, in_dim, hidden_size, out_dim, prev_weights, prev_variances, prior_mean, prior_var):
-        # hidden_size = deepcopy(hidden_size)
-        # hidden_size.append(out_dim)
-        # hidden_size.insert(0, in_dim)
-        # no_params = 0
-        # no_layers = len(hidden_size) - 1
-        # W_m = []
-        # b_m = []
-        # W_last_m = []
-        # b_last_m = []
-        # W_v = []
-        # b_v = []
-        # W_last_v = []
-        # b_last_v = []
-        # for i in range(no_layers-1):
-        #     din = hidden_size[i]
-        #     dout = hidden_size[i+1]
-        #     if prev_weights is not None and prev_variances is not None:
-        #         Wi_m = prev_weights[0][i]
-        #         bi_m = prev_weights[1][i]
-        #         Wi_v = np.exp(prev_variances[0][i])
-        #         bi_v = np.exp(prev_variances[1][i])
-        #     else:
-        #         Wi_m = prior_mean
-        #         bi_m = prior_mean
-        #         Wi_v = prior_var
-        #         bi_v = prior_var
-        #
-        #     W_m.append(Wi_m)
-        #     b_m.append(bi_m)
-        #     W_v.append(Wi_v)
-        #     b_v.append(bi_v)
-        #
-        # # if there are previous tasks
-        # if prev_weights is not None and prev_variances is not None:
-        #     prev_Wlast_m = prev_weights[2]
-        #     prev_blast_m = prev_weights[3]
-        #     prev_Wlast_v = prev_variances[2]
-        #     prev_blast_v = prev_variances[3]
-        #     no_prev_tasks = len(prev_Wlast_m)
-        #     for i in range(no_prev_tasks):
-        #         Wi_m = prev_Wlast_m[i]
-        #         bi_m = prev_blast_m[i]
-        #         Wi_v = np.exp(prev_Wlast_v[i])
-        #         bi_v = np.exp(prev_blast_v[i])
-        #
-        #         W_last_m.append(Wi_m)
-        #         b_last_m.append(bi_m)
-        #         W_last_v.append(Wi_v)
-        #         b_last_v.append(bi_v)
-        #
-        # din = hidden_size[-2]
-        # dout = hidden_size[-1]
-        # Wi_m = prior_mean
-        # bi_m = prior_mean
-        # Wi_v = prior_var
-        # bi_v = prior_var
-        # W_last_m.append(Wi_m)
-        # b_last_m.append(bi_m)
-        # W_last_v.append(Wi_v)
-        # b_last_v.append(bi_v)
-        #
-        # return [W_m, b_m, W_last_m, b_last_m], [W_v, b_v, W_last_v, b_last_v]
+    def update_prior(self):
+
+        self.create_head(head=0)
+
+        self.prior_W_m.data.copy_(self.W_m.data)
+        self.prior_b_m.data.copy_(self.b_m.data)
+        self.prior_W_last_m.data.copy_(self.W_last_m.data)
+        self.prior_b_last_m.data.copy_(self.b_last_m.data)
+
+        self.prior_W_v.data.copy_(self.W_v.data)
+        self.prior_b_v.data.copy_(self.b_v.data)
+        self.prior_W_last_v.data.copy_(self.W_last_v.data)
+        self.prior_b_last_v.data.copy_(self.b_last_v.data)
+
         return
