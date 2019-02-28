@@ -3,6 +3,7 @@ import tensorflow as tf
 import utils
 from cla_models_multihead import Vanilla_NN, MFVI_NN
 
+
 def run_vcl(hidden_size, no_epochs, data_gen, coreset_method, coreset_size=0, batch_size=None, single_head=True):
     in_dim, out_dim = data_gen.get_dims()
     x_coresets, y_coresets = [], []
@@ -25,19 +26,22 @@ def run_vcl(hidden_size, no_epochs, data_gen, coreset_method, coreset_size=0, ba
             ml_model.train(x_train, y_train, task_id, no_epochs, bsize)
             mf_weights = ml_model.get_weights()
             mf_variances = None
-            ml_model.close_session()
 
         # Select coreset if needed
         if coreset_size > 0:
-            x_coresets, y_coresets, x_train, y_train = coreset_method(x_coresets, y_coresets, x_train, y_train, coreset_size)
+            x_coresets, y_coresets, x_train, y_train = coreset_method(x_coresets, y_coresets, x_train, y_train,
+                                                                      coreset_size)
 
+        if task_id == 0:
+            mf_model = MFVI_NN(in_dim, hidden_size, out_dim, x_train.shape[0], prev_means=mf_weights,
+                               prev_log_variances=mf_variances)
         # Train on non-coreset data
-        mf_model = MFVI_NN(in_dim, hidden_size, out_dim, x_train.shape[0], prev_means=mf_weights, prev_log_variances=mf_variances)
         mf_model.train(x_train, y_train, head, no_epochs, bsize)
-        mf_weights, mf_variances = mf_model.get_weights()
+        mf_model.update_prior()
 
         # Incorporate coreset data and make prediction
-        acc = utils.get_scores(mf_model, x_testsets, y_testsets, x_coresets, y_coresets, hidden_size, no_epochs, single_head, batch_size)
+        acc = utils.get_scores(mf_model, x_testsets, y_testsets, x_coresets, y_coresets, hidden_size, no_epochs,
+                               single_head, batch_size)
         all_acc = utils.concatenate_results(acc, all_acc)
 
         mf_model.close_session()
