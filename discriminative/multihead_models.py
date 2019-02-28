@@ -1,6 +1,7 @@
 import torch
 import numpy as np
-
+import torch.optim as optim
+import torch.nn.functional as F
 np.random.seed(0)
 #tf.set_random_seed(0)
 
@@ -46,62 +47,44 @@ def _create_weights_mf(in_dim, hidden_size, out_dim, init_weights=None, init_var
     return
 
 class Cla_NN(object):
-    def __init__(self, input_size, hidden_size, output_size, training_size):
-        # input and output placeholders
-        # self.x = tf.placeholder(tf.float32, [None, input_size])
-        # self.y = tf.placeholder(tf.float32, [None, output_size])
-        # self.task_idx = tf.placeholder(tf.int32)
-        return
-
-    def assign_optimizer(self, learning_rate=0.001):
-        #self.train_step = tf.train.AdamOptimizer(learning_rate).minimize(self.cost)
-        return
-
-    def assign_session(self):
-        # Initializing the variables
-        # init = tf.global_variables_initializer()
-        #
-        # # launch a session
-        # self.sess = tf.Session()
-        # self.sess.run(init)
-        return
-
     def train(self, x_train, y_train, task_idx, no_epochs=1000, batch_size=100, display_epoch=5):
-        # N = x_train.shape[0]
-        # if batch_size > N:
-        #     batch_size = N
-        #
-        # sess = self.sess
-        # costs = []
-        # # Training cycle
-        # for epoch in range(no_epochs):
-        #     perm_inds = range(x_train.shape[0])
-        #     np.random.shuffle(perm_inds)
-        #     cur_x_train = x_train[perm_inds]
-        #     cur_y_train = y_train[perm_inds]
-        #
-        #     avg_cost = 0.
-        #     total_batch = int(np.ceil(N * 1.0 / batch_size))
-        #     # Loop over all batches
-        #     for i in range(total_batch):
-        #         start_ind = i*batch_size
-        #         end_ind = np.min([(i+1)*batch_size, N])
-        #         batch_x = cur_x_train[start_ind:end_ind, :]
-        #         batch_y = cur_y_train[start_ind:end_ind, :]
-        #         # Run optimization op (backprop) and cost op (to get loss value)
-        #         _, c = sess.run(
-        #             [self.train_step, self.cost],
-        #             feed_dict={self.x: batch_x, self.y: batch_y, self.task_idx: task_idx})
-        #         # Compute average loss
-        #         avg_cost += c / total_batch
-        #     # Display logs per epoch step
-        #     if epoch % display_epoch == 0:
-        #         print("Epoch:", '%04d' % (epoch+1), "cost=", \
-        #             "{:.9f}".format(avg_cost))
-        #     costs.append(avg_cost)
-        # print("Optimization Finished!")
-        # return costs
-        return
+        N = x_train.shape[0]
+        if batch_size > N:
+            batch_size = N
+
+        costs = []
+        # Training cycle
+        for epoch in range(no_epochs):
+            perm_inds = range(x_train.shape[0])
+            np.random.shuffle(perm_inds)
+            cur_x_train = x_train[perm_inds]
+            cur_y_train = y_train[perm_inds]
+
+            avg_cost = 0.
+            total_batch = int(np.ceil(N * 1.0 / batch_size))
+            # Loop over all batches
+            for i in range(total_batch):
+                start_ind = i*batch_size
+                end_ind = np.min([(i+1)*batch_size, N])
+                batch_x = cur_x_train[start_ind:end_ind, :]
+                batch_y = cur_y_train[start_ind:end_ind, :]
+                # # Run optimization op (backprop) and cost op (to get loss value)
+                # _, c = sess.run(
+                #     [self.train_step, self.cost],
+                #     feed_dict={self.x: batch_x, self.y: batch_y, self.task_idx: task_idx})
+                self.optimizer.zero_grad()
+                self.cost.backward()
+                self.optimizer.step()
+
+                # Compute average loss
+                avg_cost += c / total_batch
+            # Display logs per epoch step
+            if epoch % display_epoch == 0:
+                print("Epoch:", '%04d' % (epoch+1), "cost=", \
+                    "{:.9f}".format(avg_cost))
+            costs.append(avg_cost)
+        print("Optimization Finished!")
+        return costs
 
     def prediction(self, x_test, task_idx):
         # # Test model
@@ -209,62 +192,62 @@ class MFVI_NN(Cla_NN):
         no_train_samples=10, no_pred_samples=100, prev_means=None, prev_log_variances=None, learning_rate=0.001,
         prior_mean=0, prior_var=1):
 
-        # super(MFVI_NN, self).__init__(input_size, hidden_size, output_size, training_size)
-        # m, v, self.size = self.create_weights(
-        #     input_size, hidden_size, output_size, prev_means, prev_log_variances)
-        # self.W_m, self.b_m, self.W_last_m, self.b_last_m = m[0], m[1], m[2], m[3]
-        # self.W_v, self.b_v, self.W_last_v, self.b_last_v = v[0], v[1], v[2], v[3]
-        # self.weights = [m, v]
-        #
-        # m, v = self.create_prior(input_size, hidden_size, output_size, prev_means, prev_log_variances, prior_mean, prior_var)
-        # self.prior_W_m, self.prior_b_m, self.prior_W_last_m, self.prior_b_last_m = m[0], m[1], m[2], m[3]
-        # self.prior_W_v, self.prior_b_v, self.prior_W_last_v, self.prior_b_last_v = v[0], v[1], v[2], v[3]
-        #
-        # self.no_layers = len(self.size) - 1
-        # self.no_train_samples = no_train_samples
-        # self.no_pred_samples = no_pred_samples
-        # self.pred = self._prediction(self.x, self.task_idx, self.no_pred_samples)
-        # self.cost = tf.div(self._KL_term(), training_size) - self._logpred(self.x, self.y, self.task_idx)
-        #
-        # self.assign_optimizer(learning_rate)
-        # self.assign_session()
-        return
+
+
+        m, v, self.size = self.create_weights(
+             input_size, hidden_size, output_size, prev_means, prev_log_variances)
+        self.W_m, self.b_m, self.W_last_m, self.b_last_m = m[0], m[1], m[2], m[3]
+        self.W_v, self.b_v, self.W_last_v, self.b_last_v = v[0], v[1], v[2], v[3]
+        self.weights = [m, v]
+
+        m, v = self.create_prior(input_size, hidden_size, output_size, prev_means, prev_log_variances, prior_mean, prior_var)
+        self.prior_W_m, self.prior_b_m, self.prior_W_last_m, self.prior_b_last_m = m[0], m[1], m[2], m[3]
+        self.prior_W_v, self.prior_b_v, self.prior_W_last_v, self.prior_b_last_v = v[0], v[1], v[2], v[3]
+
+        self.no_layers = len(self.size) - 1
+        self.no_train_samples = no_train_samples
+        self.no_pred_samples = no_pred_samples
+        self.pred = self._prediction(self.x, self.task_idx, self.no_pred_samples)
+        self.cost = torch.div(self._KL_term(), training_size) - self._logpred(self.x, self.y, self.task_idx)
+
+
+        self.optimizer = optim.SGD(self.weights, lr=0.01)
+
 
     def _prediction(self, inputs, task_idx, no_samples):
-        # return self._prediction_layer(inputs, task_idx, no_samples)
+        return self._prediction_layer(inputs, task_idx, no_samples)
         return
 
     # this samples a layer at a time
     def _prediction_layer(self, inputs, task_idx, no_samples):
-        # K = no_samples
-        # act = tf.tile(tf.expand_dims(inputs, 0), [K, 1, 1])
-        # for i in range(self.no_layers-1):
-        #     din = self.size[i]
-        #     dout = self.size[i+1]
-        #     eps_w = tf.random_normal((K, din, dout), 0, 1, dtype=tf.float32)
-        #     eps_b = tf.random_normal((K, 1, dout), 0, 1, dtype=tf.float32)
-        #
-        #     weights = tf.add(tf.multiply(eps_w, tf.exp(0.5*self.W_v[i])), self.W_m[i])
-        #     biases = tf.add(tf.multiply(eps_b, tf.exp(0.5*self.b_v[i])), self.b_m[i])
-        #     pre = tf.add(tf.einsum('mni,mio->mno', act, weights), biases)
-        #     act = tf.nn.relu(pre)
-        # din = self.size[-2]
-        # dout = self.size[-1]
-        # eps_w = tf.random_normal((K, din, dout), 0, 1, dtype=tf.float32)
-        # eps_b = tf.random_normal((K, 1, dout), 0, 1, dtype=tf.float32)
-        #
-        # Wtask_m = tf.gather(self.W_last_m, task_idx)
-        # Wtask_v = tf.gather(self.W_last_v, task_idx)
-        # btask_m = tf.gather(self.b_last_m, task_idx)
-        # btask_v = tf.gather(self.b_last_v, task_idx)
-        # weights = tf.add(tf.multiply(eps_w, tf.exp(0.5*Wtask_v)), Wtask_m)
-        # biases = tf.add(tf.multiply(eps_b, tf.exp(0.5*btask_v)), btask_m)
-        # act = tf.expand_dims(act, 3)
-        # weights = tf.expand_dims(weights, 1)
-        # pre = tf.add(tf.reduce_sum(act * weights, 2), biases)
-        #
-        # return pre
-        return
+        K = no_samples
+        act = torch.unsqueeze(inputs, 0).repeat([K, 1, 1])
+        for i in range(self.no_layers-1):
+            din = self.size[i]
+            dout = self.size[i+1]
+            eps_w = torch.normal(torch.zeros((K, din, dout)), torch.ones((K, din, dout)))
+            eps_b = torch.normal(torch.zeros((K, 1, dout)), torch.ones((K, 1, dout)))
+            weights = torch.add(torch.mm(eps_w, torch.exp(0.5*self.W_v[i])), self.W_m[i])
+            biases = torch.add(torch.mm(eps_b, torch.exp(0.5*self.b_v[i])), self.b_m[i])
+            pre = torch.add(torch.einsum('mni,mio->mno', act, weights), biases)
+            act = F.relu(pre)
+        din = self.size[-2]
+        dout = self.size[-1]
+        eps_w = torch.normal(torch.zeros((K, din, dout)), torch.ones((K, din, dout)))
+        eps_b = torch.normal(torch.zeros((K, 1, dout)), torch.ones((K, 1, dout)))
+
+        Wtask_m = torch.gather(self.W_last_m, task_idx)
+        Wtask_v = torch.gather(self.W_last_v, task_idx)
+        btask_m = torch.gather(self.b_last_m, task_idx)
+        btask_v = torch.gather(self.b_last_v, task_idx)
+        weights = torch.add(torch.mm(eps_w, torch.exp(0.5*Wtask_v)), Wtask_m)
+        biases = torch.add(torch.mm(eps_b, torch.exp(0.5*btask_v)), btask_m)
+        act = torch.unsqueeze(act, 3)
+        weights = torch.unsqueeze(weights, 1)
+        pre = torch.add(torch.sum(act * weights, dim = 2), biases)
+
+        return pre
+
 
     def _logpred(self, inputs, targets, task_idx):
         # pred = self._prediction(inputs, task_idx, self.no_train_samples)
@@ -274,43 +257,43 @@ class MFVI_NN(Cla_NN):
         return
 
     def _KL_term(self):
-        # kl = 0
-        # for i in range(self.no_layers-1):
-        #     din = self.size[i]
-        #     dout = self.size[i+1]
-        #     m, v = self.W_m[i], self.W_v[i]
-        #     m0, v0 = self.prior_W_m[i], self.prior_W_v[i]
-        #     const_term = -0.5 * dout * din
-        #     log_std_diff = 0.5 * tf.reduce_sum(np.log(v0) - v)
-        #     mu_diff_term = 0.5 * tf.reduce_sum((tf.exp(v) + (m0 - m)**2) / v0)
-        #     kl += const_term + log_std_diff + mu_diff_term
-        #
-        #     m, v = self.b_m[i], self.b_v[i]
-        #     m0, v0 = self.prior_b_m[i], self.prior_b_v[i]
-        #     const_term = -0.5 * dout
-        #     log_std_diff = 0.5 * tf.reduce_sum(np.log(v0) - v)
-        #     mu_diff_term = 0.5 * tf.reduce_sum((tf.exp(v) + (m0 - m)**2) / v0)
-        #     kl += const_term + log_std_diff + mu_diff_term
-        #
-        # no_tasks = len(self.W_last_m)
-        # din = self.size[-2]
-        # dout = self.size[-1]
-        # for i in range(no_tasks):
-        #     m, v = self.W_last_m[i], self.W_last_v[i]
-        #     m0, v0 = self.prior_W_last_m[i], self.prior_W_last_v[i]
-        #     const_term = -0.5 * dout * din
-        #     log_std_diff = 0.5 * tf.reduce_sum(np.log(v0) - v)
-        #     mu_diff_term = 0.5 * tf.reduce_sum((tf.exp(v) + (m0 - m)**2) / v0)
-        #     kl += const_term + log_std_diff + mu_diff_term
-        #
-        #     m, v = self.b_last_m[i], self.b_last_v[i]
-        #     m0, v0 = self.prior_b_last_m[i], self.prior_b_last_v[i]
-        #     const_term = -0.5 * dout
-        #     log_std_diff = 0.5 * tf.reduce_sum(np.log(v0) - v)
-        #     mu_diff_term = 0.5 * tf.reduce_sum((tf.exp(v) + (m0 - m)**2) / v0)
-        #     kl += const_term + log_std_diff + mu_diff_term
-        # return kl
-        return
+        kl = 0
+        for i in range(self.no_layers-1):
+            din = self.size[i]
+            dout = self.size[i+1]
+            m, v = self.W_m[i], self.W_v[i]
+            m0, v0 = self.prior_W_m[i], self.prior_W_v[i]
+            const_term = -0.5 * dout * din
+            log_std_diff = 0.5 * torch.sum(np.log(v0) - v)
+            mu_diff_term = 0.5 * torch.sum((torch.exp(v) + (m0 - m)**2) / v0)
+            kl += const_term + log_std_diff + mu_diff_term
+
+            m, v = self.b_m[i], self.b_v[i]
+            m0, v0 = self.prior_b_m[i], self.prior_b_v[i]
+            const_term = -0.5 * dout
+            log_std_diff = 0.5 * torch.sum(np.log(v0) - v)
+            mu_diff_term = 0.5 * torch.sum((torch.exp(v) + (m0 - m)**2) / v0)
+            kl += const_term + log_std_diff + mu_diff_term
+
+        no_tasks = len(self.W_last_m)
+        din = self.size[-2]
+        dout = self.size[-1]
+        for i in range(no_tasks):
+            m, v = self.W_last_m[i], self.W_last_v[i]
+            m0, v0 = self.prior_W_last_m[i], self.prior_W_last_v[i]
+            const_term = -0.5 * dout * din
+            log_std_diff = 0.5 * torch.sum(np.log(v0) - v)
+            mu_diff_term = 0.5 * torch.sum((torch.exp(v) + (m0 - m)**2) / v0)
+            kl += const_term + log_std_diff + mu_diff_term
+
+            m, v = self.b_last_m[i], self.b_last_v[i]
+            m0, v0 = self.prior_b_last_m[i], self.prior_b_last_v[i]
+            const_term = -0.5 * dout
+            log_std_diff = 0.5 * torch.sum(np.log(v0) - v)
+            mu_diff_term = 0.5 * torch.sum((torch.exp(v) + (m0 - m)**2) / v0)
+            kl += const_term + log_std_diff + mu_diff_term
+        return kl
+
 
     def create_weights(self, in_dim, hidden_size, out_dim, prev_weights, prev_variances):
         # hidden_size = deepcopy(hidden_size)
