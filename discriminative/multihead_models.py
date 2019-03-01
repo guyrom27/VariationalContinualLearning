@@ -399,7 +399,7 @@ class MFVI_NN(Cla_NN):
 
             # Initializiation values of variances
             W_v_val = init_tensor(1,  dout = dout, din = din )
-            bi_v_val = init_tensor(1,  dout = dout, din = din )
+            bi_v_val = init_tensor(1,  dout = dout)
 
             # Append to list weights
             W_m.append(W_m_val)
