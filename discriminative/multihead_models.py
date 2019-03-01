@@ -77,8 +77,6 @@ class Cla_NN(object):
         return prob
 
 
-    def get_weights(self):
-        return self.weights
 
 
 
@@ -95,7 +93,7 @@ class Vanilla_NN(Cla_NN):
         #self.cost = - self._logpred(self.x, self.y, self.task_idx)
         self.weights = self.W + self.b + self.W_last + self.b_last
         self.training_size = training_size
-        self.optimizer = optim.SGD(self.weights, lr=learning_rate)
+        self.optimizer = optim.Adam(self.weights, lr=learning_rate)
 
     def _prediction(self, inputs, task_idx):
         act = inputs
@@ -109,11 +107,11 @@ class Vanilla_NN(Cla_NN):
 
         loss = torch.nn.CrossEntropyLoss()
         pred = self._prediction(inputs, task_idx)
-        log_lik = - loss(F.softmax(pred), targets.type(torch.long))
+        log_lik = - loss(pred, targets.type(torch.long))
         return log_lik
 
     def get_loss(self, batch_x, batch_y, task_idx):
-        return self._logpred(batch_x, batch_y, task_idx)
+        return -self._logpred(batch_x, batch_y, task_idx)
 
     def create_weights(self, in_dim, hidden_size, out_dim):
         hidden_size = deepcopy(hidden_size)
@@ -130,11 +128,11 @@ class Vanilla_NN(Cla_NN):
             dout = hidden_size[i+1]
 
             #Initializiation values of means
-            W_m = truncated_normal([din, dout], stddev=0.1, variable = True)
+            Wi_m = truncated_normal([din, dout], stddev=0.1, variable = True)
             bi_m = truncated_normal([dout], stddev=0.1, variable = True)
 
             #Append to list weights
-            W.append(W_m)
+            W.append(Wi_m)
             b.append(bi_m)
 
         Wi = truncated_normal([hidden_size[-2], out_dim], stddev=0.1, variable = True)
@@ -142,6 +140,10 @@ class Vanilla_NN(Cla_NN):
         W_last.append(Wi)
         b_last.append(bi)
         return W, b, W_last, b_last, hidden_size
+
+    def get_weights(self):
+        weights = [self.weights[:self.no_layers-1], self.weights[self.no_layers-1:2*(self.no_layers-1)], [self.weights[-2]], [self.weights[-1]]]
+        return weights
 
 """ Bayesian Neural Network with Mean field VI approximation """
 class MFVI_NN(Cla_NN):
@@ -191,7 +193,7 @@ class MFVI_NN(Cla_NN):
         self.no_train_samples = no_train_samples
         self.no_pred_samples = no_pred_samples
         self.training_size = training_size
-        self.optimizer = optim.SGD(self.weights, lr=0.01)
+        self.optimizer = optim.Adam(self.weights, lr=learning_rate)
 
     def get_loss(self, batch_x, batch_y, task_idx):
         ##TODO: check if need to divise the likelihood by the number of samples of the normal distrib
@@ -243,7 +245,7 @@ class MFVI_NN(Cla_NN):
         targets = targets.repeat([self.no_train_samples, 1]).view(-1)
 
 
-        log_liks =  - loss(F.softmax(pred, dim =-1), targets.type(torch.long))
+        log_liks = -loss(pred, targets.type(torch.long))
         log_lik = log_liks.mean()
         return log_lik
 
@@ -296,31 +298,47 @@ class MFVI_NN(Cla_NN):
 
         if head == None:
             W_m = truncated_normal([din, dout], stddev=0.1, variable = True)
-            bi_m = truncated_normal([dout], stddev=0.1, variable = True)
+            b_m = truncated_normal([dout], stddev=0.1, variable = True)
             W_v =  init_tensor(-6.0,  dout = dout, din = din, variable = True )
-            bi_v = init_tensor(-6.0, dout = dout, variable = True)
+            b_v = init_tensor(-6.0, dout = dout, variable = True)
+
+            W_m_p = truncated_normal([din, dout], stddev=0.1)
+            b_m_p = truncated_normal([dout], stddev=0.1)
+            W_v_p =  init_tensor(np.exp(-6.0),  dout = dout, din = din)
+            b_v_p = init_tensor(np.exp(-6.0), dout = dout)
 
         else:
 
-            W_m = torch.Tensor(self.W_last_m[0].data, requires_grad = True).to(device = device)
-            bi_m = torch.Tensor(self.bi_last_m[0].data, requires_grad = True).to(device = device)
-            W_v =  torch.Tensor(self.W_last_v[0].data, requires_grad = True).to(device = device)
-            bi_v = torch.Tensor(self.bi_last_v[0].data, requires_grad = True).to(device = device)
+            W_m = self.W_last_m[0].detach().data
+            W_m.requires_grad = True
+            b_m = self.b_last_m[0].detach().data
+            b_m.requires_grad = True
+            W_v = self.W_last_v[0].detach().data
+            W_v.requires_grad = True
+            b_v = self.b_last_v[0].detach().data
+            b_v.requires_grad = True
+
+            W_m_p = self.W_last_m[0].detach().data
+            b_m_p = self.b_last_m[0].detach().data
+            W_v_p =  torch.exp(self.W_last_v[0].detach().data)
+            b_v_p = torch.exp(self.b_last_v[0].detach().data)
+
 
         self.W_last_m.append(W_m)
         self.W_last_v.append(W_v)
-        self.b_last_m.append(bi_m)
-        self.b_last_v.append(bi_v)
+        self.b_last_m.append(b_m)
+        self.b_last_v.append(b_v)
 
-        self.prior_W_last_m.append(W_m)
-        self.prior_W_last_v.append(W_v)
-        self.prior_b_last_m.append(bi_m)
-        self.prior_b_last_v.append(bi_v)
+        self.prior_W_last_m.append(W_m_p)
+        self.prior_W_last_v.append(W_v_p)
+        self.prior_b_last_m.append(b_m_p)
+        self.prior_b_last_v.append(b_v_p)
 
 
         return
 
-    def create_weights(self, in_dim, hidden_size, out_dim):
+    def create_weights(self, in_dim, hidden_size, out_dim, prev_means, prev_log_variances):
+        ##TODO: init with prev weights
         hidden_size = deepcopy(hidden_size)
         hidden_size.append(out_dim)
         hidden_size.insert(0, in_dim)
@@ -328,7 +346,6 @@ class MFVI_NN(Cla_NN):
         no_layers = len(hidden_size) - 1
         W_m = []
         b_m = []
-
         W_v = []
         b_v = []
 
@@ -382,17 +399,18 @@ class MFVI_NN(Cla_NN):
         return [W_m, b_m], [W_v, b_v]
 
     def update_prior(self):
-        ##TODO: check if data does not detached gradient
         self.create_head(head=0)
+        for i in range(len(self.W_m)):
+            self.prior_W_m[i].data.copy_(self.W_m[i].detach().data)
+            self.prior_b_m[i].data.copy_(self.b_m[i].detach().data)
+            self.prior_W_v[i].data.copy_(torch.exp(self.W_v[i].detach().data))
+            self.prior_b_v[i].data.copy_(torch.exp(self.b_v[i].detach().data))
 
-        self.prior_W_m.data.copy_(self.W_m.data)
-        self.prior_b_m.data.copy_(self.b_m.data)
-        self.prior_W_last_m.data.copy_(self.W_last_m.data)
-        self.prior_b_last_m.data.copy_(self.b_last_m.data)
 
-        self.prior_W_v.data.copy_(torch.exp(self.W_v.data))
-        self.prior_b_v.data.copy_(torch.exp(self.b_v.data))
-        self.prior_W_last_v.data.copy_(torch.exp(self.W_last_v.data))
-        self.prior_b_last_v.data.copy_(torch.exp(self.b_last_v.data))
+        for i in range(len(self.W_last_m)):
+            self.prior_W_last_m[i].data.copy_(self.W_last_m[i].detach().data)
+            self.prior_b_last_m[i].data.copy_(self.b_last_m[i].detach().data)
+            self.prior_W_last_v[i].data.copy_(torch.exp(self.W_last_v[i].detach().data))
+            self.prior_b_last_v[i].data.copy_(torch.exp(self.b_last_v[i].detach().data))
 
         return

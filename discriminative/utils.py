@@ -23,7 +23,6 @@ def merge_coresets(x_coresets, y_coresets):
 def get_scores(model, x_testsets, y_testsets, x_coresets, y_coresets, hidden_size, no_epochs, single_head, batch_size=None):
     mf_weights, mf_variances = model.get_weights()
     acc = []
-
     if single_head:
         if len(x_coresets) > 0:
             x_train, y_train = merge_coresets(x_coresets, y_coresets)
