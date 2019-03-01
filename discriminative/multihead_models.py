@@ -80,13 +80,9 @@ class Vanilla_NN(Cla_NN):
         self.W, self.b, self.W_last, self.b_last, self.size = self.create_weights(
                  input_size, hidden_size, output_size, prev_weights)
         self.no_layers = len(hidden_size) + 1
-        self.pred = self._prediction(self.x, self.task_idx)
-        self.cost = - self._logpred(self.x, self.y, self.task_idx)
+        #self.pred = self._prediction(self.x, self.task_idx)
+        #self.cost = - self._logpred(self.x, self.y, self.task_idx)
         self.weights = [self.W, self.b, self.W_last, self.b_last]
-
-        self.assign_optimizer(learning_rate)
-        self.assign_session()
-        return
 
     def _prediction(self, inputs, task_idx):
         act = inputs
@@ -98,9 +94,12 @@ class Vanilla_NN(Cla_NN):
 
     def _logpred(self, inputs, targets, task_idx):
         pred = self._prediction(inputs, task_idx)
-        # log_lik = - tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=pred, labels=targets))
-        # return log_lik
-        return
+        log_liks = - (torch.nn.CrossEntropyLoss(torch.nn.softmax(pred), targets))
+        log_lik = log_liks.mean()
+        return log_lik
+
+    def get_loss(self, batch_x, batch_y, task_idx):
+        return self._logpred(self, batch_x, batch_y, task_idx)
 
     def create_weights(self, in_dim, hidden_size, out_dim):
         hidden_size = deepcopy(hidden_size)
@@ -217,7 +216,7 @@ class MFVI_NN(Cla_NN):
         pred = self._prediction(inputs, task_idx, self.no_train_samples)
         targets = torch.unsqueeze(targets, 0).repeat([self.no_train_samples, 1, 1])
         log_liks = - (torch.nn.CrossEntropyLoss(torch.nn.softmax(pred), targets))
-        log_lik = log_liks.mean(0)
+        log_lik = log_liks.mean()
         return log_lik
 
 
