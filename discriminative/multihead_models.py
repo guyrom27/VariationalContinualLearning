@@ -146,21 +146,19 @@ class Vanilla_NN(Cla_NN):
 """ Bayesian Neural Network with Mean field VI approximation """
 class MFVI_NN(Cla_NN):
     def __init__(self, input_size, hidden_size, output_size, training_size,
-        no_train_samples=10, no_pred_samples=100, prev_means=None, prev_log_variances=None, learning_rate=0.001,
+        no_train_samples=9, no_pred_samples=100, prev_means=None, prev_log_variances=None, learning_rate=0.001,
         prior_mean=0, prior_var=1):
 
         super(MFVI_NN, self).__init__(input_size, hidden_size, output_size, training_size)
 
-        m1, v1 = self.create_weights(
+        m1, v1, hidden_size = self.create_weights(
              input_size, hidden_size, output_size)
 
         self.input_size = input_size
         self.out_size = output_size
-        self.size = deepcopy(hidden_size)
+        #self.size = deepcopy(hidden_size)
 
-        hidden_size.append(self.out_size)
-        hidden_size.insert(0, self.input_size)
-        self.hidden_size_with_input_output = hidden_size
+        self.size = hidden_size
 
         self.W_m, self.b_m = m1[0], m1[1]
         self.W_v, self.b_v = v1[0], v1[1]
@@ -168,7 +166,7 @@ class MFVI_NN(Cla_NN):
         self.W_last_m, self.b_last_m = [], []
         self.W_last_v, self.b_last_v = [], []
 
-        m2, v2 = self.create_prior(input_size, self.hidden_size_with_input_output, output_size)
+        m2, v2 = self.create_prior(input_size, self.size, output_size)
 
 
         self.prior_W_m, self.prior_b_m, = m2[0], m2[1]
@@ -196,6 +194,7 @@ class MFVI_NN(Cla_NN):
         self.optimizer = optim.SGD(self.weights, lr=0.01)
 
     def get_loss(self, batch_x, batch_y, task_idx):
+        ##TODO: check if need to divise the likelihood by the number of samples of the normal distrib
         return torch.div(self._KL_term(), self.training_size) - self._logpred(batch_x, batch_y, task_idx)
 
     def _prediction(self, inputs, task_idx, no_samples):
@@ -204,22 +203,22 @@ class MFVI_NN(Cla_NN):
     # this samples a layer at a time
     def _prediction_layer(self, inputs, task_idx, no_samples):
         K = no_samples
-        size = self.hidden_size_with_input_output
+        size = self.size
 
 
         act = torch.unsqueeze(inputs, 0).repeat([K, 1, 1])
         for i in range(self.no_layers-1):
             ##TODO: check dimensions
-            din = self.hidden_size_with_input_output[i]
-            dout = self.hidden_size_with_input_output[i+1]
+            din = self.size[i]
+            dout = self.size[i+1]
             eps_w = torch.normal(torch.zeros((K, din, dout)), torch.ones((K, din, dout))).to(device = device)
             eps_b = torch.normal(torch.zeros((K, 1, dout)), torch.ones((K, 1, dout))).to(device = device)
             weights = torch.add(eps_w * torch.exp(0.5*self.W_v[i]), self.W_m[i])
             biases = torch.add(eps_b * torch.exp(0.5*self.b_v[i]), self.b_m[i])
             pre = torch.add(torch.einsum('mni,mio->mno', act, weights), biases)
             act = F.relu(pre)
-        din = self.size[-1]
-        dout = self.out_size
+        din = self.size[-2]
+        dout = self.size[-1]
 
 
 
@@ -238,11 +237,17 @@ class MFVI_NN(Cla_NN):
         return pre
 
     def _logpred(self, inputs, targets, task_idx):
-        pred = self._prediction(inputs, task_idx, self.no_train_samples)
-        targets = torch.unsqueeze(targets, 0).repeat([self.no_train_samples, 1, 1])
-        log_liks = - (torch.nn.CrossEntropyLoss(torch.nn.softmax(pred), targets))
+        loss = torch.nn.CrossEntropyLoss()
+
+        pred = self._prediction(inputs, task_idx, self.no_train_samples).view(-1,self.out_size)
+        targets = targets.repeat([self.no_train_samples, 1]).view(-1)
+
+
+        log_liks =  - loss(F.softmax(pred, dim =-1), targets.type(torch.long))
         log_lik = log_liks.mean()
         return log_lik
+
+
 
 
     def _KL_term(self):
@@ -286,8 +291,8 @@ class MFVI_NN(Cla_NN):
 
     def create_head(self, head = None):
         ##TODO: check how heads of the prior are initialized
-        din = self.size[-1]
-        dout = self.out_size
+        din = self.size[-2]
+        dout = self.size[-1]
 
         if head == None:
             W_m = truncated_normal([din, dout], stddev=0.1, variable = True)
@@ -345,7 +350,7 @@ class MFVI_NN(Cla_NN):
             W_v.append(W_v_i)
             b_v.append(bi_v_i)
 
-        return [W_m, b_m], [W_v, b_v]
+        return [W_m, b_m], [W_v, b_v], hidden_size
 
     def create_prior(self, in_dim, hidden_size, out_dim):
 
