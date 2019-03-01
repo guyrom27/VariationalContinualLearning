@@ -1,7 +1,7 @@
 import numpy as np
 import tensorflow as tf
 import gzip
-import cPickle
+import pickle as cp
 import sys
 sys.path.extend(['alg/'])
 import vcl
@@ -11,11 +11,17 @@ from copy import deepcopy
 
 class PermutedMnistGenerator():
     def __init__(self, max_iter=10):
-        f = gzip.open('data/mnist.pkl.gz', 'rb')
-        train_set, valid_set, test_set = cPickle.load(f)
-        f.close()
+
+        with gzip.open('data/mnist.pkl.gz', 'rb') as file:
+            u = cp._Unpickler(file)
+            u.encoding = 'latin1'
+            p = u.load()
+            train_set, valid_set, test_set = p
+
 
         self.X_train = np.vstack((train_set[0], valid_set[0]))
+
+        print(self.X_train.shape)
         self.Y_train = np.hstack((train_set[1], valid_set[1]))
         self.X_test = test_set[0]
         self.Y_test = test_set[1]
@@ -31,18 +37,18 @@ class PermutedMnistGenerator():
             raise Exception('Number of tasks exceeded!')
         else:
             np.random.seed(self.cur_iter)
-            perm_inds = range(self.X_train.shape[1])
+            perm_inds = np.arange(self.X_train.shape[1])
             np.random.shuffle(perm_inds)
 
             # Retrieve train data
             next_x_train = deepcopy(self.X_train)
             next_x_train = next_x_train[:,perm_inds]
-            next_y_train = np.eye(10)[self.Y_train]
+            next_y_train = self.Y_train#np.eye(10)[self.Y_train]
 
             # Retrieve test data
             next_x_test = deepcopy(self.X_test)
             next_x_test = next_x_test[:,perm_inds]
-            next_y_test = np.eye(10)[self.Y_test]
+            next_y_test = self.Y_test#np.eye(10)[self.Y_test]
 
             self.cur_iter += 1
 
@@ -50,7 +56,7 @@ class PermutedMnistGenerator():
 
 hidden_size = [100, 100]
 batch_size = 256
-no_epochs = 10
+no_epochs = 2
 single_head = True
 num_tasks = 5
 

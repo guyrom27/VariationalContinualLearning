@@ -10,7 +10,7 @@ import numpy as np
 import matplotlib
 matplotlib.use('agg')
 import matplotlib.pyplot as plt
-from cla_models_multihead import MFVI_NN
+from multihead_models import MFVI_NN
 
 
 def merge_coresets(x_coresets, y_coresets):

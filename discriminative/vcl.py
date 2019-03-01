@@ -1,7 +1,7 @@
 import numpy as np
 import tensorflow as tf
 import utils
-from cla_models_multihead import Vanilla_NN, MFVI_NN
+from multihead_models import Vanilla_NN, MFVI_NN
 
 
 def run_vcl(hidden_size, no_epochs, data_gen, coreset_method, coreset_size=0, batch_size=None, single_head=True):
