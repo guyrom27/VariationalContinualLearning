@@ -154,7 +154,7 @@ class MFVI_NN(Cla_NN):
         super(MFVI_NN, self).__init__(input_size, hidden_size, output_size, training_size)
 
         m1, v1, hidden_size = self.create_weights(
-             input_size, hidden_size, output_size)
+             input_size, hidden_size, output_size, prev_means)
 
         self.input_size = input_size
         self.out_size = output_size
@@ -168,6 +168,7 @@ class MFVI_NN(Cla_NN):
         self.W_last_m, self.b_last_m = [], []
         self.W_last_v, self.b_last_v = [], []
 
+
         m2, v2 = self.create_prior(input_size, self.size, output_size)
 
 
@@ -178,7 +179,8 @@ class MFVI_NN(Cla_NN):
         self.prior_W_last_v, self.prior_b_last_v = [], []
 
 
-        self.create_head()
+        if prev_means is not None:
+            self.init_first_head(prev_means)
 
         ##append the last layers to the general weights to keep track of the gradient easily
         m1.append(self.W_last_m)
@@ -291,38 +293,24 @@ class MFVI_NN(Cla_NN):
             kl += const_term + log_std_diff + mu_diff_term
         return kl
 
-    def create_head(self, head = None):
-        ##TODO: check how heads of the prior are initialized
+    def create_head(self):
+
+        W_m = self.W_last_m[0].detach().data
+        W_m.requires_grad = True
+        b_m = self.b_last_m[0].detach().data
+        b_m.requires_grad = True
+        W_v = self.W_last_v[0].detach().data
+        W_v.requires_grad = True
+        b_v = self.b_last_v[0].detach().data
+        b_v.requires_grad = True
+
         din = self.size[-2]
         dout = self.size[-1]
 
-        if head == None:
-            W_m = truncated_normal([din, dout], stddev=0.1, variable = True)
-            b_m = truncated_normal([dout], stddev=0.1, variable = True)
-            W_v =  init_tensor(-6.0,  dout = dout, din = din, variable = True )
-            b_v = init_tensor(-6.0, dout = dout, variable = True)
-
-            W_m_p = truncated_normal([din, dout], stddev=0.1)
-            b_m_p = truncated_normal([dout], stddev=0.1)
-            W_v_p =  init_tensor(np.exp(-6.0),  dout = dout, din = din)
-            b_v_p = init_tensor(np.exp(-6.0), dout = dout)
-
-        else:
-
-            W_m = self.W_last_m[0].detach().data
-            W_m.requires_grad = True
-            b_m = self.b_last_m[0].detach().data
-            b_m.requires_grad = True
-            W_v = self.W_last_v[0].detach().data
-            W_v.requires_grad = True
-            b_v = self.b_last_v[0].detach().data
-            b_v.requires_grad = True
-
-            W_m_p = self.W_last_m[0].detach().data
-            b_m_p = self.b_last_m[0].detach().data
-            W_v_p =  torch.exp(self.W_last_v[0].detach().data)
-            b_v_p = torch.exp(self.b_last_v[0].detach().data)
-
+        W_m_p = torch.zeros([din, dout]).to(device = device)
+        b_m_p = torch.zeros([dout]).to(device = device)
+        W_v_p =  init_tensor(1,  dout = dout, din = din)
+        b_v_p = init_tensor(1, dout = dout)
 
         self.W_last_m.append(W_m)
         self.W_last_v.append(W_v)
@@ -337,8 +325,27 @@ class MFVI_NN(Cla_NN):
 
         return
 
-    def create_weights(self, in_dim, hidden_size, out_dim, prev_means, prev_log_variances):
-        ##TODO: init with prev weights
+
+    def init_first_head(self, prev_means):
+        din = self.size[-2]
+        dout = self.size[-1]
+
+        self.prior_W_last_m = [torch.zeros([din, dout]).to(device = device)]
+        self.prior_b_last_m = [torch.zeros([dout]).to(device = device)]
+        self.prior_W_last_v =  [init_tensor(1,  dout = dout, din = din)]
+        self.prior_b_last_v = [init_tensor(1, dout = dout)]
+
+        self.W_last_m = prev_means[2][0].detach().data
+        self.W_last_m.requires_grad = True
+        self.W_last_m = [self.W_last_m]
+        self.b_last_m = prev_means[3][0].detach().data
+        self.b_last_m.requires_grad = True
+        self.b_last_m = [self.b_last_m]
+        self.W_last_v = [init_tensor(-6.0,  dout = dout, din = din, variable= True)]
+        self.b_last_v = [init_tensor(-6.0, dout = dout, variable= True)]
+
+
+    def create_weights(self, in_dim, hidden_size, out_dim, prev_means):
         hidden_size = deepcopy(hidden_size)
         hidden_size.append(out_dim)
         hidden_size.insert(0, in_dim)
@@ -352,11 +359,15 @@ class MFVI_NN(Cla_NN):
         for i in range(no_layers-1):
             din = hidden_size[i]
             dout = hidden_size[i+1]
-
+            if prev_means is not None:
+                W_m_i = prev_means[0][i].detach().data
+                W_m_i.requires_grad = True
+                bi_m_i = prev_means[1][i].detach().data
+                bi_m_i.requires_grad = True
+            else:
             #Initializiation values of means
-            W_m_i= truncated_normal([din, dout], stddev=0.1, variable=True)
-            bi_m_i= truncated_normal([dout], stddev=0.1, variable=True)
-
+                W_m_i= truncated_normal([din, dout], stddev=0.1, variable=True)
+                bi_m_i= truncated_normal([dout], stddev=0.1, variable=True)
             #Initializiation values of variances
             W_v_i = init_tensor(-6.0,  dout = dout, din = din, variable = True)
             bi_v_i = init_tensor(-6.0,  dout = dout, variable = True)
@@ -383,12 +394,12 @@ class MFVI_NN(Cla_NN):
             dout = hidden_size[i + 1]
 
             # Initializiation values of means
-            W_m_val = truncated_normal([din, dout], stddev=0.1)
-            bi_m_val = truncated_normal([dout], stddev=0.1)
+            W_m_val = torch.zeros([din, dout]).to(device = device)
+            bi_m_val = torch.zeros([dout]).to(device = device)
 
             # Initializiation values of variances
-            W_v_val = init_tensor(np.exp(-6.0),  dout = dout, din = din )
-            bi_v_val = init_tensor(np.exp(-6.0),  dout = dout, din = din )
+            W_v_val = init_tensor(1,  dout = dout, din = din )
+            bi_v_val = init_tensor(1,  dout = dout, din = din )
 
             # Append to list weights
             W_m.append(W_m_val)
@@ -399,7 +410,7 @@ class MFVI_NN(Cla_NN):
         return [W_m, b_m], [W_v, b_v]
 
     def update_prior(self):
-        self.create_head(head=0)
+        self.create_head()
         for i in range(len(self.W_m)):
             self.prior_W_m[i].data.copy_(self.W_m[i].detach().data)
             self.prior_b_m[i].data.copy_(self.b_m[i].detach().data)
@@ -407,7 +418,7 @@ class MFVI_NN(Cla_NN):
             self.prior_b_v[i].data.copy_(torch.exp(self.b_v[i].detach().data))
 
 
-        for i in range(len(self.W_last_m)):
+        for i in range(len(self.W_last_m)-1):
             self.prior_W_last_m[i].data.copy_(self.W_last_m[i].detach().data)
             self.prior_b_last_m[i].data.copy_(self.b_last_m[i].detach().data)
             self.prior_W_last_v[i].data.copy_(torch.exp(self.W_last_v[i].detach().data))

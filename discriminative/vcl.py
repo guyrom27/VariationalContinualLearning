@@ -2,7 +2,8 @@ import numpy as np
 import tensorflow as tf
 import utils
 from multihead_models import Vanilla_NN, MFVI_NN
-
+import torch
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 def run_vcl(hidden_size, no_epochs, data_gen, coreset_method, coreset_size=0, batch_size=None, single_head=True):
     in_dim, out_dim = data_gen.get_dims()
@@ -35,6 +36,7 @@ def run_vcl(hidden_size, no_epochs, data_gen, coreset_method, coreset_size=0, ba
         if task_id == 0:
             mf_model = MFVI_NN(in_dim, hidden_size, out_dim, x_train.shape[0], prev_means=mf_weights,
                                prev_log_variances=mf_variances)
+            print(mf_model.get_loss(torch.Tensor(x_test).to(device = device), torch.tensor(y_test).to(device = device), 0))
         # Train on non-coreset data
         mf_model.train(x_train, y_train, head, no_epochs, bsize)
         mf_model.update_prior()
