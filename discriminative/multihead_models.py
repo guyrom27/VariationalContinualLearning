@@ -11,10 +11,12 @@ np.random.seed(0)
 #tf.set_random_seed(0)
 
 # variable initialization functions
-def truncated_normal(size, std=1):
-    values = truncnorm.rvs(-2 * std, 2 * std, size=size)
-    x = torch.from_numpy(values).device(device)
-    return x
+def truncated_normal(size, stddev=1, mean=0):
+    mu, sigma = mean, stddev
+    lower, upper= -2 * sigma, 2 * sigma
+    X = truncnorm(
+        (lower - mu) / sigma, (upper - mu) / sigma, loc=mu, scale=sigma)
+    return torch.Tensor(X.rvs(size)).device(device)
 
 class Cla_NN(object):
     def train(self, x_train, y_train, task_idx, no_epochs=1000, batch_size=100, display_epoch=5):
@@ -100,53 +102,36 @@ class Vanilla_NN(Cla_NN):
         # return log_lik
         return
 
-    def create_weights(self, in_dim, hidden_size, out_dim, prev_weights):
-        # hidden_size = deepcopy(hidden_size)
-        # hidden_size.append(out_dim)
-        # hidden_size.insert(0, in_dim)
-        # no_params = 0
-        # no_layers = len(hidden_size) - 1
-        # W = []
-        # b = []
-        # W_last = []
-        # b_last = []
-        # for i in range(no_layers-1):
-        #     din = hidden_size[i]
-        #     dout = hidden_size[i+1]
-        #     if prev_weights is None:
-        #         Wi_val = tf.truncated_normal([din, dout], stddev=0.1)
-        #         bi_val = tf.truncated_normal([dout], stddev=0.1)
-        #     else:
-        #         Wi_val = tf.constant(prev_weights[0][i])
-        #         bi_val = tf.constant(prev_weights[1][i])
-        #     Wi = tf.Variable(Wi_val)
-        #     bi = tf.Variable(bi_val)
-        #     W.append(Wi)
-        #     b.append(bi)
-        #
-        # if prev_weights is not None:
-        #     prev_Wlast = prev_weights[2]
-        #     prev_blast = prev_weights[3]
-        #     no_prev_tasks = len(prev_Wlast)
-        #     for j in range(no_prev_tasks):
-        #         W_j = prev_Wlast[j]
-        #         b_j = prev_blast[j]
-        #         Wi = tf.Variable(W_j)
-        #         bi = tf.Variable(b_j)
-        #         W_last.append(Wi)
-        #         b_last.append(bi)
-        #
-        # din = hidden_size[-2]
-        # dout = hidden_size[-1]
-        # Wi_val = tf.truncated_normal([din, dout], stddev=0.1)
-        # bi_val = tf.truncated_normal([dout], stddev=0.1)
-        # Wi = tf.Variable(Wi_val)
-        # bi = tf.Variable(bi_val)
-        # W_last.append(Wi)
-        # b_last.append(bi)
-        #
-        # return W, b, W_last, b_last, hidden_size
-        return
+    def create_weights(self, in_dim, hidden_size, out_dim):
+        hidden_size = deepcopy(hidden_size)
+        hidden_size.append(out_dim)
+        hidden_size.insert(0, in_dim)
+
+        no_layers = len(hidden_size) - 1
+        W = []
+        b = []
+        W_last = []
+        b_last = []
+        for i in range(no_layers-1):
+            din = hidden_size[i]
+            dout = hidden_size[i+1]
+
+            #Initializiation values of means
+            W_m_val = truncated_normal([din, dout], stddev=0.1)
+            bi_m_val = truncated_normal([dout], stddev=0.1)
+            W_m = Variable(W_m_val)
+            bi_m = Variable(bi_m_val)
+            #Append to list weights
+            W.append(W_m)
+            b.append(bi_m)
+
+        W_last_val = truncated_normal([din, dout], stddev=0.1)
+        bi_last_val = truncated_normal([dout], stddev=0.1)
+        Wi = torch.Variable(W_last_val)
+        bi = torch.Variable(bi_last_val)
+        W_last.append(Wi)
+        b_last.append(bi)
+        return W, b, W_last, b_last, hidden_size
 
 """ Bayesian Neural Network with Mean field VI approximation """
 class MFVI_NN(Cla_NN):
@@ -190,8 +175,6 @@ class MFVI_NN(Cla_NN):
         self.no_layers = len(self.size) - 1
         self.no_train_samples = no_train_samples
         self.no_pred_samples = no_pred_samples
-        #self.pred = self._prediction(self.x, self.task_idx, self.no_pred_samples)
-        #self.cost = torch.div(self._KL_term(), training_size) - self._logpred(self.x, self.y, self.task_idx)
         self.training_size = training_size
         self.optimizer = optim.SGD(self.weights, lr=0.01)
 
@@ -277,6 +260,37 @@ class MFVI_NN(Cla_NN):
             kl += const_term + log_std_diff + mu_diff_term
         return kl
 
+    def create_head(self, head = None):
+        ##TODO: check how heads of the prior are initialized
+        din = self.size[-1]
+        dout = self.out_dim
+
+        if head == None:
+            W_m_val = truncated_normal([din, dout], stddev=0.1)
+            bi_m_val = truncated_normal([dout], stddev=0.1)
+            W_v_val = torch.Tensor(-6.0, shape=[din, dout], requires_grad=False).device(device)
+            bi_v_val = torch.Tensor(-6.0, shape=[dout], requires_grad=False).device(device)
+
+        else:
+
+            W_m_val = self.W_last_m[0].data
+            bi_m_val = self.bi_last_m[0].data
+            W_v_val =  self.W_last_m[0].data
+            bi_v_val = self.bi_last_v[0].data
+
+        self.W_last_m.append(Variable(W_m_val))
+        self.W_last_v.append(Variable(W_v_val))
+        self.bi_last_m.append(Variable(bi_m_val))
+        self.bi_last_v.append(Variable(bi_v_val))
+
+        self.prior_W_last_m.append(W_m_val)
+        self.prior_W_last_v.append(W_v_val)
+        self.prior_bi_last_m.append(bi_m_val)
+        self.prior_bi_last_v.append(bi_v_val)
+
+
+        return
+
     def create_weights(self, in_dim, hidden_size, out_dim):
         hidden_size = deepcopy(hidden_size)
         hidden_size.append(out_dim)
@@ -313,36 +327,37 @@ class MFVI_NN(Cla_NN):
             b_v.append(bi_v)
         return [W_m, b_m], [W_v, b_v]
 
-    def create_head(self, head = None):
-        ##TODO: check how heads of the prior are initialized
-        din = self.size[-1]
-        dout = self.out_dim
+    def create_prior(self, in_dim, hidden_size, out_dim):
+        hidden_size = deepcopy(hidden_size)
+        hidden_size.append(out_dim)
+        hidden_size.insert(0, in_dim)
 
-        if head == None:
+        no_layers = len(hidden_size) - 1
+        W_m = []
+        b_m = []
+
+        W_v = []
+        b_v = []
+
+        for i in range(no_layers - 1):
+            din = hidden_size[i]
+            dout = hidden_size[i + 1]
+
+            # Initializiation values of means
             W_m_val = truncated_normal([din, dout], stddev=0.1)
             bi_m_val = truncated_normal([dout], stddev=0.1)
+
+            # Initializiation values of variances
             W_v_val = torch.Tensor(-6.0, shape=[din, dout], requires_grad=False).device(device)
             bi_v_val = torch.Tensor(-6.0, shape=[dout], requires_grad=False).device(device)
 
-        else:
+            # Append to list weights
+            W_m.append(W_m_val)
+            b_m.append(bi_m_val)
+            W_v.append(W_v_val)
+            b_v.append(bi_v_val)
 
-            W_m_val = self.W_last_m[0].data
-            bi_m_val = self.bi_last_m[0].data
-            W_v_val =  self.W_last_m[0].data
-            bi_v_val = self.bi_last_v[0].data
-
-        self.W_last_m.append(Variable(W_m_val))
-        self.W_last_v.append(Variable(W_v_val))
-        self.bi_last_m.append(Variable(bi_m_val))
-        self.bi_last_v.append(Variable(bi_v_val))
-
-        self.prior_W_last_m.append(W_m_val)
-        self.prior_W_last_v.append(W_v_val)
-        self.prior_bi_last_m.append(bi_m_val)
-        self.prior_bi_last_v.append(bi_v_val)
-
-
-        return
+        return [W_m, b_m], [W_v, b_v]
 
     def update_prior(self):
 
