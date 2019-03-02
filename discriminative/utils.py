@@ -10,7 +10,7 @@ def merge_coresets(x_coresets, y_coresets):
     merged_x, merged_y = x_coresets[0], y_coresets[0]
     for i in range(1, len(x_coresets)):
         merged_x = np.vstack((merged_x, x_coresets[i]))
-        merged_y = np.vstack((merged_y, y_coresets[i]))
+        merged_y = np.hstack((merged_y, y_coresets[i]))
     return merged_x, merged_y
 
 def get_scores(model, x_testsets, y_testsets, x_coresets, y_coresets, hidden_size, no_epochs, single_head, batch_size=None):
