@@ -26,9 +26,8 @@ def run_vcl(hidden_size, no_epochs, data_gen, coreset_method, coreset_size=0, ba
             ml_model = Vanilla_NN(in_dim, hidden_size, out_dim, x_train.shape[0])
             ml_model.train(x_train, y_train, task_id, no_epochs, bsize)
             mf_weights = ml_model.get_weights()
-            mf_model = MFVI_NN(in_dim, hidden_size, out_dim, x_train.shape[0], single_head, prev_means=mf_weights)
-
-
+            #mf_weights = [[torch.ones((784, 100)).to(device),torch.ones((100, 100)).to(device)],[torch.ones((100,)).to(device),torch.ones((100,)).to(device)],[torch.ones((100, 10)).to(device)],[torch.ones((10,)).to(device)]]
+            mf_model = MFVI_NN(in_dim, hidden_size, out_dim, x_train.shape[0], single_head = single_head, prev_means=mf_weights)
         # Select coreset if needed
         if coreset_size > 0:
             x_coresets, y_coresets, x_train, y_train = coreset_method(x_coresets, y_coresets, x_train, y_train, coreset_size)

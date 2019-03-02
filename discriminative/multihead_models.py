@@ -288,6 +288,7 @@ class MFVI_NN(Cla_NN):
     def save_weights(self):
         ''' Save weights before training on the coreset before getting the test accuracy '''
 
+        print("Saving weights before core set training")
         self.W_m_copy = [self.W_m[i].detach().data for i in range(len(self.W_m))]
         self.W_v_copy = [self.W_v[i].detach().data for i in range(len(self.W_v))]
         self.b_m_copy = [self.b_m[i].detach().data for i in range(len(self.b_m))]
@@ -313,6 +314,7 @@ class MFVI_NN(Cla_NN):
     def load_weights(self):
         ''' Re-load weights after getting the test accuracy '''
 
+        print("Reloading previous weights after core set training")
         self.W_m = [self.W_m_copy[i].detach().data for i in range(len(self.W_m))]
         self.W_v = [self.W_v_copy[i].detach().data for i in range(len(self.W_v))]
         self.b_m = [self.b_m_copy[i].detach().data for i in range(len(self.b_m))]
@@ -343,6 +345,7 @@ class MFVI_NN(Cla_NN):
 
     def create_head(self):
         ''''Create new head when a new task is detected'''
+        print("creating a new head")
         din = self.size[-2]
         dout = self.size[-1]
 
@@ -374,7 +377,7 @@ class MFVI_NN(Cla_NN):
 
     def init_first_head(self, prev_means):
         ''''When the MFVI_NN is instanciated, we initialize weights with those of the Vanilla NN'''
-
+        print("initializing first head")
         din = self.size[-2]
         dout = self.size[-1]
         self.prior_W_last_m = [torch.zeros([din, dout]).to(device = device)]
@@ -461,12 +464,14 @@ class MFVI_NN(Cla_NN):
 
 
     def new_task(self):
+        print("New task...")
         if not self.single_head:
             self.create_head()
         self.update_prior()
         return
 
     def update_prior(self):
+        print("updating prior...")
         for i in range(len(self.W_m)):
             self.prior_W_m[i].data.copy_(self.W_m[i].detach().data)
             self.prior_b_m[i].data.copy_(self.b_m[i].detach().data)

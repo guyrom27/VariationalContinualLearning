@@ -49,7 +49,7 @@ def get_scores(model, x_testsets, y_testsets, x_coresets, y_coresets, hidden_siz
             pred = model.prediction_prob(batch_x_test, head)
             pred_mean = pred.mean(0)
             pred_y = torch.argmax(pred_mean, dim=1)
-            cur_acc += bsize-(pred_y - batch_y_test).nonzero().shape[0]
+            cur_acc += end_ind - start_ind-(pred_y - batch_y_test).nonzero().shape[0]
 
         cur_acc = float(cur_acc)
         cur_acc /= N
