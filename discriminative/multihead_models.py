@@ -265,7 +265,7 @@ class MFVI_NN(Cla_NN):
             m0, v0 = self.prior_b_m[i], self.prior_b_v[i]
 
             const_term = -0.5 * dout
-            log_std_diff_b = 0.5 * torch.sum(torch.log(v0) - v)
+            log_std_diff = 0.5 * torch.sum(torch.log(v0) - v)
             mu_diff_term = 0.5 * torch.sum((torch.exp(v) + (m0 - m)**2) / v0)
             kl +=  log_std_diff_b + mu_diff_term + const_term
 
