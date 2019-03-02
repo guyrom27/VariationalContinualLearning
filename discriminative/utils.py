@@ -67,9 +67,7 @@ def concatenate_results(score, all_score):
         all_score = np.vstack((new_arr, score))
     return all_score
 
-def plot(filename, vcl, rand_vcl, kcen_vcl):
-    plt.rc('text', usetex=True)
-    plt.rc('font', family='serif')
+def plot3(filename, vcl, rand_vcl, kcen_vcl):
 
     fig = plt.figure(figsize=(7,3))
     ax = plt.gca()
@@ -80,6 +78,6 @@ def plot(filename, vcl, rand_vcl, kcen_vcl):
     ax.set_ylabel('Average accuracy')
     ax.set_xlabel('\# tasks')
     ax.legend()
-
-    fig.savefig(filename, bbox_inches='tight')
-    plt.close()
+    plt.show()
+    #fig.savefig(filename)
+    #plt.close()

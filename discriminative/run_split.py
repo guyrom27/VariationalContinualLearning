@@ -1,7 +1,7 @@
 import numpy as np
 import tensorflow as tf
 import gzip
-import cPickle
+import pickle as cp
 import sys
 sys.path.extend(['alg/'])
 import vcl
@@ -11,9 +11,11 @@ from copy import deepcopy
 
 class SplitMnistGenerator():
     def __init__(self):
-        f = gzip.open('data/mnist.pkl.gz', 'rb')
-        train_set, valid_set, test_set = cPickle.load(f)
-        f.close()
+        with gzip.open('data/mnist.pkl.gz', 'rb') as file:
+            u = cp._Unpickler(file)
+            u.encoding = 'latin1'
+            p = u.load()
+            train_set, valid_set, test_set = p
 
         self.X_train = np.vstack((train_set[0], valid_set[0]))
         self.X_test = test_set[0]
@@ -66,7 +68,7 @@ coreset_size = 0
 data_gen = SplitMnistGenerator()
 vcl_result = vcl.run_vcl(hidden_size, no_epochs, data_gen, 
     coreset.rand_from_batch, coreset_size, batch_size, single_head)
-print vcl_result
+print(vcl_result)
 
 # Run random coreset VCL
 tf.reset_default_graph()
@@ -77,7 +79,7 @@ coreset_size = 40
 data_gen = SplitMnistGenerator()
 rand_vcl_result = vcl.run_vcl(hidden_size, no_epochs, data_gen, 
     coreset.rand_from_batch, coreset_size, batch_size, single_head)
-print rand_vcl_result
+print(rand_vcl_result)
 
 # Run k-center coreset VCL
 tf.reset_default_graph()
@@ -87,7 +89,7 @@ np.random.seed(1)
 data_gen = SplitMnistGenerator()
 kcen_vcl_result = vcl.run_vcl(hidden_size, no_epochs, data_gen, 
     coreset.k_center, coreset_size, batch_size, single_head)
-print kcen_vcl_result
+print(kcen_vcl_result)
 
 # Plot average accuracy
 vcl_avg = np.nanmean(vcl_result, 1)

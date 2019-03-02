@@ -87,8 +87,6 @@ rand_vcl_result = vcl.run_vcl(hidden_size, no_epochs, data_gen,
 print(rand_vcl_result)
 
 # Run k-center coreset VCL
-tf.reset_default_graph()
-tf.set_random_seed(12)
 np.random.seed(1)
 
 data_gen = PermutedMnistGenerator(num_tasks)
