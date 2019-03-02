@@ -191,6 +191,7 @@ class MFVI_NN(Cla_NN):
         self.no_train_samples = no_train_samples
         self.no_pred_samples = no_pred_samples
         self.training_size = training_size
+        self.learning_rate = learning_rate
         self.optimizer = optim.Adam(self.weights, lr=learning_rate)
 
     def get_loss(self, batch_x, batch_y, task_idx):
@@ -289,25 +290,25 @@ class MFVI_NN(Cla_NN):
         ''' Save weights before training on the coreset before getting the test accuracy '''
 
         print("Saving weights before core set training")
-        self.W_m_copy = [self.W_m[i].detach().data for i in range(len(self.W_m))]
-        self.W_v_copy = [self.W_v[i].detach().data for i in range(len(self.W_v))]
-        self.b_m_copy = [self.b_m[i].detach().data for i in range(len(self.b_m))]
-        self.b_v_copy = [self.b_v[i].detach().data for i in range(len(self.b_v))]
+        self.W_m_copy = [self.W_m[i].clone().detach().data for i in range(len(self.W_m))]
+        self.W_v_copy = [self.W_v[i].clone().detach().data for i in range(len(self.W_v))]
+        self.b_m_copy = [self.b_m[i].clone().detach().data for i in range(len(self.b_m))]
+        self.b_v_copy = [self.b_v[i].clone().detach().data for i in range(len(self.b_v))]
 
-        self.W_last_m_copy = [self.W_last_m[i].detach().data for i in range(len(self.W_last_m))]
-        self.W_last_v_copy = [self.W_last_v[i].detach().data for i in range(len(self.W_last_v))]
-        self.b_last_m_copy = [self.b_last_m[i].detach().data for i in range(len(self.b_last_m))]
-        self.b_last_v_copy = [self.b_last_v[i].detach().data for i in range(len(self.b_last_v))]
+        self.W_last_m_copy = [self.W_last_m[i].clone().detach().data for i in range(len(self.W_last_m))]
+        self.W_last_v_copy = [self.W_last_v[i].clone().detach().data for i in range(len(self.W_last_v))]
+        self.b_last_m_copy = [self.b_last_m[i].clone().detach().data for i in range(len(self.b_last_m))]
+        self.b_last_v_copy = [self.b_last_v[i].clone().detach().data for i in range(len(self.b_last_v))]
 
-        self.prior_W_m_copy = [self.prior_W_m[i].detach().data for i in range(len(self.prior_W_m))]
-        self.prior_W_v_copy = [self.prior_W_v[i].detach().data for i in range(len(self.prior_W_v))]
-        self.prior_b_m_copy = [self.prior_b_m[i].detach().data for i in range(len(self.prior_b_m))]
-        self.prior_b_v_copy = [self.prior_b_v[i].detach().data for i in range(len(self.prior_b_v))]
+        self.prior_W_m_copy = [self.prior_W_m[i].data for i in range(len(self.prior_W_m))]
+        self.prior_W_v_copy = [self.prior_W_v[i].data for i in range(len(self.prior_W_v))]
+        self.prior_b_m_copy = [self.prior_b_m[i].data for i in range(len(self.prior_b_m))]
+        self.prior_b_v_copy = [self.prior_b_v[i].data for i in range(len(self.prior_b_v))]
 
-        self.prior_W_last_m_copy = [self.prior_W_last_m[i].detach().data for i in range(len(self.prior_W_last_m))]
-        self.prior_W_last_v_copy = [self.prior_W_last_v[i].detach().data for i in range(len(self.prior_W_last_v))]
-        self.prior_b_last_m_copy = [self.prior_b_last_m[i].detach().data for i in range(len(self.prior_b_last_m))]
-        self.prior_b_last_v_copy = [self.prior_b_last_v[i].detach().data for i in range(len(self.prior_b_last_v))]
+        self.prior_W_last_m_copy = [self.prior_W_last_m[i].data for i in range(len(self.prior_W_last_m))]
+        self.prior_W_last_v_copy = [self.prior_W_last_v[i].data for i in range(len(self.prior_W_last_v))]
+        self.prior_b_last_m_copy = [self.prior_b_last_m[i].data for i in range(len(self.prior_b_last_m))]
+        self.prior_b_last_v_copy = [self.prior_b_last_v[i].data for i in range(len(self.prior_b_last_v))]
 
         return
 
@@ -315,25 +316,47 @@ class MFVI_NN(Cla_NN):
         ''' Re-load weights after getting the test accuracy '''
 
         print("Reloading previous weights after core set training")
-        self.W_m = [self.W_m_copy[i].detach().data for i in range(len(self.W_m))]
-        self.W_v = [self.W_v_copy[i].detach().data for i in range(len(self.W_v))]
-        self.b_m = [self.b_m_copy[i].detach().data for i in range(len(self.b_m))]
-        self.b_v = [self.b_v_copy[i].detach().data for i in range(len(self.b_v))]
+        self.weights = []
+        self.W_m = [self.W_m_copy[i].data for i in range(len(self.W_m))]
+        self.W_v = [self.W_v_copy[i].data for i in range(len(self.W_v))]
+        self.b_m = [self.b_m_copy[i].data for i in range(len(self.b_m))]
+        self.b_v = [self.b_v_copy[i].data for i in range(len(self.b_v))]
 
-        self.W_last_m = [self.W_last_m_copy[i].detach().data for i in range(len(self.W_last_m))]
-        self.W_last_v = [self.W_last_v_copy[i].detach().data for i in range(len(self.W_last_v))]
-        self.b_last_m = [self.b_last_m_copy[i].detach().data for i in range(len(self.b_last_m))]
-        self.b_last_v = [self.b_last_v_copy[i].detach().data for i in range(len(self.b_last_v))]
+        for i in range(len(self.W_m)):
+            self.W_m[i].requires_grad = True
+            self.W_v[i].requires_grad = True
+            self.b_m[i].requires_grad = True
+            self.b_v[i].requires_grad = True
+        self.weights += self.W_m
+        self.weights += self.W_v
+        self.weights += self.b_m
+        self.weights += self.b_v
 
-        self.prior_W_m = [self.prior_W_m_copy[i].detach().data for i in range(len(self.prior_W_m))]
-        self.prior_W_v = [self.prior_W_v_copy[i].detach().data for i in range(len(self.prior_W_v))]
-        self.prior_b_m = [self.prior_b_m_copy[i].detach().data for i in range(len(self.prior_b_m))]
-        self.prior_b_v = [self.prior_b_v_copy[i].detach().data for i in range(len(self.prior_b_v))]
 
-        self.prior_W_last_m = [self.prior_W_last_m_copy[i].detach().data for i in range(len(self.prior_W_last_m))]
-        self.prior_W_last_v = [self.prior_W_last_v_copy[i].detach().data for i in range(len(self.prior_W_last_v))]
-        self.prior_b_last_m = [self.prior_b_last_m_copy[i].detach().data for i in range(len(self.prior_b_last_m))]
-        self.prior_b_last_v = [self.prior_b_last_v_copy[i].detach().data for i in range(len(self.prior_b_last_v))]
+        self.W_last_m = [self.W_last_m_copy[i].data for i in range(len(self.W_last_m))]
+        self.W_last_v = [self.W_last_v_copy[i].data for i in range(len(self.W_last_v))]
+        self.b_last_m = [self.b_last_m_copy[i].data for i in range(len(self.b_last_m))]
+        self.b_last_v = [self.b_last_v_copy[i].data for i in range(len(self.b_last_v))]
+
+        for i in range(len(self.W_last_m)):
+            self.W_last_m[i].requires_grad = True
+            self.W_last_v[i].requires_grad = True
+            self.b_last_m[i].requires_grad = True
+            self.b_last_v[i].requires_grad = True
+        self.weights += self.W_last_m
+        self.weights += self.W_last_v
+        self.weights += self.b_last_m
+        self.weights += self.b_last_v
+        self.optimizer = optim.Adam(self.weights, lr=self.learning_rate)
+        self.prior_W_m = [self.prior_W_m_copy[i].data for i in range(len(self.prior_W_m))]
+        self.prior_W_v = [self.prior_W_v_copy[i].data for i in range(len(self.prior_W_v))]
+        self.prior_b_m = [self.prior_b_m_copy[i].data for i in range(len(self.prior_b_m))]
+        self.prior_b_v = [self.prior_b_v_copy[i].data for i in range(len(self.prior_b_v))]
+
+        self.prior_W_last_m = [self.prior_W_last_m_copy[i].data for i in range(len(self.prior_W_last_m))]
+        self.prior_W_last_v = [self.prior_W_last_v_copy[i].data for i in range(len(self.prior_W_last_v))]
+        self.prior_b_last_m = [self.prior_b_last_m_copy[i].data for i in range(len(self.prior_b_last_m))]
+        self.prior_b_last_v = [self.prior_b_last_v_copy[i].data for i in range(len(self.prior_b_last_v))]
 
         self.W_m_copy, self.W_v_copy, self.b_m_copy, self.b_v_copy = None, None, None, None
         self.W_last_m_copy, self.W_last_v_copy, self.b_last_m_copy, self.b_last_v_copy = None, None, None, None
@@ -473,15 +496,15 @@ class MFVI_NN(Cla_NN):
     def update_prior(self):
         print("updating prior...")
         for i in range(len(self.W_m)):
-            self.prior_W_m[i].data.copy_(self.W_m[i].detach().data)
-            self.prior_b_m[i].data.copy_(self.b_m[i].detach().data)
-            self.prior_W_v[i].data.copy_(torch.exp(self.W_v[i].detach().data))
-            self.prior_b_v[i].data.copy_(torch.exp(self.b_v[i].detach().data))
+            self.prior_W_m[i].data.copy_(self.W_m[i].clone().detach().data)
+            self.prior_b_m[i].data.copy_(self.b_m[i].clone().detach().data)
+            self.prior_W_v[i].data.copy_(torch.exp(self.W_v[i].clone().detach().data))
+            self.prior_b_v[i].data.copy_(torch.exp(self.b_v[i].clone().detach().data))
 
         for i in range(len(self.W_last_m)-1):
-            self.prior_W_last_m[i].data.copy_(self.W_last_m[i].detach().data)
-            self.prior_b_last_m[i].data.copy_(self.b_last_m[i].detach().data)
-            self.prior_W_last_v[i].data.copy_(torch.exp(self.W_last_v[i].detach().data))
-            self.prior_b_last_v[i].data.copy_(torch.exp(self.b_last_v[i].detach().data))
+            self.prior_W_last_m[i].data.copy_(self.W_last_m[i].clone().detach().data)
+            self.prior_b_last_m[i].data.copy_(self.b_last_m[i].clone().detach().data)
+            self.prior_W_last_v[i].data.copy_(torch.exp(self.W_last_v[i].clone().detach().data))
+            self.prior_b_last_v[i].data.copy_(torch.exp(self.b_last_v[i].clone().detach().data))
 
         return
