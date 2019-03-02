@@ -56,7 +56,8 @@ class PermutedMnistGenerator():
 
 hidden_size = [100, 100]
 batch_size = 256
-no_epochs = 1
+no_epochs = 100
+no_epochs = 20
 single_head = True
 num_tasks = 5
 
