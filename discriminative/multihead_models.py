@@ -71,7 +71,7 @@ class Cla_NN(object):
         return costs
 
     def prediction_prob(self, x_test, task_idx):
-        prob = torch.nn.softmax(self._prediction(x_test, task_idx, self.no_pred_samples))
+        prob = F.softmax(self._prediction(x_test, task_idx, self.no_pred_samples))
         return prob
 
 

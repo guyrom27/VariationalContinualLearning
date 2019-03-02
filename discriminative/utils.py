@@ -1,17 +1,10 @@
-####Code by  nvcuong ###
-#
-#
-# Nothing to change here to make it work on pytorch
-# Maybe some problems with the new version of pyplot, we'll see
-
-
-
 import numpy as np
 import matplotlib
 matplotlib.use('agg')
 import matplotlib.pyplot as plt
 from multihead_models import MFVI_NN
-
+import torch
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 def merge_coresets(x_coresets, y_coresets):
     merged_x, merged_y = x_coresets[0], y_coresets[0]
@@ -21,43 +14,47 @@ def merge_coresets(x_coresets, y_coresets):
     return merged_x, merged_y
 
 def get_scores(model, x_testsets, y_testsets, x_coresets, y_coresets, hidden_size, no_epochs, single_head, batch_size=None):
-    mf_weights, mf_variances = model.get_weights()
+
     acc = []
+
     if single_head:
         if len(x_coresets) > 0:
             x_train, y_train = merge_coresets(x_coresets, y_coresets)
             bsize = x_train.shape[0] if (batch_size is None) else batch_size
-            final_model = MFVI_NN(x_train.shape[1], hidden_size, y_train.shape[1], x_train.shape[0], prev_means=mf_weights, prev_log_variances=mf_variances)
-            final_model.train(x_train, y_train, 0, no_epochs, bsize)
-        else:
-            final_model = model
+            x_train = torch.Tensor(x_train)
+            y_train = torch.Tensor(y_train)
+            model.train(x_train, y_train, 0, no_epochs, bsize)
 
     for i in range(len(x_testsets)):
         if not single_head:
             if len(x_coresets) > 0:
                 x_train, y_train = x_coresets[i], y_coresets[i]
                 bsize = x_train.shape[0] if (batch_size is None) else batch_size
-                final_model = MFVI_NN(x_train.shape[1], hidden_size, y_train.shape[1], x_train.shape[0], prev_means=mf_weights, prev_log_variances=mf_variances)
-                final_model.train(x_train, y_train, i, no_epochs, bsize)
-            else:
-                final_model = model
+                x_train = torch.Tensor(x_train)
+                y_train = torch.Tensor(y_train)
+                model.train(x_train, y_train, i, no_epochs, bsize)
 
         head = 0 if single_head else i
         x_test, y_test = x_testsets[i], y_testsets[i]
+        N = x_test.shape[0]
+        bsize = N if (batch_size is None) else batch_size
+        cur_acc = 0
+        total_batch = int(np.ceil(N * 1.0 / batch_size))
+        # Loop over all batches
+        for i in range(total_batch):
+            start_ind = i*bsize
+            end_ind = np.min([(i+1)*bsize, N])
+            batch_x_test = torch.Tensor(x_test[start_ind:end_ind, :]).to(device = device)
+            batch_y_test = torch.Tensor(y_test[start_ind:end_ind]).type(torch.LongTensor).to(device = device)
+            pred = model.prediction_prob(batch_x_test, head)
+            pred_mean = pred.mean(0)
+            pred_y = torch.argmax(pred_mean, dim=1)
+            cur_acc += bsize-(pred_y - batch_y_test).nonzero().shape[0]
 
-        pred = final_model.prediction_prob(x_test, head)
-        pred_mean = np.mean(pred, axis=0)
-        pred_y = np.argmax(pred_mean, axis=1)
-        y = np.argmax(y_test, axis=1)
-        cur_acc = len(np.where((pred_y - y) == 0)[0]) * 1.0 / y.shape[0]
+        cur_acc = float(cur_acc)
+        cur_acc /= N
         acc.append(cur_acc)
-
-        if len(x_coresets) > 0 and not single_head:
-            final_model.close_session()
-
-    if len(x_coresets) > 0 and single_head:
-        final_model.close_session()
-
+        print("Accuracy is {}".format(cur_acc))
     return acc
 
 def concatenate_results(score, all_score):
