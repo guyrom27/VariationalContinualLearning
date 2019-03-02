@@ -3,12 +3,10 @@ import numpy as np
 import torch.optim as optim
 import torch.nn.functional as F
 from scipy.stats import truncnorm
-from torch.autograd import Variable
 from copy import deepcopy
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 np.random.seed(0)
-#tf.set_random_seed(0)
 
 # variable initialization functions
 def truncated_normal(size, stddev=1, variable = False, mean=0):
@@ -56,7 +54,7 @@ class Cla_NN(object):
                 batch_x = torch.Tensor(cur_x_train[start_ind:end_ind, :]).to(device = device)
                 batch_y = torch.Tensor(cur_y_train[start_ind:end_ind]).to(device = device)
 
-
+                ##TODO: check if we need to lock the gradient somewhere
                 self.optimizer.zero_grad()
                 cost = self.get_loss(batch_x, batch_y, task_idx)
                 cost.backward()
@@ -89,8 +87,6 @@ class Vanilla_NN(Cla_NN):
         self.W, self.b, self.W_last, self.b_last, self.size = self.create_weights(
                  input_size, hidden_size, output_size)
         self.no_layers = len(hidden_size) + 1
-        #self.pred = self._prediction(self.x, self.task_idx)
-        #self.cost = - self._logpred(self.x, self.y, self.task_idx)
         self.weights = self.W + self.b + self.W_last + self.b_last
         self.training_size = training_size
         self.optimizer = optim.Adam(self.weights, lr=learning_rate)
@@ -148,9 +144,8 @@ class Vanilla_NN(Cla_NN):
 """ Bayesian Neural Network with Mean field VI approximation """
 class MFVI_NN(Cla_NN):
     def __init__(self, input_size, hidden_size, output_size, training_size,
-        no_train_samples=10, no_pred_samples=100, prev_means=None, prev_log_variances=None, learning_rate=0.001,
-        prior_mean=0, prior_var=1):
-
+        no_train_samples=10, no_pred_samples=100, single_head = False, prev_means=None, learning_rate=0.001):
+        ##TODO: handle single head
         super(MFVI_NN, self).__init__(input_size, hidden_size, output_size, training_size)
 
         m1, v1, hidden_size = self.create_weights(
@@ -158,9 +153,8 @@ class MFVI_NN(Cla_NN):
 
         self.input_size = input_size
         self.out_size = output_size
-        #self.size = deepcopy(hidden_size)
-
         self.size = hidden_size
+        self.single_head = single_head
 
         self.W_m, self.b_m = m1[0], m1[1]
         self.W_v, self.b_v = v1[0], v1[1]
@@ -176,6 +170,9 @@ class MFVI_NN(Cla_NN):
 
         self.prior_W_last_m, self.prior_b_last_m = [], []
         self.prior_W_last_v, self.prior_b_last_v = [], []
+
+        self.W_m_copy, self.W_v_copy, self.b_m_copy, self.b_v_copy = None, None, None, None
+        self.W_last_m_copy, self.W_last_v_copy, self.b_last_m_copy, self.b_last_v_copy = None, None, None, None
 
 
         if prev_means is not None:
@@ -238,11 +235,8 @@ class MFVI_NN(Cla_NN):
 
     def _logpred(self, inputs, targets, task_idx):
         loss = torch.nn.CrossEntropyLoss()
-
         pred = self._prediction(inputs, task_idx, self.no_train_samples).view(-1,self.out_size)
         targets = targets.repeat([self.no_train_samples, 1]).view(-1)
-
-
         log_liks = -loss(pred, targets.type(torch.long))
         log_lik = log_liks.mean()
         return log_lik
@@ -267,7 +261,7 @@ class MFVI_NN(Cla_NN):
             const_term = -0.5 * dout
             log_std_diff = 0.5 * torch.sum(torch.log(v0) - v)
             mu_diff_term = 0.5 * torch.sum((torch.exp(v) + (m0 - m)**2) / v0)
-            kl +=  log_std_diff_b + mu_diff_term + const_term
+            kl +=  log_std_diff + mu_diff_term + const_term
 
         no_tasks = len(self.W_last_m)
         din = self.size[-2]
@@ -291,6 +285,22 @@ class MFVI_NN(Cla_NN):
             kl += const_term + log_std_diff + mu_diff_term
         return kl
 
+    def save_weights(self):
+        ''' Save weights before training on the coreset before getting the test accuracy '''
+        self.W_m_copy, self.W_v_copy, self.b_m_copy, self.b_v_copy = None, None, None, None
+        self.W_last_m_copy, self.W_last_v_copy, self.b_last_m_copy, self.b_last_v_copy = None, None, None, None
+
+        return
+
+    def load_weights(self):
+        ''' Re-load weights after getting the test accuracy '''
+        self.W_m_copy, self.W_v_copy, self.b_m_copy, self.b_v_copy = None, None, None, None
+        self.W_last_m_copy, self.W_last_v_copy, self.b_last_m_copy, self.b_last_v_copy = None, None, None, None
+
+
+        return
+
+
     def create_head(self):
         ''''Create new head when a new task is detected'''
         din = self.size[-2]
@@ -303,15 +313,16 @@ class MFVI_NN(Cla_NN):
         W_v = init_tensor(-6.0,  dout = dout, din = din, variable= True)
         b_v = init_tensor(-6.0,  dout = dout, variable= True)
 
-        W_m_p = torch.zeros([din, dout]).to(device = device)
-        b_m_p = torch.zeros([dout]).to(device = device)
-        W_v_p =  init_tensor(1,  dout = dout, din = din)
-        b_v_p = init_tensor(1, dout = dout)
-
         self.W_last_m.append(W_m)
         self.W_last_v.append(W_v)
         self.b_last_m.append(b_m)
         self.b_last_v.append(b_v)
+
+
+        W_m_p = torch.zeros([din, dout]).to(device = device)
+        b_m_p = torch.zeros([dout]).to(device = device)
+        W_v_p =  init_tensor(1,  dout = dout, din = din)
+        b_v_p = init_tensor(1, dout = dout)
 
         self.prior_W_last_m.append(W_m_p)
         self.prior_W_last_v.append(W_v_p)
@@ -323,9 +334,9 @@ class MFVI_NN(Cla_NN):
 
     def init_first_head(self, prev_means):
         ''''When the MFVI_NN is instanciated, we initialize weights with those of the Vanilla NN'''
+
         din = self.size[-2]
         dout = self.size[-1]
-
         self.prior_W_last_m = [torch.zeros([din, dout]).to(device = device)]
         self.prior_b_last_m = [torch.zeros([dout]).to(device = device)]
         self.prior_W_last_v =  [init_tensor(1,  dout = dout, din = din)]
@@ -341,7 +352,6 @@ class MFVI_NN(Cla_NN):
         b_last_m.requires_grad = True
         self.b_last_m = [b_last_m]
         self.b_last_v = [init_tensor(-6.0, dout = dout, variable= True)]
-
 
         return
 
@@ -380,7 +390,7 @@ class MFVI_NN(Cla_NN):
 
         return [W_m, b_m], [W_v, b_v], hidden_size
 
-    def create_prior(self, in_dim, hidden_size, out_dim):
+    def create_prior(self, in_dim, hidden_size, out_dim, initial_mean = 0, initial_variance = 1):
 
         no_layers = len(hidden_size) - 1
         W_m = []
@@ -394,12 +404,12 @@ class MFVI_NN(Cla_NN):
             dout = hidden_size[i + 1]
 
             # Initializiation values of means
-            W_m_val = torch.zeros([din, dout]).to(device = device)
-            bi_m_val = torch.zeros([dout]).to(device = device)
+            W_m_val = initial_mean * torch.zeros([din, dout]).to(device = device)
+            bi_m_val = initial_mean * torch.zeros([dout]).to(device = device)
 
             # Initializiation values of variances
-            W_v_val = init_tensor(1,  dout = dout, din = din )
-            bi_v_val = init_tensor(1,  dout = dout)
+            W_v_val = initial_variance * init_tensor(1,  dout = dout, din = din )
+            bi_v_val =  initial_variance * init_tensor(1,  dout = dout)
 
             # Append to list weights
             W_m.append(W_m_val)
@@ -409,14 +419,19 @@ class MFVI_NN(Cla_NN):
 
         return [W_m, b_m], [W_v, b_v]
 
+
+    def new_task(self):
+        if not self.single_head:
+            self.create_head()
+        self.update_prior()
+        return
+
     def update_prior(self):
-        self.create_head()
         for i in range(len(self.W_m)):
             self.prior_W_m[i].data.copy_(self.W_m[i].detach().data)
             self.prior_b_m[i].data.copy_(self.b_m[i].detach().data)
             self.prior_W_v[i].data.copy_(torch.exp(self.W_v[i].detach().data))
             self.prior_b_v[i].data.copy_(torch.exp(self.b_v[i].detach().data))
-
 
         for i in range(len(self.W_last_m)-1):
             self.prior_W_last_m[i].data.copy_(self.W_last_m[i].detach().data)
