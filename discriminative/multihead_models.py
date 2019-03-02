@@ -148,7 +148,7 @@ class Vanilla_NN(Cla_NN):
 """ Bayesian Neural Network with Mean field VI approximation """
 class MFVI_NN(Cla_NN):
     def __init__(self, input_size, hidden_size, output_size, training_size,
-        no_train_samples=9, no_pred_samples=100, prev_means=None, prev_log_variances=None, learning_rate=0.001,
+        no_train_samples=10, no_pred_samples=100, prev_means=None, prev_log_variances=None, learning_rate=0.001,
         prior_mean=0, prior_var=1):
 
         super(MFVI_NN, self).__init__(input_size, hidden_size, output_size, training_size)
@@ -170,7 +170,6 @@ class MFVI_NN(Cla_NN):
 
 
         m2, v2 = self.create_prior(input_size, self.size, output_size)
-
 
         self.prior_W_m, self.prior_b_m, = m2[0], m2[1]
         self.prior_W_v, self.prior_b_v = v2[0], v2[1]
@@ -209,7 +208,6 @@ class MFVI_NN(Cla_NN):
         K = no_samples
         size = self.size
 
-
         act = torch.unsqueeze(inputs, 0).repeat([K, 1, 1])
         for i in range(self.no_layers-1):
             ##TODO: check dimensions
@@ -223,8 +221,6 @@ class MFVI_NN(Cla_NN):
             act = F.relu(pre)
         din = self.size[-2]
         dout = self.size[-1]
-
-
 
         eps_w = torch.normal(torch.zeros((K, din, dout)), torch.ones((K, din, dout))).to(device = device)
         eps_b = torch.normal(torch.zeros((K, 1, dout)), torch.ones((K, 1, dout))).to(device = device)
@@ -252,8 +248,6 @@ class MFVI_NN(Cla_NN):
         return log_lik
 
 
-
-
     def _KL_term(self):
         kl = 0
         for i in range(self.no_layers-1):
@@ -261,6 +255,7 @@ class MFVI_NN(Cla_NN):
             dout = self.size[i+1]
             m, v = self.W_m[i], self.W_v[i]
             m0, v0 = self.prior_W_m[i], self.prior_W_v[i]
+
             const_term = -0.5 * dout * din
             log_std_diff = 0.5 * torch.sum(torch.log(v0) - v)
             mu_diff_term = 0.5 * torch.sum((torch.exp(v) + (m0 - m)**2) / v0)
@@ -268,10 +263,11 @@ class MFVI_NN(Cla_NN):
 
             m, v = self.b_m[i], self.b_v[i]
             m0, v0 = self.prior_b_m[i], self.prior_b_v[i]
+
             const_term = -0.5 * dout
-            log_std_diff = 0.5 * torch.sum(torch.log(v0) - v)
+            log_std_diff_b = 0.5 * torch.sum(torch.log(v0) - v)
             mu_diff_term = 0.5 * torch.sum((torch.exp(v) + (m0 - m)**2) / v0)
-            kl += const_term + log_std_diff + mu_diff_term
+            kl +=  log_std_diff_b + mu_diff_term + const_term
 
         no_tasks = len(self.W_last_m)
         din = self.size[-2]
@@ -280,13 +276,15 @@ class MFVI_NN(Cla_NN):
         for i in range(no_tasks):
             m, v = self.W_last_m[i], self.W_last_v[i]
             m0, v0 = self.prior_W_last_m[i], self.prior_W_last_v[i]
-            const_term = -0.5 * dout * din
+
+            const_term = - 0.5 * dout * din
             log_std_diff = 0.5 * torch.sum(torch.log(v0) - v)
             mu_diff_term = 0.5 * torch.sum((torch.exp(v) + (m0 - m)**2) / v0)
             kl += const_term + log_std_diff + mu_diff_term
 
             m, v = self.b_last_m[i], self.b_last_v[i]
             m0, v0 = self.prior_b_last_m[i], self.prior_b_last_v[i]
+
             const_term = -0.5 * dout
             log_std_diff = 0.5 * torch.sum(torch.log(v0) - v)
             mu_diff_term = 0.5 * torch.sum((torch.exp(v) + (m0 - m)**2) / v0)
@@ -294,18 +292,16 @@ class MFVI_NN(Cla_NN):
         return kl
 
     def create_head(self):
+        ''''Create new head when a new task is detected'''
+        din = self.size[-2]
+        dout = self.size[-1]
 
         W_m = self.W_last_m[0].detach().data
         W_m.requires_grad = True
         b_m = self.b_last_m[0].detach().data
         b_m.requires_grad = True
-        W_v = self.W_last_v[0].detach().data
-        W_v.requires_grad = True
-        b_v = self.b_last_v[0].detach().data
-        b_v.requires_grad = True
-
-        din = self.size[-2]
-        dout = self.size[-1]
+        W_v = init_tensor(-6.0,  dout = dout, din = din, variable= True)
+        b_v = init_tensor(-6.0,  dout = dout, variable= True)
 
         W_m_p = torch.zeros([din, dout]).to(device = device)
         b_m_p = torch.zeros([dout]).to(device = device)
@@ -322,11 +318,11 @@ class MFVI_NN(Cla_NN):
         self.prior_b_last_m.append(b_m_p)
         self.prior_b_last_v.append(b_v_p)
 
-
         return
 
 
     def init_first_head(self, prev_means):
+        ''''When the MFVI_NN is instanciated, we initialize weights with those of the Vanilla NN'''
         din = self.size[-2]
         dout = self.size[-1]
 
@@ -335,15 +331,19 @@ class MFVI_NN(Cla_NN):
         self.prior_W_last_v =  [init_tensor(1,  dout = dout, din = din)]
         self.prior_b_last_v = [init_tensor(1, dout = dout)]
 
-        self.W_last_m = prev_means[2][0].detach().data
-        self.W_last_m.requires_grad = True
-        self.W_last_m = [self.W_last_m]
-        self.b_last_m = prev_means[3][0].detach().data
-        self.b_last_m.requires_grad = True
-        self.b_last_m = [self.b_last_m]
+        W_last_m = prev_means[2][0].detach().data
+        W_last_m.requires_grad = True
+        self.W_last_m = [W_last_m]
         self.W_last_v = [init_tensor(-6.0,  dout = dout, din = din, variable= True)]
+
+
+        b_last_m = prev_means[3][0].detach().data
+        b_last_m.requires_grad = True
+        self.b_last_m = [b_last_m]
         self.b_last_v = [init_tensor(-6.0, dout = dout, variable= True)]
 
+
+        return
 
     def create_weights(self, in_dim, hidden_size, out_dim, prev_means):
         hidden_size = deepcopy(hidden_size)
@@ -399,7 +399,7 @@ class MFVI_NN(Cla_NN):
 
             # Initializiation values of variances
             W_v_val = init_tensor(1,  dout = dout, din = din )
-            bi_v_val = init_tensor(1,  dout = dout, din = din )
+            bi_v_val = init_tensor(1,  dout = dout)
 
             # Append to list weights
             W_m.append(W_m_val)

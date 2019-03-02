@@ -56,12 +56,12 @@ class PermutedMnistGenerator():
 
 hidden_size = [100, 100]
 batch_size = 256
-no_epochs = 100
+no_epochs = 10
 single_head = True
 num_tasks = 5
 
 tf.set_random_seed(12)
-np.random.seed(1)
+np.random.seed(0)
 run_vanilla = False
 
 if run_vanilla:

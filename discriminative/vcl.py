@@ -32,16 +32,19 @@ def run_vcl(hidden_size, no_epochs, data_gen, coreset_method, coreset_size=0, ba
         if coreset_size > 0:
             x_coresets, y_coresets, x_train, y_train = coreset_method(x_coresets, y_coresets, x_train, y_train,
                                                                       coreset_size)
-
+        mf_weights = [[torch.ones((784, 100)).to(device = device), torch.ones((100, 100)).to(device = device)], [torch.ones((100,)).to(device = device), torch.ones((100,)).to(device = device)],
+                          [torch.ones((100, 10)).to(device = device)], [torch.ones((10,)).to(device = device)]]
         if task_id == 0:
             mf_model = MFVI_NN(in_dim, hidden_size, out_dim, x_train.shape[0], prev_means=mf_weights,
                                prev_log_variances=mf_variances)
+            print(mf_model._KL_term())
             print(mf_model.get_loss(torch.Tensor(x_test).to(device = device), torch.tensor(y_test).to(device = device), 0))
         # Train on non-coreset data
         mf_model.train(x_train, y_train, head, no_epochs, bsize)
         mf_model.update_prior()
 
         # Incorporate coreset data and make prediction
+        ##TODO: make sure that single head is working + change instantiation of MFVI_NN
         acc = utils.get_scores(mf_model, x_testsets, y_testsets, x_coresets, y_coresets, hidden_size, no_epochs,
                                single_head, batch_size)
         all_acc = utils.concatenate_results(acc, all_acc)
