@@ -19,10 +19,10 @@ class PermutedMnistGenerator():
             train_set, valid_set, test_set = p
 
 
-        self.X_train = np.vstack((train_set[0], valid_set[0]))
+        self.X_train = np.vstack((train_set[0], valid_set[0]))[:6000]
 
         print(self.X_train.shape)
-        self.Y_train = np.hstack((train_set[1], valid_set[1]))
+        self.Y_train = np.hstack((train_set[1], valid_set[1]))[:6000]
         self.X_test = test_set[0]
         self.Y_test = test_set[1]
         self.max_iter = max_iter
@@ -57,7 +57,7 @@ class PermutedMnistGenerator():
 hidden_size = [100, 100]
 batch_size = 256
 no_epochs = 100
-no_epochs = 20
+no_epochs = 2
 single_head = True
 num_tasks = 5
 

@@ -4,6 +4,7 @@ import utils
 from multihead_models import Vanilla_NN, MFVI_NN
 import torch
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+from torchviz import make_dot, make_dot_from_trace
 
 def run_vcl(hidden_size, no_epochs, data_gen, coreset_method, coreset_size=0, batch_size=None, single_head=True):
     in_dim, out_dim = data_gen.get_dims()
@@ -23,16 +24,46 @@ def run_vcl(hidden_size, no_epochs, data_gen, coreset_method, coreset_size=0, ba
 
         # Train network with maximum likelihood to initialize first model
         if task_id == 0:
+            print_graph = True
+
             ml_model = Vanilla_NN(in_dim, hidden_size, out_dim, x_train.shape[0])
             ml_model.train(x_train, y_train, task_id, no_epochs, bsize)
             mf_weights = ml_model.get_weights()
             #mf_weights = [[torch.ones((784, 100)).to(device),torch.ones((100, 100)).to(device)],[torch.ones((100,)).to(device),torch.ones((100,)).to(device)],[torch.ones((100, 10)).to(device)],[torch.ones((10,)).to(device)]]
             mf_model = MFVI_NN(in_dim, hidden_size, out_dim, x_train.shape[0], single_head = single_head, prev_means=mf_weights)
+
+
+
         # Select coreset if needed
         if coreset_size > 0:
             x_coresets, y_coresets, x_train, y_train = coreset_method(x_coresets, y_coresets, x_train, y_train, coreset_size)
-
         # Train on non-coreset data
+        if print_graph:
+            params = dict()
+            for i in range(len(mf_model.W_m)):
+                params["W_m{}".format(i)] = mf_model.W_m[i]
+                params["W_v{}".format(i)] = mf_model.W_v[i]
+                params["b_m{}".format(i)] = mf_model.b_m[i]
+                params["b_v{}".format(i)] = mf_model.b_v[i]
+                params["prior_W_m".format(i)] = mf_model.prior_W_m[i]
+                params["prior_W_v".format(i)] = mf_model.prior_W_v[i]
+                params["prior_b_m".format(i)] = mf_model.prior_b_m[i]
+                params["prior_b_v".format(i)] = mf_model.prior_b_v[i]
+
+            for i in range(len(mf_model.W_last_m)):
+                 params["W_last_m".format(i)] = mf_model.W_last_m[i]
+                 params["W_last_v".format(i)] = mf_model.W_last_v[i]
+                 params["b_last_m".format(i)] = mf_model.b_last_m[i]
+                 params["b_last_v".format(i)] = mf_model.b_last_v[i]
+                 params["prior_W_last_m".format(i)] = mf_model.prior_W_last_m[i]
+                 params["prior_W_last_v".format(i)] = mf_model.prior_W_last_v[i]
+                 params["prior_b_last_m".format(i)] = mf_model.prior_b_last_m[i]
+                 params["prior_b_last_v".format(i)] = mf_model.prior_b_last_v[i]
+
+            dot = make_dot(mf_model._KL_term(), params = params)#(torch.Tensor(x_train).to(device), torch.Tensor(y_train).to(device), task_id), params=params)
+            dot.view()
+            print_graph = False
+
         mf_model.train(x_train, y_train, head, no_epochs, bsize)
         mf_model.save_weights()
 
