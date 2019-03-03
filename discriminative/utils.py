@@ -27,6 +27,7 @@ def get_scores(model, x_testsets, y_testsets, x_coresets, y_coresets, hidden_siz
     for i in range(len(x_testsets)):
         if not single_head:
             if len(x_coresets) > 0:
+                model.load_weights()
                 x_train, y_train = x_coresets[i], y_coresets[i]
                 bsize = x_train.shape[0] if (batch_size is None) else batch_size
                 x_train = torch.Tensor(x_train)
@@ -57,9 +58,6 @@ def get_scores(model, x_testsets, y_testsets, x_coresets, y_coresets, hidden_siz
         cur_acc /= N
         acc.append(cur_acc)
         print("Accuracy is {}".format(cur_acc))
-        if not single_head:
-            if len(x_coresets) > 0:
-                model.load_weights()
     return acc
 
 def concatenate_results(score, all_score):

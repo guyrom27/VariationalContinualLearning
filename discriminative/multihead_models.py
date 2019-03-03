@@ -34,6 +34,7 @@ class Cla_NN(object):
 
     def train(self, x_train, y_train, task_idx, no_epochs=1000, batch_size=100, display_epoch=5):
         N = x_train.shape[0]
+        self.training_size = N
         if batch_size > N:
             batch_size = N
 
