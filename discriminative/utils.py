@@ -57,6 +57,9 @@ def get_scores(model, x_testsets, y_testsets, x_coresets, y_coresets, hidden_siz
         cur_acc /= N
         acc.append(cur_acc)
         print("Accuracy is {}".format(cur_acc))
+        if not single_head:
+            if len(x_coresets) > 0:
+                model.load_weights()
     return acc
 
 def concatenate_results(score, all_score):

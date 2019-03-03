@@ -321,10 +321,10 @@ class MFVI_NN(Cla_NN):
 
         print("Reloading previous weights after core set training")
         self.weights = []
-        self.W_m = [self.W_m_copy[i].data for i in range(len(self.W_m))]
-        self.W_v = [self.W_v_copy[i].data for i in range(len(self.W_v))]
-        self.b_m = [self.b_m_copy[i].data for i in range(len(self.b_m))]
-        self.b_v = [self.b_v_copy[i].data for i in range(len(self.b_v))]
+        self.W_m = [self.W_m_copy[i].clone().detach().data for i in range(len(self.W_m))]
+        self.W_v = [self.W_v_copy[i].clone().detach().data for i in range(len(self.W_v))]
+        self.b_m = [self.b_m_copy[i].clone().detach().data for i in range(len(self.b_m))]
+        self.b_v = [self.b_v_copy[i].clone().detach().data for i in range(len(self.b_v))]
 
         for i in range(len(self.W_m)):
             self.W_m[i].requires_grad = True
@@ -337,10 +337,10 @@ class MFVI_NN(Cla_NN):
         self.weights += self.b_v
 
 
-        self.W_last_m = [self.W_last_m_copy[i].data for i in range(len(self.W_last_m))]
-        self.W_last_v = [self.W_last_v_copy[i].data for i in range(len(self.W_last_v))]
-        self.b_last_m = [self.b_last_m_copy[i].data for i in range(len(self.b_last_m))]
-        self.b_last_v = [self.b_last_v_copy[i].data for i in range(len(self.b_last_v))]
+        self.W_last_m = [self.W_last_m_copy[i].clone().detach().data for i in range(len(self.W_last_m))]
+        self.W_last_v = [self.W_last_v_copy[i].clone().detach().data for i in range(len(self.W_last_v))]
+        self.b_last_m = [self.b_last_m_copy[i].clone().detach().data for i in range(len(self.b_last_m))]
+        self.b_last_v = [self.b_last_v_copy[i].clone().detach().data for i in range(len(self.b_last_v))]
 
         for i in range(len(self.W_last_m)):
             self.W_last_m[i].requires_grad = True
@@ -363,13 +363,13 @@ class MFVI_NN(Cla_NN):
         self.prior_b_last_m = [self.prior_b_last_m_copy[i].data for i in range(len(self.prior_b_last_m))]
         self.prior_b_last_v = [self.prior_b_last_v_copy[i].data for i in range(len(self.prior_b_last_v))]
 
+        return
+
+    def clean_copy_weights(self):
         self.W_m_copy, self.W_v_copy, self.b_m_copy, self.b_v_copy = None, None, None, None
         self.W_last_m_copy, self.W_last_v_copy, self.b_last_m_copy, self.b_last_v_copy = None, None, None, None
         self.prior_W_m_copy, self.prior_W_v_copy, self.prior_b_m_copy, self.prior_b_v_copy = None, None, None, None
         self.prior_W_last_m_copy, self.prior_W_last_v_copy, self.prior_b_last_m_copy, self.prior_b_last_v_copy = None, None, None, None
-
-        return
-
 
     def create_head(self):
         ''''Create new head when a new task is detected'''

@@ -72,7 +72,7 @@ def run_vcl(hidden_size, no_epochs, data_gen, coreset_method, coreset_size=0, ba
         all_acc = utils.concatenate_results(acc, all_acc)
 
         mf_model.load_weights()
-
+        mf_model.clean_copy_weights()
         ##Create head + update prior
         mf_model.new_task()
 
