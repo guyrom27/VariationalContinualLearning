@@ -8,6 +8,7 @@ import vcl
 import coreset
 import utils
 from copy import deepcopy
+import os
 
 class PermutedMnistGenerator():
     def __init__(self, max_iter=10):
@@ -19,10 +20,8 @@ class PermutedMnistGenerator():
             train_set, valid_set, test_set = p
 
 
-        self.X_train = np.vstack((train_set[0], valid_set[0]))[:6000]
-
-        print(self.X_train.shape)
-        self.Y_train = np.hstack((train_set[1], valid_set[1]))[:6000]
+        self.X_train = np.vstack((train_set[0], valid_set[0]))
+        self.Y_train = np.hstack((train_set[1], valid_set[1]))
         self.X_test = test_set[0]
         self.Y_test = test_set[1]
         self.max_iter = max_iter
@@ -57,13 +56,11 @@ class PermutedMnistGenerator():
 hidden_size = [100, 100]
 batch_size = 256
 no_epochs = 100
-no_epochs = 2
 single_head = True
-num_tasks = 5
+num_tasks = 10
 
-tf.set_random_seed(12)
 np.random.seed(0)
-run_vanilla = False
+run_vanilla = True
 
 if run_vanilla:
     # Run vanilla VCL
@@ -73,26 +70,28 @@ if run_vanilla:
     data_gen = PermutedMnistGenerator(num_tasks)
     vcl_result = vcl.run_vcl(hidden_size, no_epochs, data_gen,
         coreset.rand_from_batch, coreset_size, batch_size, single_head)
+    np.save("./results/VCL{}".format(""), vcl_result)
     print(vcl_result)
 
 # Run random coreset VCL
-tf.reset_default_graph()
-tf.set_random_seed(12)
 np.random.seed(1)
 
-coreset_size = 200
-data_gen = PermutedMnistGenerator(num_tasks)
-rand_vcl_result = vcl.run_vcl(hidden_size, no_epochs, data_gen, 
-    coreset.rand_from_batch, coreset_size, batch_size, single_head)
-print(rand_vcl_result)
+
+for coreset_size in [200,400,1000,2500,5000]:
+    data_gen = PermutedMnistGenerator(num_tasks)
+    rand_vcl_result = vcl.run_vcl(hidden_size, no_epochs, data_gen,
+        coreset.rand_from_batch, coreset_size, batch_size, single_head)
+    np.save("./results/rand-VCL-{}".format(coreset_size), rand_vcl_result)
+    print(rand_vcl_result)
 
 # Run k-center coreset VCL
 np.random.seed(1)
-
+coreset_size = 200
 data_gen = PermutedMnistGenerator(num_tasks)
-kcen_vcl_result = vcl.run_vcl(hidden_size, no_epochs, data_gen, 
+kcen_vcl_result = vcl.run_vcl(hidden_size, no_epochs, data_gen,
     coreset.k_center, coreset_size, batch_size, single_head)
 print(kcen_vcl_result)
+np.save("./results/kcen-VCL-{}".format(coreset_size), kcen_vcl_result)
 
 # Plot average accuracy
 vcl_avg = np.nanmean(vcl_result, 1)
