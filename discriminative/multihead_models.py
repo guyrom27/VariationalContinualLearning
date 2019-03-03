@@ -351,6 +351,7 @@ class MFVI_NN(Cla_NN):
         self.weights += self.W_last_v
         self.weights += self.b_last_m
         self.weights += self.b_last_v
+
         self.optimizer = optim.Adam(self.weights, lr=self.learning_rate)
         self.prior_W_m = [self.prior_W_m_copy[i].data for i in range(len(self.prior_W_m))]
         self.prior_W_v = [self.prior_W_v_copy[i].data for i in range(len(self.prior_W_v))]
@@ -376,10 +377,8 @@ class MFVI_NN(Cla_NN):
         din = self.size[-2]
         dout = self.size[-1]
 
-        W_m = self.W_last_m[0].detach().data
-        W_m.requires_grad = True
-        b_m = self.b_last_m[0].detach().data
-        b_m.requires_grad = True
+        W_m= truncated_normal([din, dout], stddev=0.1, variable=True)
+        b_m= truncated_normal([dout], stddev=0.1, variable=True)
         W_v = init_tensor(-6.0,  dout = dout, din = din, variable= True)
         b_v = init_tensor(-6.0,  dout = dout, variable= True)
 
@@ -398,7 +397,16 @@ class MFVI_NN(Cla_NN):
         self.prior_W_last_v.append(W_v_p)
         self.prior_b_last_m.append(b_m_p)
         self.prior_b_last_v.append(b_v_p)
-
+        self.weights = []
+        self.weights += self.W_m
+        self.weights += self.W_v
+        self.weights += self.b_m
+        self.weights += self.b_v
+        self.weights += self.W_last_m
+        self.weights += self.W_last_v
+        self.weights += self.b_last_m
+        self.weights += self.b_last_v
+        self.optimizer = optim.Adam(self.weights, lr=self.learning_rate)
         return
 
 
@@ -492,12 +500,12 @@ class MFVI_NN(Cla_NN):
 
     def new_task(self):
         print("New task...")
+        self.update_prior()
         if not self.single_head:
             self.create_head()
-        self.update_prior(self.single_head)
         return
 
-    def update_prior(self, single_head):
+    def update_prior(self):
         print("updating prior...")
         for i in range(len(self.W_m)):
             self.prior_W_m[i].data.copy_(self.W_m[i].clone().detach().data)
@@ -505,10 +513,8 @@ class MFVI_NN(Cla_NN):
             self.prior_W_v[i].data.copy_(torch.exp(self.W_v[i].clone().detach().data))
             self.prior_b_v[i].data.copy_(torch.exp(self.b_v[i].clone().detach().data))
 
-        if single_head:
-            length =  len(self.W_last_m)
-        else:
-            length = len(self.W_last_m) - 1
+        length = len(self.W_last_m)
+
         for i in range(length):
             self.prior_W_last_m[i].data.copy_(self.W_last_m[i].clone().detach().data)
             self.prior_b_last_m[i].data.copy_(self.b_last_m[i].clone().detach().data)

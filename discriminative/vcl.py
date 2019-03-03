@@ -63,7 +63,7 @@ def run_vcl(hidden_size, no_epochs, data_gen, coreset_method, coreset_size=0, ba
             dot = make_dot(mf_model._KL_term(), params = params)#(torch.Tensor(x_train).to(device), torch.Tensor(y_train).to(device), task_id), params=params)
             dot.view()
             print_graph = False
-
+        print(mf_model.get_loss(torch.Tensor(x_test).to(device), torch.Tensor(y_test).to(device), task_id))
         mf_model.train(x_train, y_train, head, no_epochs, bsize)
         mf_model.save_weights()
 

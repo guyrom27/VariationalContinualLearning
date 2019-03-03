@@ -16,9 +16,9 @@ class SplitMnistGenerator():
             p = u.load()
             train_set, valid_set, test_set = p
 
-        self.X_train = np.vstack((train_set[0], valid_set[0]))[:40000,:]
+        self.X_train = np.vstack((train_set[0], valid_set[0]))
         self.X_test = test_set[0]
-        self.train_label = np.hstack((train_set[1], valid_set[1]))[:40000]
+        self.train_label = np.hstack((train_set[1], valid_set[1]))
         self.test_label = test_set[1]
 
         self.sets_0 = [0, 2, 4, 6, 8]
@@ -56,7 +56,7 @@ class SplitMnistGenerator():
 
 hidden_size = [256, 256]
 batch_size = None
-no_epochs = 120
+no_epochs = 20
 single_head = False
 
 # Run vanilla VCL

@@ -38,7 +38,7 @@ def get_scores(model, x_testsets, y_testsets, x_coresets, y_coresets, hidden_siz
         N = x_test.shape[0]
         bsize = N if (batch_size is None) else batch_size
         cur_acc = 0
-        total_batch = int(np.ceil(N * 1.0 / batch_size))
+        total_batch = int(np.ceil(N * 1.0 / bsize))
         # Loop over all batches
         for i in range(total_batch):
             start_ind = i*bsize
