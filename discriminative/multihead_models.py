@@ -106,6 +106,10 @@ class Vanilla_NN(Cla_NN):
         log_lik = - loss(pred, targets.type(torch.long))
         return log_lik
 
+    def prediction_prob(self, x_test, task_idx):
+        prob = F.softmax(self._prediction(x_test, task_idx), dim=-1)
+        return prob
+
     def get_loss(self, batch_x, batch_y, task_idx):
         return -self._logpred(batch_x, batch_y, task_idx)
 
