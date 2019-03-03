@@ -13,10 +13,9 @@ def merge_coresets(x_coresets, y_coresets):
         merged_y = np.hstack((merged_y, y_coresets[i]))
     return merged_x, merged_y
 
-def get_scores(model, x_testsets, y_testsets, x_coresets, y_coresets, hidden_size, no_epochs, single_head, batch_size=None):
+def get_scores(model, x_testsets, y_testsets, x_coresets, y_coresets, hidden_size, no_epochs, single_head, batch_size=None, just_vanilla = False):
 
     acc = []
-
     if single_head:
         if len(x_coresets) > 0:
             x_train, y_train = merge_coresets(x_coresets, y_coresets)
@@ -47,7 +46,10 @@ def get_scores(model, x_testsets, y_testsets, x_coresets, y_coresets, hidden_siz
             batch_x_test = torch.Tensor(x_test[start_ind:end_ind, :]).to(device = device)
             batch_y_test = torch.Tensor(y_test[start_ind:end_ind]).type(torch.LongTensor).to(device = device)
             pred = model.prediction_prob(batch_x_test, head)
-            pred_mean = pred.mean(0)
+            if not just_vanilla:
+                pred_mean = pred.mean(0)
+            else:
+                pred_mean = pred
             pred_y = torch.argmax(pred_mean, dim=1)
             cur_acc += end_ind - start_ind-(pred_y - batch_y_test).nonzero().shape[0]
 

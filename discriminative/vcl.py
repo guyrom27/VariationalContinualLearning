@@ -77,3 +77,36 @@ def run_vcl(hidden_size, no_epochs, data_gen, coreset_method, coreset_size=0, ba
         mf_model.new_task()
 
     return all_acc
+
+def run_vcl_vanilla(hidden_size, no_epochs, data_gen, coreset_method, coreset_size=0, batch_size=None, single_head=True):
+    in_dim, out_dim = data_gen.get_dims()
+    x_coresets, y_coresets = [], []
+    x_testsets, y_testsets = [], []
+
+    all_acc = np.array([])
+
+
+    for task_id in range(data_gen.max_iter):
+        x_train, y_train, x_test, y_test = data_gen.next_task()
+        x_testsets.append(x_test)
+        y_testsets.append(y_test)
+
+        # Set the readout head to train
+        head = 0 if single_head else task_id
+        bsize = x_train.shape[0] if (batch_size is None) else batch_size
+        if task_id == 0:
+            mf_model = Vanilla_NN(in_dim, hidden_size, out_dim, x_train.shape[0])
+
+        # Train network with maximum likelihood to initialize first model
+        # Select coreset if needed
+        if coreset_size > 0:
+            x_coresets, y_coresets, x_train, y_train = coreset_method(x_coresets, y_coresets, x_train, y_train, coreset_size)
+
+
+
+        # Incorporate coreset data and make prediction
+        acc = utils.get_scores(mf_model, x_testsets, y_testsets, x_coresets, y_coresets, hidden_size, no_epochs, single_head, batch_size, just_vanilla = True)
+        all_acc = utils.concatenate_results(acc, all_acc)
+
+    return all_acc
+
