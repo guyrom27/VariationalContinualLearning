@@ -490,10 +490,10 @@ class MFVI_NN(Cla_NN):
         print("New task...")
         if not self.single_head:
             self.create_head()
-        self.update_prior()
+        self.update_prior(self.single_head)
         return
 
-    def update_prior(self):
+    def update_prior(self, single_head):
         print("updating prior...")
         for i in range(len(self.W_m)):
             self.prior_W_m[i].data.copy_(self.W_m[i].clone().detach().data)
@@ -501,7 +501,11 @@ class MFVI_NN(Cla_NN):
             self.prior_W_v[i].data.copy_(torch.exp(self.W_v[i].clone().detach().data))
             self.prior_b_v[i].data.copy_(torch.exp(self.b_v[i].clone().detach().data))
 
-        for i in range(len(self.W_last_m)-1):
+        if single_head:
+            length =  len(self.W_last_m)
+        else:
+            length = len(self.W_last_m) - 1
+        for i in range(length):
             self.prior_W_last_m[i].data.copy_(self.W_last_m[i].clone().detach().data)
             self.prior_b_last_m[i].data.copy_(self.b_last_m[i].clone().detach().data)
             self.prior_W_last_v[i].data.copy_(torch.exp(self.W_last_v[i].clone().detach().data))
