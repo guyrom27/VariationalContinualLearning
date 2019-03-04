@@ -109,5 +109,6 @@ def run_vcl_vanilla(hidden_size, no_epochs, data_gen, coreset_method, coreset_si
         acc = utils.get_scores(mf_model, x_testsets, y_testsets, x_coresets, y_coresets, hidden_size, no_epochs, single_head, batch_size, just_vanilla = True)
         all_acc = utils.concatenate_results(acc, all_acc)
 
+
     return all_acc
 
