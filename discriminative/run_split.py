@@ -74,7 +74,7 @@ data_gen = SplitMnistGenerator()
 rand_vcl_result = vcl.run_vcl(hidden_size, no_epochs, data_gen,
     coreset.rand_from_batch, coreset_size, batch_size, single_head)
 print(rand_vcl_result)
-np.save("./results/randVCL-split{}".format(""), vcl_result)
+np.save("./results/randVCL-split{}".format(""), rand_vcl_result)
 # Run k-center coreset VCL
 np.random.seed(1)
 
@@ -82,7 +82,7 @@ data_gen = SplitMnistGenerator()
 kcen_vcl_result = vcl.run_vcl(hidden_size, no_epochs, data_gen, 
     coreset.k_center, coreset_size, batch_size, single_head)
 print(kcen_vcl_result)
-np.save("./results/kcenVCL-split{}".format(""), vcl_result)
+np.save("./results/kcenVCL-split{}".format(""), kcen_vcl_result)
 # Plot average accuracy
 vcl_avg = np.nanmean(vcl_result, 1)
 rand_vcl_avg = np.nanmean(rand_vcl_result, 1)
