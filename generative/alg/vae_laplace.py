@@ -1,6 +1,6 @@
 import numpy as np
 import tensorflow as tf
-from .helper_functions import *
+from helper_functions import *
 import time
 
 def compute_fisher(X_ph, batch_size_ph, bound, N_data):

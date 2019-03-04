@@ -2,10 +2,10 @@ import numpy as np
 import tensorflow as tf
 import sys, os
 sys.path.extend(['alg/', 'models/'])
-from .models.visualisation import plot_images
-from .models.encoder_no_shared import encoder, recon
-from .models.utils import init_variables, save_params, load_params, load_data
-from .alg.eval_test_ll import construct_eval_func
+from visualisation import plot_images
+from encoder_no_shared import encoder, recon
+from utils import init_variables, save_params, load_params, load_data
+from eval_test_ll import construct_eval_func
 
 dimZ = 50
 dimH = 500
@@ -19,19 +19,19 @@ data_path = 'asdf' # TODO
 
 def main(data_name, method, dimZ, dimH, n_channel, batch_size, K_mc, checkpoint, lbd):
     # set up dataset specific stuff
-    from .config import config
+    from config import config
     labels, n_iter, dimX, shape_high, ll = config(data_name, n_channel)
     if data_name == 'mnist':
-        from .classifier.mnist import load_mnist
+        from mnist import load_mnist
     if data_name == 'notmnist':
-        from .classifier.notmnist import load_notmnist
+        from notmnist import load_notmnist
 
     # import functionalities
     if method == 'onlinevi':
-        from .models.bayesian_generator import generator_head, generator_shared, \
+        from bayesian_generator import generator_head, generator_shared, \
                                generator, construct_gen
     if method in ['ewc', 'noreg', 'si', 'laplace']:
-        from .models.generator import generator_head, generator_shared, generator, construct_gen
+        from generator import generator_head, generator_shared, generator, construct_gen
 
     # then define model
     n_layers_shared = 2

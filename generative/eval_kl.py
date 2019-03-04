@@ -3,11 +3,11 @@ import tensorflow as tf
 import sys, os
 import keras
 sys.path.extend(['alg/', 'models/', 'utils/'])
-from .models.visualisation import plot_images
-from .models.encoder_no_shared import encoder, recon
-from .models.utils import init_variables, save_params, load_params, load_data
-from .alg.eval_test_class import construct_eval_func
-from .load_classifier import load_model
+from visualisation import plot_images
+from encoder_no_shared import encoder, recon
+from utils import init_variables, save_params, load_params, load_data
+from eval_test_class import construct_eval_func
+from load_classifier import load_model
 
 dimZ = 50
 dimH = 500
@@ -21,15 +21,15 @@ data_path = 'asdf' # TODO
 
 def main(data_name, method, dimZ, dimH, n_channel, batch_size, K_mc, checkpoint, lbd):
     # set up dataset specific stuff
-    from .config import config
+    from config import config
     labels, n_iter, dimX, shape_high, ll = config(data_name, n_channel)
 
     # import functionalities
     if method == 'onlinevi':
-        from .models.bayesian_generator import generator_head, generator_shared, \
+        from bayesian_generator import generator_head, generator_shared, \
                                generator, construct_gen
     if method in ['ewc', 'noreg', 'si', 'si2', 'laplace']:
-        from .models.generator import generator_head, generator_shared, generator, construct_gen
+        from generator import generator_head, generator_shared, generator, construct_gen
 
     # then define model
     n_layers_shared = 2
