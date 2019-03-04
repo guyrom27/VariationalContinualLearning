@@ -38,7 +38,7 @@ def construct_eval_func(X_ph, enc, dec, ll, batch_size_ph, K = 100, sample_W = T
     
     def eval(sess, X):
         N = X.shape[0]        
-        n_iter_vae = N / batch_size
+        n_iter_vae = int(N / batch_size)
         bound_total = 0.0; bound_var = 0.0
         begin = time.time()
         for j in range(0, n_iter_vae):

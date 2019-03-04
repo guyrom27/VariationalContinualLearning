@@ -46,7 +46,7 @@ def update_q_sigma(sess):
 def KL_param(shared_prior_params, task, regularise_headnet=False):
     # first get q params
     shared_q_params = get_q_theta_params()
-    N_layer = len(list(shared_q_params.keys())) / 4	# one layer has for params
+    N_layer = int(len(list(shared_q_params.keys())) / 4)	# one layer has for params
     # then compute kl between prior and q
     kl_total = 0.0
     # for the shared network
@@ -115,7 +115,7 @@ def construct_optimizer(X_ph, enc, dec, ll, N_data, batch_size_ph, shared_prior_
         N = X.shape[0]        
         print("training for %d epochs with lr=%.5f" % (n_iter, lr))
         begin = time.time()
-        n_iter_vae = N / batch_size
+        n_iter_vae = int(N / batch_size)
         for iteration in range(1, n_iter + 1):
             ind_s = np.random.permutation(list(range(N)))
             bound_total = 0.0

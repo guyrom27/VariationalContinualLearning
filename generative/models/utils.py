@@ -34,7 +34,7 @@ def save_params(sess, filename, checkpoint):
     for v in params:
         param_dict[v.name] = sess.run(v)
     filename = filename + '_' + str(checkpoint)
-    f = open(filename + '.pkl', 'w')
+    f = open(filename + '.pkl', 'wb')
     pickle.dump(param_dict, f, protocol=pickle.HIGHEST_PROTOCOL)
     print('parameters saved at ' + filename + '.pkl')    
     f.close()
