@@ -3,10 +3,10 @@ import tensorflow as tf
 import sys, os
 
 sys.path.extend(['alg/', 'models/'])
-from visualisation import plot_images
-from encoder_no_shared import encoder, recon
-from utils import init_variables, save_params, load_params, load_data
-from eval_test_ll import construct_eval_func
+from .models.visualisation import plot_images
+from .models.encoder_no_shared import encoder, recon
+from .models.utils import init_variables, save_params, load_params, load_data
+from .alg.eval_test_ll import construct_eval_func
 
 dimZ = 50
 dimH = 500
@@ -21,29 +21,29 @@ data_path = 'asdf'  # TODO
 
 def main(data_name, method, dimZ, dimH, n_channel, batch_size, K_mc, checkpoint, lbd):
     # set up dataset specific stuff
-    from config import config
+    from .config import config
     labels, n_iter, dimX, shape_high, ll = config(data_name, n_channel)
     if data_name == 'mnist':
-        from mnist import load_mnist
+        from .classifier.mnist import load_mnist
     if data_name == 'notmnist':
-        from notmnist import load_notmnist
+        from .classifier.notmnist import load_notmnist
 
     # import functionalities
     if method == 'onlinevi':
-        from bayesian_generator import generator_head, generator_shared, \
+        from .models.bayesian_generator import generator_head, generator_shared, \
             generator, construct_gen
-        from onlinevi import construct_optimizer, init_shared_prior, \
+        from .models.onlinevi import construct_optimizer, init_shared_prior, \
             update_shared_prior, update_q_sigma
     if method in ['ewc', 'noreg', 'laplace', 'si']:
-        from generator import generator_head, generator_shared, generator, construct_gen
+        from .models.generator import generator_head, generator_shared, generator, construct_gen
         if method in ['ewc', 'noreg']:
-            from vae_ewc import construct_optimizer, lowerbound
-        if method == 'ewc': from vae_ewc import update_ewc_loss, compute_fisher
+            from .alg.vae_ewc import construct_optimizer, lowerbound
+        if method == 'ewc': from .alg.vae_ewc import update_ewc_loss, compute_fisher
         if method == 'laplace':
-            from vae_laplace import construct_optimizer, lowerbound
-            from vae_laplace import update_laplace_loss, compute_fisher, init_fisher_accum
+            from .alg.vae_laplace import construct_optimizer, lowerbound
+            from .alg.vae_laplace import update_laplace_loss, compute_fisher, init_fisher_accum
         if method == 'si':
-            from vae_si import construct_optimizer, lowerbound, update_si_reg
+            from .alg.vae_si import construct_optimizer, lowerbound, update_si_reg
 
     # then define model
     n_layers_shared = 2
@@ -220,7 +220,8 @@ def main(data_name, method, dimZ, dimH, n_channel, batch_size, K_mc, checkpoint,
 if __name__ == '__main__':
     data_name = 'mnist'  # str(sys.argv[1])
     methods = ['noreg', 'laplace', 'ewc', 'si', 'onlinevi']
-    for method in methods:
+    for i in range(1):
+        method = 'laplace'
         assert method in ['noreg', 'laplace', 'ewc', 'si', 'onlinevi']
         lbd = 1.0  # some placeholder, doesn't matter
         if method == 'si':

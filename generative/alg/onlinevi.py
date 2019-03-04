@@ -1,6 +1,6 @@
 import numpy as np
 import tensorflow as tf
-from helper_functions import *
+from .helper_functions import *
 import time
 
 def get_q_theta_params():

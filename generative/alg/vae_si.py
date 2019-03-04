@@ -1,6 +1,6 @@
 import numpy as np
 import tensorflow as tf
-from helper_functions import *
+from .helper_functions import *
 import time
     
 def update_si_reg(sess, si_reg, new_params, old_params, w_params):

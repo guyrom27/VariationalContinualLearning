@@ -1,6 +1,6 @@
 import numpy as np
 import tensorflow as tf
-from mlp import mlp_layer
+from .mlp import mlp_layer
 import time
 
 def encoder(dimX, dimH, dimZ, n_layers, name):

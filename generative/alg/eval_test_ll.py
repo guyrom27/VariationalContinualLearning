@@ -1,6 +1,6 @@
 import numpy as np
 import tensorflow as tf
-from helper_functions import *
+from .helper_functions import *
 import time
 
 def IS_estimate(x, enc, dec, ll, K = 100, sample_W = True, mu_pz = 0.0, log_sig_pz = 0.0):

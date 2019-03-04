@@ -3,11 +3,11 @@ import tensorflow as tf
 import sys, os
 import keras
 sys.path.extend(['alg/', 'models/', 'utils/'])
-from visualisation import plot_images
-from encoder_no_shared import encoder, recon
-from utils import init_variables, save_params, load_params, load_data
-from eval_test_class import construct_eval_func
-from load_classifier import load_model
+from .models.visualisation import plot_images
+from .models.encoder_no_shared import encoder, recon
+from .models.utils import init_variables, save_params, load_params, load_data
+from .alg.eval_test_class import construct_eval_func
+from .load_classifier import load_model
 
 dimZ = 50
 dimH = 500
@@ -21,15 +21,15 @@ data_path = 'asdf' # TODO
 
 def main(data_name, method, dimZ, dimH, n_channel, batch_size, K_mc, checkpoint, lbd):
     # set up dataset specific stuff
-    from config import config
+    from .config import config
     labels, n_iter, dimX, shape_high, ll = config(data_name, n_channel)
 
     # import functionalities
     if method == 'onlinevi':
-        from bayesian_generator import generator_head, generator_shared, \
+        from .models.bayesian_generator import generator_head, generator_shared, \
                                generator, construct_gen
     if method in ['ewc', 'noreg', 'si', 'si2', 'laplace']:
-        from generator import generator_head, generator_shared, generator, construct_gen
+        from .models.generator import generator_head, generator_shared, generator, construct_gen
 
     # then define model
     n_layers_shared = 2
@@ -64,10 +64,10 @@ def main(data_name, method, dimZ, dimH, n_channel, batch_size, K_mc, checkpoint,
     
     for task in range(1):
         if data_name == 'mnist':
-            from mnist import load_mnist
+            from .classifier.mnist import load_mnist
             _, X_test, _, Y_test = load_mnist([task])
         if data_name == 'notmnist':
-            from notmnist import load_notmnist
+            from .classifier.notmnist import load_notmnist
             _, X_test, _, Y_test = load_notmnist(data_path, [task], conv = False)
         test_acc = 0.0; test_kl = 0.0
         N_test = X_test.shape[0]
