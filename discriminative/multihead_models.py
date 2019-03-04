@@ -180,9 +180,15 @@ class MFVI_NN(Cla_NN):
         self.W_last_m_copy, self.W_last_v_copy, self.b_last_m_copy, self.b_last_v_copy = None, None, None, None
         self.prior_W_m_copy, self.prior_W_v_copy, self.prior_b_m_copy, self.prior_b_v_copy = None, None, None, None
         self.prior_W_last_m_copy, self.prior_W_last_v_copy, self.prior_b_last_m_copy, self.prior_b_last_v_copy = None, None, None, None
-
+        self.no_layers = len(self.size) - 1
+        self.no_train_samples = no_train_samples
+        self.no_pred_samples = no_pred_samples
+        self.training_size = training_size
+        self.learning_rate = learning_rate
         if prev_means is not None:
             self.init_first_head(prev_means)
+        else:
+            self.create_head()
         ##append the last layers to the general weights to keep track of the gradient easily
         m1.append(self.W_last_m)
         m1.append(self.b_last_m)
@@ -192,11 +198,7 @@ class MFVI_NN(Cla_NN):
         r1 = m1 + v1
         self.weights = [item for sublist in r1 for item in sublist]
 
-        self.no_layers = len(self.size) - 1
-        self.no_train_samples = no_train_samples
-        self.no_pred_samples = no_pred_samples
-        self.training_size = training_size
-        self.learning_rate = learning_rate
+
         self.optimizer = optim.Adam(self.weights, lr=learning_rate)
 
     def get_loss(self, batch_x, batch_y, task_idx):
