@@ -30,14 +30,24 @@ def compute_fisher(X_ph, batch_size_ph, bound, N_data):
                                  batch_size_ph: x.shape[0]})
     
     return fisher, var_list
+
+def init_fisher_accum():
+    t_vars = tf.trainable_variables()
+    var_list = [var for var in t_vars if 'gen_shared' in var.name]
+    F_accum = [0.0 for v in range(len(var_list))]
+    return F_accum
     
-def update_ewc_loss(sess, loss, var_list, fisher, lbd, x):
+def update_laplace_loss(sess, F_accum_old, var_list, fisher, lbd, x):
     old_var_list = sess.run(var_list)
     F_accum = fisher(sess, x)
+    loss = 0.0
+    F_accum_new = []
     for v in range(len(F_accum)):
-        loss += 0.5 * lbd * tf.reduce_sum(F_accum[v] * \
-                              (var_list[v] - old_var_list[v])**2)                              
-    return loss
+        hessian = F_accum[v] + F_accum_old[v]
+        loss += 0.5 * lbd * tf.reduce_sum(hessian * \
+                              (var_list[v] - old_var_list[v])**2)
+        F_accum_new.append(hessian)
+    return loss, F_accum_new
     
 def extract_old_var(sess):
     t_vars = tf.trainable_variables()
@@ -57,11 +67,11 @@ def lowerbound(x, enc, dec, ll, mu_pz = 0.0, log_sig_pz = 0.0):
         logp = log_l1_prob(x, mu_x)
     return logp - kl_z
 
-def construct_optimizer(X_ph, batch_size_ph, bound, N_data, ewc_loss):
+def construct_optimizer(X_ph, batch_size_ph, bound, N_data, laplace_loss):
 
     # loss function
     bound = tf.reduce_mean(bound)
-    loss_total = -bound + ewc_loss / N_data
+    loss_total = -bound + laplace_loss / N_data
     batch_size = X_ph.get_shape().as_list()[0]
 
     # now construct optimizers
@@ -82,7 +92,7 @@ def construct_optimizer(X_ph, batch_size_ph, bound, N_data, ewc_loss):
         N = X.shape[0]        
         print("training for %d epochs with lr=%.5f" % (n_iter, lr))
         begin = time.time()
-        n_iter_vae = N // batch_size
+        n_iter_vae = N / batch_size
         for iteration in range(1, n_iter + 1):
             ind_s = np.random.permutation(list(range(N)))
             bound_total = 0.0

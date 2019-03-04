@@ -216,11 +216,11 @@ def main(data_name, method, dimZ, dimH, n_channel, batch_size, K_mc, checkpoint,
 
 if __name__ == '__main__':
     data_name = 'mnist' #str(sys.argv[1])
-    method = 'noreg' #str(sys.argv[2])
+    method = 'onlinevi' #str(sys.argv[2])
     assert method in ['noreg', 'laplace', 'ewc', 'si', 'onlinevi']
     if method == 'onlinevi':
         lbd = 1.0	# some placeholder, doesn't matter
     else:
-        lbd = 1.0 #float(sys.argv[3])
+        lbd = float(sys.argv[3])
     main(data_name, method, dimZ, dimH, n_channel, batch_size, K_mc, checkpoint, lbd)
     

@@ -92,7 +92,7 @@ def construct_optimizer(X_ph, batch_size_ph, bound, N_data, laplace_loss):
         N = X.shape[0]        
         print("training for %d epochs with lr=%.5f" % (n_iter, lr))
         begin = time.time()
-        n_iter_vae = N / batch_size
+        n_iter_vae = N // batch_size
         for iteration in range(1, n_iter + 1):
             ind_s = np.random.permutation(list(range(N)))
             bound_total = 0.0
