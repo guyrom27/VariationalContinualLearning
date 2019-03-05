@@ -1,6 +1,7 @@
 import numpy as np
 import tensorflow as tf
 import sys, os
+import torch
 sys.path.extend(['alg/', 'models/'])
 from visualisation import plot_images
 from encoder_no_shared import encoder, recon

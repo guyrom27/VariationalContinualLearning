@@ -218,10 +218,9 @@ def main(data_name, method, dimZ, dimH, n_channel, batch_size, K_mc, checkpoint,
 
 
 if __name__ == '__main__':
-    data_name = 'mnist'  # str(sys.argv[1])
-    methods = ['noreg', 'laplace', 'ewc', 'si', 'onlinevi']
-    for i in range(1):
-        method = 'ewc'
+    data_name = 'mnist'
+    methods = ['si']
+    for method in methods:
         assert method in ['noreg', 'laplace', 'ewc', 'si', 'onlinevi']
         lbd = 1.0  # some placeholder, doesn't matter
         if method == 'si':
@@ -229,5 +228,5 @@ if __name__ == '__main__':
         if method == 'ewc':
             lbd = 10000.0
         if method == 'laplace':
-            lbd = 1.0  # float(sys.argv[3])
+            lbd = 1.0
         main(data_name, method, dimZ, dimH, n_channel, batch_size, K_mc, checkpoint, lbd)

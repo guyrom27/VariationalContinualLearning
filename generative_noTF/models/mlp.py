@@ -2,6 +2,9 @@
 import tensorflow as tf
 import numpy as np
 
+
+
+
 def init_weights(input_size, output_size, constant=1.0, seed=123): 
     """ Glorot and Bengio, 2010's initialization of network weights"""
     scale = constant*np.sqrt(6.0/(input_size + output_size))
