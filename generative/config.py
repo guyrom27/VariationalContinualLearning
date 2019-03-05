@@ -3,7 +3,7 @@ import numpy as np
 def config(data_name, n_channel):
     if data_name == 'mnist':
         labels = [[i] for i in range(10)]
-        n_iter = 1 #200
+        n_iter = 50#200
         dimX = 28**2
         shape_high = (28, 28)
         ll = 'bernoulli'

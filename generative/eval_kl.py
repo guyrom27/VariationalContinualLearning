@@ -64,10 +64,10 @@ def main(data_name, method, dimZ, dimH, n_channel, batch_size, K_mc, checkpoint,
     
     for task in range(1):
         if data_name == 'mnist':
-            from mnist import load_mnist
+            from .classifier.mnist import load_mnist
             _, X_test, _, Y_test = load_mnist([task])
         if data_name == 'notmnist':
-            from notmnist import load_notmnist
+            from .classifier.notmnist import load_notmnist
             _, X_test, _, Y_test = load_notmnist(data_path, [task], conv = False)
         test_acc = 0.0; test_kl = 0.0
         N_test = X_test.shape[0]

@@ -3,6 +3,7 @@ Visualising animations
 """
 
 import numpy as np
+import math
 
 def reshape_and_tile_images(array, shape=(28, 28), n_cols=None):
     if n_cols is None:
