@@ -1,6 +1,6 @@
 import numpy as np
 import tensorflow as tf
-import discriminative.utils
+import discriminative.utils as utils
 from .multihead_models import Vanilla_NN, MFVI_NN
 import torch
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -106,7 +106,7 @@ def run_vcl_vanilla(hidden_size, no_epochs, data_gen, coreset_method, coreset_si
 
         mf_model.save_weights()
         # Incorporate coreset data and make prediction
-        acc = utils.get_scores(mf_model, x_testsets, y_testsets, x_coresets, y_coresets, hidden_size, no_epochs, single_head, batch_size, just_vanilla =True)
+        acc = utils.get_scores(mf_model, x_testsets, y_testsets, x_coresets, y_coresets, hidden_size, no_epochs, single_head, batch_size, just_vanilla =False)
         all_acc = utils.concatenate_results(acc, all_acc)
         mf_model.load_weights()
         mf_model.clean_copy_weights()
