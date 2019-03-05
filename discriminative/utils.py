@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib
 matplotlib.use('agg')
 import matplotlib.pyplot as plt
+from discriminative.multihead_models import MFVI_NN
 import torch
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
@@ -17,7 +18,6 @@ def get_scores(model, x_testsets, y_testsets, x_coresets, y_coresets, hidden_siz
     acc = []
     if single_head:
         if len(x_coresets) > 0:
-            model.load_weights()
             x_train, y_train = merge_coresets(x_coresets, y_coresets)
             bsize = x_train.shape[0] if (batch_size is None) else batch_size
             x_train = torch.Tensor(x_train)
@@ -27,7 +27,6 @@ def get_scores(model, x_testsets, y_testsets, x_coresets, y_coresets, hidden_siz
     for i in range(len(x_testsets)):
         if not single_head:
             if len(x_coresets) > 0:
-                model.load_weights()
                 x_train, y_train = x_coresets[i], y_coresets[i]
                 bsize = x_train.shape[0] if (batch_size is None) else batch_size
                 x_train = torch.Tensor(x_train)
