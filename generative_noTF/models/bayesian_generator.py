@@ -1,6 +1,6 @@
 import numpy as np
 import tensorflow as tf
-from .mlp import init_weights
+from mlp import init_weights
 
 """
 A Bayesian MLP generator

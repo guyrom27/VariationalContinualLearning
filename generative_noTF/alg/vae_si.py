@@ -62,7 +62,7 @@ def construct_optimizer(X_ph, batch_size_ph, bound, N_data, si_reg, old_params, 
         N = X.shape[0]        
         print("training for %d epochs with lr=%.5f" % (n_iter, lr))
         begin = time.time()
-        n_iter_vae = N // batch_size
+        n_iter_vae = N / batch_size
         old_params = sess.run(shared_var_list)
         if w_params is None:
             w_params = [np.zeros(old_params[i].shape) \
