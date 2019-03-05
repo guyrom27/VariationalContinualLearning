@@ -95,7 +95,8 @@ def run_vcl_vanilla(hidden_size, no_epochs, data_gen, coreset_method, coreset_si
         # Set the readout head to train
         head = 0 if single_head else task_id
         bsize = x_train.shape[0] if (batch_size is None) else batch_size
-        mf_model = Vanilla_NN(in_dim, hidden_size, out_dim, x_train.shape[0])
+        if task_id == 0:
+            mf_model = MFVI_NN(in_dim, hidden_size, out_dim, x_train.shape[0], single_head = single_head, prev_means=None)
 
         # Train network with maximum likelihood to initialize first model
         # Select coreset if needed
@@ -103,9 +104,12 @@ def run_vcl_vanilla(hidden_size, no_epochs, data_gen, coreset_method, coreset_si
             x_coresets, y_coresets, x_train, y_train = coreset_method(x_coresets, y_coresets, x_train, y_train, coreset_size)
 
 
+        mf_model.save_weights()
         # Incorporate coreset data and make prediction
         acc = utils.get_scores(mf_model, x_testsets, y_testsets, x_coresets, y_coresets, hidden_size, no_epochs, single_head, batch_size, just_vanilla =True)
         all_acc = utils.concatenate_results(acc, all_acc)
+        mf_model.load_weights()
+        mf_model.clean_copy_weights()
 
     return all_acc
 
