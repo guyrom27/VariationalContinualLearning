@@ -110,6 +110,7 @@ def run_vcl_vanilla(hidden_size, no_epochs, data_gen, coreset_method, coreset_si
         all_acc = utils.concatenate_results(acc, all_acc)
         mf_model.load_weights()
         mf_model.clean_copy_weights()
+        mf_model.create_head()
 
     return all_acc
 
