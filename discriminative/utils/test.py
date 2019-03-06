@@ -11,12 +11,24 @@ def merge_coresets(x_coresets, y_coresets):
         merged_y = np.hstack((merged_y, y_coresets[i]))
     return merged_x, merged_y
 
-def get_scores(model, x_testsets, y_testsets, x_coresets, y_coresets, hidden_size, no_epochs, single_head, batch_size=None, just_vanilla = False):
+
+def get_coreset(x_coresets, y_coresets, single_head, batch_size = None, gans = None):
+    if gans != None:
+            return generate_samples(batch_size)
+    else:
+        if single_head:
+            return merge_coresets(x_coresets, y_coresets)
+        else:
+            return x_coresets, y_coresets
+
+
+def get_scores(model, x_testsets, y_testsets, no_epochs, single_head,  x_coresets, y_coresets, batch_size=None, just_vanilla = False, gans = None):
 
     acc = []
     if single_head:
         if len(x_coresets) > 0:
-            x_train, y_train = merge_coresets(x_coresets, y_coresets)
+            x_train, y_train =  get_coreset(x_coresets, y_coresets, single_head, batch_size, gans)
+
             bsize = x_train.shape[0] if (batch_size is None) else batch_size
             x_train = torch.Tensor(x_train)
             y_train = torch.Tensor(y_train)
@@ -26,7 +38,11 @@ def get_scores(model, x_testsets, y_testsets, x_coresets, y_coresets, hidden_siz
         if not single_head:
             if len(x_coresets) > 0:
                 model.load_weights()
-                x_train, y_train = x_coresets[i], y_coresets[i]
+
+                if gans != None:
+                    gan_i = gans[i]
+                x_train, y_train = get_coreset(x_coresets[i], y_coresets[i], single_head, batch_size, gan_i)
+
                 bsize = x_train.shape[0] if (batch_size is None) else batch_size
                 x_train = torch.Tensor(x_train)
                 y_train = torch.Tensor(y_train)
