@@ -4,9 +4,9 @@ import gzip
 import pickle as cp
 import sys
 sys.path.extend(['alg/'])
-import vcl
-import coreset
-import utils
+import discriminative.vcl as vcl
+import discriminative.coreset as coreset
+import discriminative.utils as utils
 from copy import deepcopy
 import os
 
@@ -60,7 +60,7 @@ single_head = True
 num_tasks = 10
 
 np.random.seed(0)
-run_vanilla = True
+run_vanilla = False
 
 if run_vanilla:
     # Run vanilla VCL
@@ -77,12 +77,12 @@ if run_vanilla:
 np.random.seed(1)
 
 
-for coreset_size in [200,400,1000,2500,5000]:
-    data_gen = PermutedMnistGenerator(num_tasks)
-    rand_vcl_result = vcl.run_vcl(hidden_size, no_epochs, data_gen,
-        coreset.rand_from_batch, coreset_size, batch_size, single_head)
-    np.save("./results/rand-VCL-{}".format(coreset_size), rand_vcl_result)
-    print(rand_vcl_result)
+#for coreset_size in [200,400,1000,2500,5000]:
+#    data_gen = PermutedMnistGenerator(num_tasks)
+#    rand_vcl_result = vcl.run_vcl(hidden_size, no_epochs, data_gen,
+#        coreset.rand_from_batch, coreset_size, batch_size, single_head)
+#    np.save("./results/rand-VCL-{}".format(coreset_size), rand_vcl_result)
+#    print(rand_vcl_result)
 
 # Run k-center coreset VCL
 np.random.seed(1)
@@ -91,7 +91,7 @@ data_gen = PermutedMnistGenerator(num_tasks)
 kcen_vcl_result = vcl.run_vcl(hidden_size, no_epochs, data_gen,
     coreset.k_center, coreset_size, batch_size, single_head)
 print(kcen_vcl_result)
-np.save("./results/kcen-VCL-{}".format(coreset_size), kcen_vcl_result)
+np.save("./results/pca-kcen-VCL-{}".format(coreset_size), kcen_vcl_result)
 
 # Plot average accuracy
 vcl_avg = np.nanmean(vcl_result, 1)
