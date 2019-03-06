@@ -12,7 +12,7 @@ def run_vcl(hidden_size, no_epochs, data_gen, coreset_method, coreset_size=0, ba
     in_dim, out_dim = data_gen.get_dims()
     x_coresets, y_coresets = [], []
     x_testsets, y_testsets = [], []
-
+    gans = []
     all_acc = np.array([])
 
     for task_id in range(data_gen.max_iter):
@@ -41,7 +41,11 @@ def run_vcl(hidden_size, no_epochs, data_gen, coreset_method, coreset_size=0, ba
             print_graph(mf_model, output_tensor)
             print_graph_bol = False
 
+        gan_i = GAN(task_id,...)
+        gan_i.train(x_train, y_train)
+        gans.append(gan_i)
         mf_model.train(x_train, y_train, head, no_epochs, bsize)
+
         mf_model.update_prior()
         # Save weights before test (and last-minute training on coreset
         mf_model.save_weights()
