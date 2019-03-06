@@ -14,7 +14,7 @@ os.makedirs('images', exist_ok=True)
 parser = argparse.ArgumentParser()
 opt, unknown = parser.parse_known_args()
 opt.n_epochs = 10
-opt.batch_size = 64
+opt.batch_size = 256
 opt.lr = 0.0002
 opt.b1 = 0.5
 opt.b2 = 0.999
@@ -25,14 +25,14 @@ opt.img_size = 28
 opt.channels = 1
 opt.sample_interval = 400
 print(opt)
-
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 cuda = True if torch.cuda.is_available() else False
 FloatTensor = torch.cuda.FloatTensor if cuda else torch.FloatTensor
 LongTensor = torch.cuda.LongTensor if cuda else torch.LongTensor
 
 
 
-class GAN():
+class VGR():
     def __init__(self, task_id):
         self.task_id = task_id
         # Loss functions
@@ -52,14 +52,14 @@ class GAN():
         self.discriminator.apply(weights_init_normal)
 
         # Configure data loader
-        os.makedirs('../../data/mnist', exist_ok=True)
-        self.dataloader = torch.utils.data.DataLoader(
-            datasets.MNIST('../../data/mnist', train=True, download=True,
-                           transform=transforms.Compose([
-                                transforms.ToTensor(),
-                                transforms.Normalize([0.5], [0.5])
-                           ])),
-            batch_size=opt.batch_size, shuffle=True)
+        #os.makedirs('../../data/mnist', exist_ok=True)
+        #self.dataloader = torch.utils.data.DataLoader(
+        #    datasets.MNIST('../../data/mnist', train=True, download=True,
+        #                   transform=transforms.Compose([
+        #                        transforms.ToTensor(),
+        #                        transforms.Normalize([0.5], [0.5])
+        #                   ])),
+        #    batch_size=opt.batch_size, shuffle=True)
 
         # Optimizers
         self.optimizer_G = torch.optim.Adam(self.generator.parameters(), lr=opt.lr, betas=(opt.b1, opt.b2))
@@ -67,18 +67,26 @@ class GAN():
 
 
     def train(self, x_train, y_train):
+        N = x_train.shape[0]
         for epoch in range(opt.n_epochs):
-            for i,(imgs, labels) in enumerate(self.dataloader):
 
-                batch_size = imgs.shape[0]
+            total_batch = int(np.ceil(N * 1.0 / opt.batch_size))
+            # Loop over all batches
+            for i in range(total_batch):
+                start_ind = i*opt.batch_size
+                end_ind = np.min([(i+1)*opt.batch_size, N])
+                batch_x = torch.Tensor(x_train[start_ind:end_ind, :]).to(device = device)
+                batch_y = torch.Tensor(y_train[start_ind:end_ind]).to(device = device)
+                batch_x = batch_x.reshape(-1,opt.img_size,opt.img_size).unsqueeze(1)
+                batch_size = batch_x.shape[0]
 
                 # Adversarial ground truths
                 valid = Variable(FloatTensor(batch_size, 1).fill_(1.0), requires_grad=False)
                 fake = Variable(FloatTensor(batch_size, 1).fill_(0.0), requires_grad=False)
 
                 # Configure input
-                real_imgs = Variable(imgs.type(FloatTensor))
-                labels = Variable(labels.type(LongTensor))
+                real_imgs = Variable(batch_x.type(FloatTensor))
+                labels = Variable(batch_y.type(LongTensor))
 
                 # -----------------
                 #  Train Generator
@@ -124,7 +132,7 @@ class GAN():
                 d_loss.backward()
                 self.optimizer_D.step()
 
-                print ("[Epoch %d/%d] [Batch %d/%d] [D loss: %f, acc: %d%%] [G loss: %f]" % (epoch, opt.n_epochs, i, len(self.dataloader),
+                print ("[Epoch %d/%d] [Batch %d/%d] [D loss: %f, acc: %d%%] [G loss: %f]" % (epoch, opt.n_epochs, i, total_batch,
                                                                     d_loss.item(), 100 * d_acc,
                                                                     g_loss.item()))
 

@@ -2,6 +2,7 @@ import numpy as np
 import discriminative.utils.test  as test
 from discriminative.utils.multihead_models import Vanilla_NN, MFVI_NN
 import torch
+import discriminative.GAN as GAN
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 try:
     from torchviz import make_dot, make_dot_from_trace
@@ -42,7 +43,7 @@ def run_vcl(hidden_size, no_epochs, data_gen, coreset_method, coreset_size=0, ba
             print_graph(mf_model, output_tensor)
             print_graph_bol = False
 
-        gan_i = GAN(task_id)
+        gan_i = GAN.VGR(task_id)
         gan_i.train(x_train, y_train)
         gans.append(gan_i)
         mf_model.train(x_train, y_train, head, no_epochs, bsize)

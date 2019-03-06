@@ -5,18 +5,18 @@ from discriminative.utils.DataGenerator import PermutedMnistGenerator
 
 hidden_size = [100, 100]
 batch_size = 256
-no_epochs = 100
+no_epochs = 5
 single_head = True
 num_tasks = 10
 
 np.random.seed(1)
 #Just VCL
-coreset_size = 0
-data_gen = PermutedMnistGenerator(num_tasks)
-vcl_result = vcl.run_vcl(hidden_size, no_epochs, data_gen,
-    coreset.rand_from_batch, coreset_size, batch_size, single_head)
-np.save("./results/VCL{}".format(""), vcl_result)
-print(vcl_result)
+#coreset_size = 0
+#data_gen = PermutedMnistGenerator(num_tasks)
+#vcl_result = vcl.run_vcl(hidden_size, no_epochs, data_gen,
+#    coreset.rand_from_batch, coreset_size, batch_size, single_head)
+#np.save("./results/VCL{}".format(""), vcl_result)
+#print(vcl_result)
 
 #VCL + Random Coreset
 np.random.seed(1)

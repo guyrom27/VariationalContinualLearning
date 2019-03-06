@@ -3,7 +3,7 @@ import matplotlib
 matplotlib.use('agg')
 import torch
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-
+import discriminative.GAN as GAN
 def merge_coresets(x_coresets, y_coresets):
     merged_x, merged_y = x_coresets[0], y_coresets[0]
     for i in range(1, len(x_coresets)):
