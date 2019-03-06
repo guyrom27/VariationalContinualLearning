@@ -1,6 +1,6 @@
 import numpy as np
-import discriminative.utils.utils  as utils
-import discriminative.utils.multihead_models import Vanilla_NN, MFVI_NN
+import discriminative.utils.test  as test
+from discriminative.utils.multihead_models import Vanilla_NN, MFVI_NN
 import torch
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 try:
@@ -42,16 +42,16 @@ def run_vcl(hidden_size, no_epochs, data_gen, coreset_method, coreset_size=0, ba
             print_graph_bol = False
 
         mf_model.train(x_train, y_train, head, no_epochs, bsize)
-
+        mf_model.update_prior()
         # Save weights before test (and last-minute training on coreset
         mf_model.save_weights()
-        mf_model.update_prior()
 
-        acc = utils.get_scores(mf_model, x_testsets, y_testsets, x_coresets, y_coresets, hidden_size, no_epochs, single_head, batch_size)
-        all_acc = utils.concatenate_results(acc, all_acc)
+        acc = test.get_scores(mf_model, x_testsets, y_testsets, x_coresets, y_coresets, hidden_size, no_epochs, single_head, batch_size)
+        all_acc = test.concatenate_results(acc, all_acc)
 
         mf_model.load_weights()
         mf_model.clean_copy_weights()
+
 
         if not single_head:
             mf_model.create_head()
@@ -81,8 +81,8 @@ def run_coreset_only(hidden_size, no_epochs, data_gen, coreset_method, coreset_s
 
         mf_model.save_weights()
 
-        acc = utils.get_scores(mf_model, x_testsets, y_testsets, x_coresets, y_coresets, hidden_size, no_epochs, single_head, batch_size, just_vanilla =False)
-        all_acc = utils.concatenate_results(acc, all_acc)
+        acc = test.get_scores(mf_model, x_testsets, y_testsets, x_coresets, y_coresets, hidden_size, no_epochs, single_head, batch_size, just_vanilla =False)
+        all_acc = test.concatenate_results(acc, all_acc)
 
         mf_model.load_weights()
         mf_model.clean_copy_weights()
