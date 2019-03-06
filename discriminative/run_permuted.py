@@ -24,7 +24,7 @@ np.random.seed(1)
 for coreset_size in [200,400,1000,2500,5000]:
     data_gen = PermutedMnistGenerator(num_tasks)
     rand_vcl_result = vcl.run_vcl(hidden_size, no_epochs, data_gen,
-        coreset.rand_from_batch, coreset_size, batch_size, single_head)
+        coreset.rand_from_batch, coreset_size, batch_size, single_head, gan_bol=True)
     np.save("./results/rand-VCL-{}".format(coreset_size), rand_vcl_result)
     print(rand_vcl_result)
 

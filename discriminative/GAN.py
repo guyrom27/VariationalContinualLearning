@@ -13,7 +13,7 @@ os.makedirs('images', exist_ok=True)
 
 parser = argparse.ArgumentParser()
 opt, unknown = parser.parse_known_args()
-opt.n_epochs = 10
+opt.n_epochs = 1
 opt.batch_size = 256
 opt.lr = 0.0002
 opt.b1 = 0.5
