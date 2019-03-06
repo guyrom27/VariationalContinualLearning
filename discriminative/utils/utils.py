@@ -1,8 +1,6 @@
 import numpy as np
 import matplotlib
 matplotlib.use('agg')
-import matplotlib.pyplot as plt
-from multihead_models import MFVI_NN
 import torch
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 

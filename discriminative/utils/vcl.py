@@ -1,7 +1,6 @@
 import numpy as np
-import tensorflow as tf
-import utils as utils
-from multihead_models import Vanilla_NN, MFVI_NN
+import discriminative.utils.utils  as utils
+import discriminative.utils.multihead_models import Vanilla_NN, MFVI_NN
 import torch
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 try:
