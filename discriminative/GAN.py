@@ -30,6 +30,8 @@ cuda = True if torch.cuda.is_available() else False
 FloatTensor = torch.cuda.FloatTensor if cuda else torch.FloatTensor
 LongTensor = torch.cuda.LongTensor if cuda else torch.LongTensor
 
+
+
 class GAN():
     def __init__(self, task_id):
         self.task_id = task_id
@@ -65,7 +67,6 @@ class GAN():
 
 
     def train(self, x_train, y_train):
-
         for epoch in range(opt.n_epochs):
             for i,(imgs, labels) in enumerate(self.dataloader):
 
@@ -207,4 +208,5 @@ class Discriminator(nn.Module):
         label = self.aux_layer(out)
 
         return validity, label
+
 
