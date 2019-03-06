@@ -3,7 +3,6 @@ import discriminative.utils.vcl as vcl
 import discriminative.utils.coreset as coreset
 from discriminative.utils.DataGenerator import PermutedMnistGenerator
 
-
 hidden_size = [100, 100]
 batch_size = 256
 no_epochs = 100
@@ -21,6 +20,7 @@ print(vcl_result)
 
 #VCL + Random Coreset
 np.random.seed(1)
+
 for coreset_size in [200,400,1000,2500,5000]:
     data_gen = PermutedMnistGenerator(num_tasks)
     rand_vcl_result = vcl.run_vcl(hidden_size, no_epochs, data_gen,
@@ -36,3 +36,4 @@ kcen_vcl_result = vcl.run_vcl(hidden_size, no_epochs, data_gen,
     coreset.k_center, coreset_size, batch_size, single_head)
 print(kcen_vcl_result)
 np.save("./results/kcen-VCL-{}".format(coreset_size), kcen_vcl_result)
+
