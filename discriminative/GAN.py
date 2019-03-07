@@ -13,14 +13,14 @@ os.makedirs('images', exist_ok=True)
 
 parser = argparse.ArgumentParser()
 opt, unknown = parser.parse_known_args()
-opt.n_epochs = 1
+opt.n_epochs = 50
 opt.batch_size = 256
 opt.lr = 0.0002
 opt.b1 = 0.5
 opt.b2 = 0.999
 opt.n_cpu = 8
 opt.latent_dim = 100
-opt.num_classes = 10
+opt.num_classes = 2
 opt.img_size = 28
 opt.channels = 1
 opt.sample_interval = 400
@@ -71,12 +71,16 @@ class VGR():
         for epoch in range(opt.n_epochs):
 
             total_batch = int(np.ceil(N * 1.0 / opt.batch_size))
+            perm_inds = np.arange(x_train.shape[0])
+            np.random.shuffle(perm_inds)
+            cur_x_train = x_train[perm_inds]
+            cur_y_train = y_train[perm_inds]
             # Loop over all batches
             for i in range(total_batch):
                 start_ind = i*opt.batch_size
                 end_ind = np.min([(i+1)*opt.batch_size, N])
-                batch_x = torch.Tensor(x_train[start_ind:end_ind, :]).to(device = device)
-                batch_y = torch.Tensor(y_train[start_ind:end_ind]).to(device = device)
+                batch_x = torch.Tensor(cur_x_train[start_ind:end_ind, :]).to(device = device)
+                batch_y = torch.Tensor(cur_y_train[start_ind:end_ind]).to(device = device)
                 batch_x = batch_x.reshape(-1,opt.img_size,opt.img_size).unsqueeze(1)
                 batch_size = batch_x.shape[0]
 
@@ -139,16 +143,22 @@ class VGR():
                 #batches_done = epoch * len(self.dataloader) + i
                 #if batches_done % opt.sample_interval == 0:
                 #    save_image(gen_imgs.data[:25], 'images/%d.png' % batches_done, nrow=5, normalize=True)
+        self.generator.cpu()
+        self.discriminator.cpu()
+        self.adversarial_loss.cpu()
+        self.auxiliary_loss.cpu()
 
 
 
     def generate_samples(self, no_samples):
          # Sample noise and labels as generator input
-        z = Variable(FloatTensor(np.random.normal(0, 1, (no_samples, opt.latent_dim))))
+        z = Variable(torch.FloatTensor(np.random.normal(0, 1, (no_samples, opt.latent_dim))))
         # Generate a batch of images
         gen_imgs = self.generator(z)
         _,labels = self.discriminator(gen_imgs)
-        return gen_imgs,labels
+        gen_imgs = gen_imgs.squeeze(1).reshape(no_samples,784)
+        labels = labels.argmax(1)
+        return gen_imgs.data.cpu().numpy(),labels.data.cpu().numpy()
 
 def weights_init_normal(m):
     classname = m.__class__.__name__
@@ -206,7 +216,7 @@ class Discriminator(nn.Module):
         # Output layers
         self.adv_layer = nn.Sequential( nn.Linear(512, 1),
                                         nn.Sigmoid())
-        self.aux_layer = nn.Sequential( nn.Linear(512, opt.num_classes+1),
+        self.aux_layer = nn.Sequential( nn.Linear(512, opt.num_classes),
                                         nn.Softmax())
 
     def forward(self, img):
