@@ -9,12 +9,8 @@ from torch.autograd import Variable
 import torch.nn as nn
 import torch
 
-os.makedirs('images', exist_ok=True)
-
-parser = argparse.ArgumentParser()
-opt, unknown = parser.parse_known_args()
 n_epochs = 50
-batch_size = 100
+batch_size = 64
 lr = 0.0002
 b1 = 0.5
 b2 = 0.999
@@ -24,7 +20,7 @@ num_classes = 2
 img_size = 28
 channels = 1
 sample_interval = 400
-threshold = 0.98
+threshold = 0.99
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 cuda = True if torch.cuda.is_available() else False
 FloatTensor = torch.cuda.FloatTensor if cuda else torch.FloatTensor
@@ -58,6 +54,8 @@ class VGR():
 
     def train(self, x_train, y_train):
         N = x_train.shape[0]
+        x_train -= 0.5
+        x_train /= 0.5
         for epoch in range(n_epochs):
 
             total_batch = int(np.ceil(N * 1.0 / batch_size))
@@ -178,14 +176,14 @@ class Generator(nn.Module):
         self.conv_blocks = nn.Sequential(
             nn.BatchNorm2d(128),
             nn.Upsample(scale_factor=2),
-            nn.Conv2d(128, 128, 5, stride=1, padding=2),
+            nn.Conv2d(128, 128, 3, stride=1, padding=1),
             nn.BatchNorm2d(128, 0.8),
             nn.LeakyReLU(0.2, inplace=True),
             nn.Upsample(scale_factor=2),
-            nn.Conv2d(128, 64, 5, stride=1, padding=2),
+            nn.Conv2d(128, 64, 3, stride=1, padding=1),
             nn.BatchNorm2d(64, 0.8),
             nn.LeakyReLU(0.2, inplace=True),
-            nn.Conv2d(64, channels, 5, stride=1, padding=2),
+            nn.Conv2d(64, channels, 3, stride=1, padding=1),
             nn.Tanh()
         )
 
