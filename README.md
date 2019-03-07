@@ -35,5 +35,5 @@ Permuted MNIST
 Split MNIST
 ![](/discriminative/misc/split_mnist_main_part1.png)
 ![](/discriminative/misc/split_mnist_main_part2.png)
-... with Variational Generative Replay (VGR):
+... with Variational Generative Replay (VGR):<br/>
 ![](/discriminative/misc/VGR.png)
