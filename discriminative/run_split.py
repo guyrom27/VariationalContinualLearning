@@ -11,11 +11,11 @@ run_coreset_only = False
 np.random.seed(0)
 
 #Just VCL
-#coreset_size = 0
-#data_gen = SplitMnistGenerator()
-#vcl_result = vcl.run_vcl(hidden_size, no_epochs, data_gen,
-#   coreset.rand_from_batch, coreset_size, batch_size, single_head)
-#np.save("./results/VCL-split{}".format(""), vcl_result)
+coreset_size = 0
+data_gen = SplitMnistGenerator()
+vcl_result = vcl.run_vcl(hidden_size, no_epochs, data_gen,
+   coreset.rand_from_batch, coreset_size, batch_size, single_head)
+np.save("./results/VCL-split{}".format(""), vcl_result)
 
 #VCL + Random Coreset
 coreset_size = 40

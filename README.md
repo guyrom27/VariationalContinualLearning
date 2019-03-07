@@ -17,16 +17,24 @@ An implementation of the Variational Continual Learning (VCL) algorithms propose
 
 	python run_split.py
 	
+**Requirements:**
+<ul> 
+	<li> Torch 1.0 </li>
+	<li> Python 3.6 </li>
+</ul>
+
 ## Results
 ### VCL in Deep discriminative models
 
-<h3>Permuted MNIST</h3>
+
+Permuted MNIST
+>>>>>>> d34093ff1764fbc2fd1585b95ddb8b8a67a44256
 ![](/discriminative/misc/permuted_mnist_main.png)
 ![](/discriminative/misc/permuted_mnist_coreset_sizes.png)
 
 
-<h4>Split MNIST</h4>
+Split MNIST
 ![](/discriminative/misc/split_mnist_main_part1.png)
 ![](/discriminative/misc/split_mnist_main_part2.png)
-With Variational Generative Replay (VGR):
+... with Variational Generative Replay (VGR):
 ![](/discriminative/misc/vgr.png)
