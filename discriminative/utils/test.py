@@ -47,7 +47,7 @@ def get_scores(model, x_testsets, y_testsets, no_epochs, single_head,  x_coreset
             if len(x_coresets) > 0:
                 model.load_weights()
                 gan_i = None
-                if gans != None:
+                if gans is not None:
                     gan_i = gans[i]
                 x_train, y_train = get_coreset(x_coresets[i], y_coresets[i], single_head, coreset_size = 5000, gans= gan_i)
 
