@@ -13,7 +13,6 @@ def merge_coresets(x_coresets, y_coresets):
 
 
 def get_coreset(x_coresets, y_coresets, single_head, coreset_size = 5000, gans = None, task_id=0):
-    ##TODO: stack with torch
     if gans is not None:
         if single_head:
             merged_x, merged_y = gans[0].generate_samples(coreset_size, task_id)
@@ -46,7 +45,7 @@ def get_scores(model, x_testsets, y_testsets, no_epochs, single_head,  x_coreset
     for i in range(len(x_testsets)):
         if not single_head:
             if len(x_coresets)>0 or gans is not None:
-                model.load_weights()
+                #model.load_weights()
                 gan_i = None
                 if gans is not None:
                     gan_i = gans[i]
