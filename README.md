@@ -25,8 +25,8 @@ Permuted MNIST
 ![](/discriminative/misc/permuted_mnist_coreset_sizes.png)
 
 
-<h4>Split MNIST</h4>
+Split MNIST
 ![](/discriminative/misc/split_mnist_main_part1.png)
 ![](/discriminative/misc/split_mnist_main_part2.png)
-With Variational Generative Replay (VGR):
+... with Variational Generative Replay (VGR):
 ![](/discriminative/misc/vgr.png)
