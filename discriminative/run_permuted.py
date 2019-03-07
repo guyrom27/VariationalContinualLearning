@@ -5,7 +5,7 @@ from discriminative.utils.DataGenerator import PermutedMnistGenerator
 
 hidden_size = [100, 100]
 batch_size = 256
-no_epochs = 5
+no_epochs = 100
 single_head = True
 num_tasks = 10
 
