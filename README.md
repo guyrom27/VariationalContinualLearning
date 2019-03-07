@@ -37,4 +37,4 @@ Split MNIST
 ![](/discriminative/misc/split_mnist_main_part1.png)
 ![](/discriminative/misc/split_mnist_main_part2.png)
 ... with Variational Generative Replay (VGR):
-![](/discriminative/misc/vgr.png)
+![](/discriminative/misc/VGR.png)
