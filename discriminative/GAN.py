@@ -158,7 +158,7 @@ class VGR():
             gen_imgs = np.vstack((gen_imgs,new_gen_imgs))
             labels = np.hstack((labels,new_labels))
 
-        return gen_imgs, labels
+        return gen_imgs*0.5+0.5, labels
 
 def weights_init_normal(m):
     classname = m.__class__.__name__
@@ -176,14 +176,14 @@ class Generator(nn.Module):
         self.conv_blocks = nn.Sequential(
             nn.BatchNorm2d(128),
             nn.Upsample(scale_factor=2),
-            nn.Conv2d(128, 128, 3, stride=1, padding=1),
+            nn.Conv2d(128, 128, 5, stride=1, padding=2),
             nn.BatchNorm2d(128, 0.8),
             nn.LeakyReLU(0.2, inplace=True),
             nn.Upsample(scale_factor=2),
-            nn.Conv2d(128, 64, 3, stride=1, padding=1),
+            nn.Conv2d(128, 64, 5, stride=1, padding=2),
             nn.BatchNorm2d(64, 0.8),
             nn.LeakyReLU(0.2, inplace=True),
-            nn.Conv2d(64, channels, 3, stride=1, padding=1),
+            nn.Conv2d(64, channels, 5, stride=1, padding=2),
             nn.Tanh()
         )
 
