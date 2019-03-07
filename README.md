@@ -28,7 +28,6 @@ An implementation of the Variational Continual Learning (VCL) algorithms propose
 
 
 Permuted MNIST
->>>>>>> d34093ff1764fbc2fd1585b95ddb8b8a67a44256
 ![](/discriminative/misc/permuted_mnist_main.png)
 ![](/discriminative/misc/permuted_mnist_coreset_sizes.png)
 
