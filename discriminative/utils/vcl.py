@@ -51,13 +51,13 @@ def run_vcl(hidden_size, no_epochs, data_gen, coreset_method, coreset_size=0, ba
 
         mf_model.update_prior()
         # Save weights before test (and last-minute training on coreset
-        #mf_model.save_weights()
+        mf_model.save_weights()
 
         acc = test.get_scores(mf_model, x_testsets, y_testsets, no_epochs, single_head, x_coresets, y_coresets, batch_size, False,gans)
         all_acc = test.concatenate_results(acc, all_acc)
 
-        #mf_model.load_weights()
-        #mf_model.clean_copy_weights()
+        mf_model.load_weights()
+        mf_model.clean_copy_weights()
 
 
         if not single_head:
