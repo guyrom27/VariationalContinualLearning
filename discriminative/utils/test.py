@@ -12,17 +12,18 @@ def merge_coresets(x_coresets, y_coresets):
     return merged_x, merged_y
 
 
-def get_coreset(x_coresets, y_coresets, single_head, coreset_size = 5000, gans = None):
-    if gans != None:
+def get_coreset(x_coresets, y_coresets, single_head, coreset_size = 5000, gans = None, task_id=0):
+    ##TODO: stack with torch
+    if gans is not None:
         if single_head:
-            merged_x, merged_y = gans[0].generate_samples(coreset_size)
+            merged_x, merged_y = gans[0].generate_samples(coreset_size, task_id)
             for i in range(1, len(gans)):
-                new_x, new_y = gans[i].generate_samples(coreset_size)
+                new_x, new_y = gans[i].generate_samples(coreset_size, task_id)
                 merged_x = np.vstack((merged_x,new_x))
                 merged_y = np.hstack((merged_y,new_y))
             return merged_x, merged_y
         else:
-            gans.generate_samples(coreset_size)
+            return gans.generate_samples(coreset_size, task_id)[:coreset_size]
     else:
         if single_head:
             return merge_coresets(x_coresets, y_coresets)
@@ -34,8 +35,8 @@ def get_scores(model, x_testsets, y_testsets, no_epochs, single_head,  x_coreset
 
     acc = []
     if single_head:
-        if len(x_coresets) > 0:
-            x_train, y_train =  get_coreset(x_coresets, y_coresets, single_head, coreset_size = 5000, gans = gans)
+        if len(x_coresets) > 0 or gans is not None:
+            x_train, y_train = get_coreset(x_coresets, y_coresets, single_head, coreset_size = 6000, gans = gans, task_id=0)
 
             bsize = x_train.shape[0] if (batch_size is None) else batch_size
             x_train = torch.Tensor(x_train)
@@ -44,13 +45,14 @@ def get_scores(model, x_testsets, y_testsets, no_epochs, single_head,  x_coreset
 
     for i in range(len(x_testsets)):
         if not single_head:
-            if len(x_coresets) > 0:
+            if len(x_coresets)>0 or gans is not None:
                 model.load_weights()
                 gan_i = None
                 if gans is not None:
                     gan_i = gans[i]
-                x_train, y_train = get_coreset(x_coresets[i], y_coresets[i], single_head, coreset_size = 5000, gans= gan_i)
-
+                    x_train, y_train = get_coreset(None, None, single_head, coreset_size = 6000, gans= gan_i, task_id=i)
+                else:
+                    x_train, y_train = get_coreset(x_coresets[i], y_coresets[i], single_head, coreset_size = 6000, gans= None, task_id=i)
                 bsize = x_train.shape[0] if (batch_size is None) else batch_size
                 x_train = torch.Tensor(x_train)
                 y_train = torch.Tensor(y_train)
