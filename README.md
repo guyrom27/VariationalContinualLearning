@@ -17,6 +17,12 @@ An implementation of the Variational Continual Learning (VCL) algorithms propose
 
 	python run_split.py
 	
+**Requirements:**
+<ul> 
+	<li> Torch 1.0 </li>
+	<li> Python 3.6 </li>
+</ul>
+
 ## Results
 ### VCL in Deep discriminative models
 
