@@ -14,9 +14,10 @@ An implementation of the Variational Continual Learning (VCL) algorithms propose
 ### VCL in Deep discriminative models
 
 ####Permuted MNIST
-![Permuted mnist](../discriminative/misc/images/permuted_mnist_main.png)
-![Permuted mnist](../discriminative/misc/images/permuted_mnist_coreset_sizes.png)
+![](/discriminative/misc/images/permuted_mnist_main.png)
+![](/discriminative/misc/images/permuted_mnist_coreset_sizes.png)
+
 
 ####Split MNIST
-![Split mnist](../discriminative/misc/images/split_mnist_main_part1.png)
-![Split mnist zoom](../discriminative/misc/images/split_mnist_main_part2.png)
+![](/discriminative/misc/images/split_mnist_main_part1.png)
+![](/discriminative/misc/images/split_mnist_main_part2.png)
