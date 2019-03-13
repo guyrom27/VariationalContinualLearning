@@ -219,7 +219,7 @@ def main(data_name, method, dimZ, dimH, n_channel, batch_size, K_mc, checkpoint,
 
 if __name__ == '__main__':
     data_name = 'mnist'
-    methods = ['si']
+    methods = ['onlinevi']
     for method in methods:
         assert method in ['noreg', 'laplace', 'ewc', 'si', 'onlinevi']
         lbd = 1.0  # some placeholder, doesn't matter
