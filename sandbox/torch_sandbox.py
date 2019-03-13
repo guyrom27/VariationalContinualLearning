@@ -62,7 +62,6 @@ class bayesian_mlp_layer(mlp_layer):
         self.bias_sampler = Normal(self.mu.bias,                               torch.exp(self.log_sigma.bias))
         
     def forward(self,x, sampling=True):
-        print("BMLP Sampling " + str(sampling))
         if sampling:
             my_lin = nn.Linear(*self.mu.weight.shape)
             my_lin.weight = nn.Parameter(self.weight_sampler.sample())
@@ -90,7 +89,7 @@ class NormalSamplingLayer:
         self.d_out = d_out
     
     def __call__(self, mu_log_sigma_vec):
-        return Normal(mu_log_sigma_vec[:,:d_out], torch.exp(mu_log_sigma_vec[:,d_out:])).sample()
+        return Normal(mu_log_sigma_vec[:,:self.d_out], torch.exp(mu_log_sigma_vec[:, self.d_out:])).sample()
 
 
 # In[95]:
@@ -101,8 +100,8 @@ import itertools
 class FunctionComposition:
     def __init__(self,f_list):
         assert(len(f_list) > 0)
-        for i in range(len(f_list)-1):
-            assert(f_list[i].d_out == f_list[i+1].d_in)
+        #for i in range(len(f_list)-1):
+        #assert(f_list[i].d_out == f_list[i+1].d_in)
         self.f_list = f_list
     
     def __call__(self, x, *optional):
@@ -171,14 +170,14 @@ def KL_div_gaussian(mu_q, log_sig_q, mu_p, log_sig_p):
 
 def KL_div_gaussian_from_standard_normal(mu_q, log_sig_q):
     #0,0 corresponds to N(0,1) due to the log_sig representation, works for multidim normal as well.
-    return KL_div_gaussian(mu_q, log_sig_q, 0.0, 0.0) 
+    return KL_div_gaussian(mu_q, log_sig_q, torch.zeros(1), torch.zeros(1))
 
 
 # In[100]:
 
 
-def Zs_to_mu_sig(Zs):
-    dimZ = Zs.shape[1]//2 #1st is batch size 2nd is 2*dimZ
+def Zs_to_mu_sig(Zs_params):
+    dimZ = Zs_params.shape[1]//2 #1st is batch size 2nd is 2*dimZ
     mu_qz = Zs_params[:,:dimZ]
     log_sig_qz  = Zs_params[:,dimZ:]
     return mu_qz, log_sig_qz 
@@ -192,8 +191,10 @@ def log_bernouillli(X, Mu_Reconstructed_X):
     """
     Mu_Reconstructed_X is the output of the decoder. We accept fractions, and project them to the interval 'forced_interval' for numerical stability
     """
-    logprob =    x      * torch.log(torch.clamp(Mu_Reconstructed_X,         *forced_interval))               + (1 - x) * torch.log(torch.clamp((1.0 - Mu_Reconstructed_X), *forced_interval))
-    return torch.sum(logprob, dim=logprob.dim())
+    logprob =    X      * torch.log(torch.clamp(Mu_Reconstructed_X,         *forced_interval))\
+              + (1 - X) * torch.log(torch.clamp((1.0 - Mu_Reconstructed_X), *forced_interval))
+
+    return torch.sum(logprob, dim=-1)
 
 
 # In[102]:
@@ -204,13 +205,13 @@ def log_P_y_GIVEN_x(Xs, enc, sample_and_decode, NumLogPSamples = 100):
     Returns logP(Y|X), KL(Z||Normal(0,1))
     """
     Zs_params = enc(Xs)
-    mu_qz, log_sig_qz  = Zs_to_mu_sig(Zs)
+    mu_qz, log_sig_qz  = Zs_to_mu_sig(Zs_params)
     kl_z = KL_div_gaussian_from_standard_normal(mu_qz, log_sig_qz)
     logp = 0.0
     for _ in range(NumLogPSamples):
         #The Zs_params are the deterministic result of enc(Xs) so we don't recalculate them
         Mu_Ys = sample_and_decode(Zs_params)
-        logp += log_bernouillli(x, Mu_Ys) / NumLogPSamples
+        logp += log_bernouillli(Xs, Mu_Ys) / NumLogPSamples
     return logp, kl_z
 
 
@@ -240,7 +241,8 @@ class SharedDecoder(nn.Module):
         self.prior = [(mu.clone().detach(), log_sig.clone().detach()) for mu,log_sig  in self.net.get_posterior()]
         
     def KL_from_prior(self):
-        return sum([KL_div_gaussian(*post, *prior) for (post, prior) in zip(self.net.get_posterior(), self.prior)])
+        KLs=[KL_div_gaussian(*post, *prior) for (post, prior) in zip(self.net.get_posterior(), self.prior)]
+        return sum(map(torch.sum, KLs))
     
     def parameters(self):
         return self.net.parameters()
@@ -268,9 +270,10 @@ class TaskModel(nn.Module):
         self.enc = NNFactory.CreateNN(*enc_dims_activations)
         self.dec_head = NNFactory.CreateBayesianNet(*dec_head_dims_activations)
         self.dec_shared = dec_shared
+        self.printer = PrintLayer()
     
         self.sampler = NormalSamplingLayer(self.dec_head.d_in)
-        self.sample_and_decode = FunctionComposition([self.sampler, self.dec_head, self.dec_shared])
+        self.sample_and_decode = FunctionComposition([self.printer, self.sampler, self.printer, self.dec_head, self.printer,  self.dec_shared, self.printer])
  
         #update just before training
         self.DatasetSize = None
@@ -310,25 +313,33 @@ class TaskModel(nn.Module):
         for epoch in range(n_epochs):  
             print("starting epoch " + str(epoch))
             running_loss = 0.0
-            for data in task_trainloader:
-                print("next batch")
+            for i, data in enumerate(task_trainloader):
                 # get the inputs
                 inputs, labels = data
         
                 # step
                 self.optimizer.zero_grad()
-                loss = self(inputs)
+                loss = self(inputs.view(-1, self.enc.d_in))
                 loss.backward()
                 self.optimizer.step()
         
                 # print statistics
                 running_loss += loss.item() #?
-                if i % 2000 == 1999:    # print every 2000 mini-batches
+                if i % 1 == 0:    # print every 2000 mini-batches
                     print('[%d, %5d] loss: %.3f' %
                           (epoch + 1, i + 1, running_loss / 2000))
                     running_loss = 0.0
         self.DatasetSize = None
     
+
+class PrintLayer(nn.Module):
+    def __init__(self):
+        super(PrintLayer, self).__init__()
+
+    def forward(self, x):
+        print(x[0].shape)
+        print(x[0])
+        return x
 
 
 # In[135]:

@@ -4,5 +4,5 @@
 /figs
 */data
 */mnist
-
+.ipynb_checkpoints/*
 
