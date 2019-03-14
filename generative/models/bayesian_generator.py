@@ -9,28 +9,30 @@ A Bayesian MLP generator
 def sample_gaussian(mu, log_sig):
     return mu + tf.exp(log_sig) * tf.random_normal(mu.get_shape())
 
-def bayesian_mlp_layer(d_in, d_out, activation, name):
-    mu_W = tf.Variable(init_weights(d_in, d_out), name = name+'_mu_W')
-    mu_b = tf.Variable(tf.zeros([d_out]), name = name+'_mu_b')
-    log_sig_W = tf.Variable(tf.ones([d_in, d_out])*-6, name = name+'_log_sig_W')
-    log_sig_b = tf.Variable(tf.ones([d_out])*-6, name = name+'_log_sig_b')
-    
-    def apply_layer(x, sampling=True):
+class bayesian_mlp_layer:
+
+    def __init__(self,d_in, d_out, activation, name):
+        self.mu_W = tf.Variable(init_weights(d_in, d_out), name = name+'_mu_W')
+        self.mu_b = tf.Variable(tf.zeros([d_out]), name = name+'_mu_b')
+        self.log_sig_W = tf.Variable(tf.ones([d_in, d_out])*-6, name = name+'_log_sig_W')
+        self.log_sig_b = tf.Variable(tf.ones([d_out])*-6, name = name+'_log_sig_b')
+        self.activation = activation
+
+    def __call__(self, x, sampling=True):
         if sampling:
-            W = sample_gaussian(mu_W, log_sig_W)
-            b = sample_gaussian(mu_b, log_sig_b)
+            W = sample_gaussian(self.mu_W, self.log_sig_W)
+            b = sample_gaussian(self.mu_b, self.log_sig_b)
         else:
             print('use mean of q(theta)...')
-            W = mu_W; b = mu_b
+            W = self.mu_W; b = self.mu_b
         a = tf.matmul(x, W) + b
-        if activation == 'relu':
+        if self.activation == 'relu':
             return tf.nn.relu(a)
-        if activation == 'sigmoid':
+        if self.activation == 'sigmoid':
             return tf.nn.sigmoid(a)
-        if activation == 'linear':
+        if self.activation == 'linear':
             return a  
             
-    return apply_layer
 
 def generator_head(dimZ, dimH, n_layers, name):
     fc_layer_sizes = [dimZ] + [dimH for i in range(n_layers)]
@@ -50,36 +52,40 @@ def generator_head(dimZ, dimH, n_layers, name):
         
     return apply
 
-def generator_shared(dimX, dimH, n_layers, last_activation, name):
-    # now construct a decoder
-    fc_layer_sizes = [dimH for i in range(n_layers)] + [dimX]
-    layers = []
-    N_layers = len(fc_layer_sizes) - 1
-    for i in range(N_layers):
-        d_in = fc_layer_sizes[i]; d_out = fc_layer_sizes[i+1]
-        if i < N_layers - 1:
-            activation = 'relu'
-        else:
-            activation = last_activation
-        name_layer = name + '_shared_l%d' % i
-        layers.append(bayesian_mlp_layer(d_in, d_out, activation, name_layer))
+class generator_shared:
+
+    def __init__(self,dimX, dimH, n_layers, last_activation, name):
+        # now construct a decoder
+        fc_layer_sizes = [dimH for i in range(n_layers)] + [dimX]
+        self.layers = []
+        self.N_layers = len(fc_layer_sizes) - 1
+        for i in range(self.N_layers):
+            d_in = fc_layer_sizes[i]; d_out = fc_layer_sizes[i+1]
+            if i < self.N_layers - 1:
+                activation = 'relu'
+            else:
+                activation = last_activation
+            name_layer = name + '_shared_l%d' % i
+            self.layers.append(bayesian_mlp_layer(d_in, d_out, activation, name_layer))
+
+        print('decoder shared MLP of size', fc_layer_sizes)
     
-    print('decoder shared MLP of size', fc_layer_sizes)
-    
-    def apply(x, sampling=True):
-        for layer in layers:
+    def __call__(self, x, sampling=True):
+        for layer in self.layers:
             x = layer(x, sampling)
         return x
-        
-    return apply
+
     
-def generator(head_net, shared_net):
-    def apply(x, sampling=True):
-        x = head_net(x, sampling)
-        x = shared_net(x, sampling)
+class generator:
+
+    def __init__(self, head_net, shared_net):
+        self.head_net = head_net
+        self.shared_net = shared_net
+
+    def __call__(self, x, sampling=True):
+        x = self.head_net(x)
+        x = self.shared_net(x)
         return x
-    
-    return apply
 
 def construct_gen(gen, dimZ, sampling=True):
     def gen_data(N):

@@ -88,12 +88,14 @@ def lowerbound(x, enc, dec, ll, K = 1, mu_pz = 0.0, log_sig_pz = 0.0):
             logp += log_l2_prob(x, mu_x) / K
         if ll == 'l1':
             logp += log_l1_prob(x, mu_x) / K
-    return logp - kl_z
+    return logp, kl_z
 
 def construct_optimizer(X_ph, enc, dec, ll, N_data, batch_size_ph, shared_prior_params, task, K):
 
     # loss function
-    bound = tf.reduce_mean(lowerbound(X_ph, enc, dec, ll, K))
+    my_logp, my_kl_z= lowerbound(X_ph, enc, dec, ll, K)
+    bound = tf.reduce_mean(my_logp - my_kl_z)
+
     kl_theta = KL_param(shared_prior_params, task)
     loss_total = -bound + kl_theta / N_data
     batch_size = X_ph.get_shape().as_list()[0]
@@ -105,11 +107,32 @@ def construct_optimizer(X_ph, enc, dec, ll, N_data, batch_size_ph, shared_prior_
     N_param = np.sum([np.prod(var.get_shape().as_list()) for var in var_list])
     opt = tf.train.AdamOptimizer(learning_rate=lr_ph).minimize(loss_total)
     
-    ops = [opt, bound, kl_theta]
+    ops = [opt, loss_total, my_logp, my_kl_z, bound, kl_theta]
     def train(sess, X, lr):
-        _, logp, kl = sess.run(ops, feed_dict={X_ph: X, lr_ph: lr,
+
+        #for i, layer in enumerate(dec.shared_net.layers):
+        #    print("DEC_shared mu_weigkl_thetahts",i,  sess.run(layer.mu_W))
+        #   print("DEC_shared mu_bias",i,  sess.run(layer.mu_b))
+        #   print("DEC_shared log_sig_weights",i,  sess.run(layer.log_sig_W))
+        #   print("DEC_shared log_sig_bias",i,  sess.run(layer.log_sig_b))
+
+
+        print()
+        print("Log_like", sess.run(tf.reduce_mean(my_logp),feed_dict={X_ph: X, lr_ph: lr,
+                                    batch_size_ph: X.shape[0]}))
+        print("KL Z", sess.run(tf.reduce_mean(my_kl_z),feed_dict={X_ph: X, lr_ph: lr,
+                                    batch_size_ph: X.shape[0]}))
+        print("Log_like - KL Z", sess.run(tf.reduce_mean(my_logp-my_kl_z), feed_dict={X_ph: X, lr_ph: lr,
+                                                                       batch_size_ph: X.shape[0]}))
+        print("Bound", sess.run(bound, feed_dict={X_ph: X, lr_ph: lr,
+                                                                   batch_size_ph: X.shape[0]}))
+        print("KL Qt vs prev Qt", sess.run(kl_theta,feed_dict={X_ph: X, lr_ph: lr,
+                                    batch_size_ph: X.shape[0]})/N_data)
+
+        _, my_loss_total, my_my_logp, my_my_kl_z, my_bound, my_kl_theta = sess.run(ops, feed_dict={X_ph: X, lr_ph: lr,
                                     batch_size_ph: X.shape[0]})
-        return logp, kl / N_param
+
+        return my_loss_total, my_bound, my_kl_theta / N_data
 
     def fit(sess, X, n_iter, lr):
         N = X.shape[0]        
@@ -126,9 +149,10 @@ def construct_optimizer(X_ph, enc, dec, ll, N_data, batch_size_ph, shared_prior_
                 ind = ind_s[indl:min(indr, N)]
                 if indr > N:
                     ind = np.concatenate((ind, ind_s[:(indr-N)]))
-                logp, kl = train(sess, X[ind], lr)    
+                my_loss_total, logp, kl = train(sess, X[ind], lr)
                 bound_total += logp / n_iter_vae
                 kl_total += kl / n_iter_vae
+                print("Loss on iteration", j, my_loss_total)
             end = time.time()
             print("Iter %d, bound=%.2f, kl=%.2f, time=%.2f" \
                   % (iteration, bound_total, kl_total, end - begin))
