@@ -14,18 +14,20 @@ def init_weights(input_size, output_size, constant=1.0, seed=123):
                              minval=-scale, maxval=scale, 
                              dtype=tf.float32, seed=seed)
 
-def mlp_layer(d_in, d_out, activation, name):
-    W = tf.Variable(init_weights(d_in, d_out), name = name+'_W')
-    b = tf.Variable(tf.zeros([d_out]), name = name+'_b')
+class mlp_layer:
+
+    def __init__(self, d_in, d_out, activation, name):
+        self.W = tf.Variable(init_weights(d_in, d_out), name = name+'_W')
+        self.b = tf.Variable(tf.zeros([d_out]), name = name+'_b')
+        self.activation = activation
     
-    def apply_layer(x):
-        a = tf.matmul(x, W) + b
-        if activation == 'relu':
+    def __call__(self, x):
+        a = tf.matmul(x, self.W) + self.b
+        if self.activation == 'relu':
             return tf.nn.relu(a)
-        if activation == 'sigmoid':
+        if self.activation == 'sigmoid':
             return tf.nn.sigmoid(a)
-        if activation == 'linear':
+        if self.activation == 'linear':
             return a  
-            
-    return apply_layer
+
 
