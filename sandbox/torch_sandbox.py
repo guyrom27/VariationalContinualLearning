@@ -12,7 +12,7 @@ import torch
 torch.manual_seed(123)
 weight_print = False
 data_print = False
-loss_print = True
+loss_print = False
 
 
 class mlp_layer(nn.Module):
@@ -355,7 +355,7 @@ def create_mnist_single_digit_loaders(b_size=10, train_data=True):
                                          transform=torchvision.transforms.ToTensor())
 
     for i in range(10):
-        partial_dataset = torch.utils.data.Subset(dataset, torch.nonzero(dataset.train_labels == i).squeeze())
+        partial_dataset = torch.utils.data.Subset(dataset, torch.nonzero(dataset.targets == i).squeeze())
 
         # NOT Repeating the original "mistake"
         # train_idx = len(partial_trainset) * 0.9
@@ -392,11 +392,11 @@ def main():
 
     # this can be any iterable
     task_loaders = list(create_mnist_single_digit_loaders(batch_size))
-
+    test_loaders = list(create_mnist_single_digit_loaders(batch_size, train_data=False))
     models = []
 
     # this may train the classifier to generate test_classifier
-    # evaluator = Evaluations()
+    evaluator = Evaluation(test_loaders, K=100, sample_W=False)
 
     # A task corresponds to a digit
     for task_id, loader in enumerate(task_loaders):
@@ -406,6 +406,7 @@ def main():
         models.append(task_model)
         print("starting training")
         task_model.train(n_epochs, loader)
+        evaluator(task_id, task_model.enc, task_model.dec_head, task_model.dec_shared, batch_size)
         # make sure you don't change the model params inside the eval
         # evaluator.create_task_evaluations(models)
 
