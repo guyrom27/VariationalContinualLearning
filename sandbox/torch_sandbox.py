@@ -12,7 +12,7 @@ import torch
 torch.manual_seed(123)
 weight_print = False
 data_print = False
-loss_print = True
+loss_print = False
 
 
 class mlp_layer(nn.Module):
@@ -62,26 +62,33 @@ class bayesian_mlp_layer(mlp_layer):
         self._init_log_sigma()
         # mu is initialized the same as non-Bayesian mlp
 
-        """
-        Attribute for now, but planning to do only "in-place" changes 
-        """
-        self.weight_sampler = Normal(self.mu.weight, torch.exp(self.log_sigma.weight))
-        self.bias_sampler = Normal(self.mu.bias, torch.exp(self.log_sigma.bias))
+        self.w_standard_normal_sampler = Normal(torch.zeros(self.mu.weight.shape), torch.ones(self.mu.weight.shape))
+        self.b_standard_normal_sampler = Normal(torch.zeros(self.mu.bias.shape), torch.ones(self.mu.bias.shape))
+        # self.weight_sampler = Normal(self.mu.weight, \
+        #                      torch.exp(self.log_sigma.weight))
+        # self.bias_sampler = Normal(self.mu.bias, \
+        #                      torch.exp(self.log_sigma.bias))
 
     def forward(self, x, sampling=True):
+
+        if (weight_print):
+            print("Weights of mu DEC ", self.mu.weight)
+            print("bias of mu DEC ", self.mu.bias)
+            print("Weights of log_sig DEC ", self.log_sigma.weight)
+            print("bias of log_sig DEC ", self.log_sigma.bias)
+
         if sampling:
-            my_lin = nn.Linear(*self.mu.weight.shape)
-            my_lin.weight = nn.Parameter(self.weight_sampler.sample())
-            my_lin.bias = nn.Parameter(self.bias_sampler.sample())
+            sampled_W = self.mu.weight + self.w_standard_normal_sampler.sample() * torch.exp(self.log_sigma.weight)
+            sampled_b = self.mu.bias + self.b_standard_normal_sampler.sample() * torch.exp(self.log_sigma.bias)
+
+            return self.activation(torch.einsum('ij,bj->bi',[sampled_W, x]) + sampled_b)
+            # if sampling:
+            #    my_lin = nn.Linear(*self.mu.weight.shape)
+            #    my_lin.weight = nn.Parameter(self.weight_sampler.sample())
+            #    my_lin.bias = nn.Parameter(self.bias_sampler.sample())
+            #    return self.activation(my_lin(x))
 
             # ADD other printers for log_sig and samples
-            if (weight_print):
-                print("Weights of mu DEC ", self.mu.weight)
-                print("bias of mu DEC ", self.mu.bias)
-                print("Weights of log_sig DEC ", self.log_sigma.weight)
-                print("bias of log_sig DEC ", self.log_sigma.bias)
-
-            return self.activation(my_lin(x))
         else:
             return super().forward(x)
 
@@ -96,100 +103,36 @@ class bayesian_mlp_layer(mlp_layer):
 # In[94]:
 
 
-class NormalSamplingLayer:
+class NormalSamplingLayer(nn.Module):
     def __init__(self, d_out):
+        super().__init__()
         self.d_out = d_out
 
-    def __call__(self, mu_log_sigma_vec):
+    def forward(self, mu_log_sigma_vec):
         return Normal(mu_log_sigma_vec[:, :self.d_out], torch.exp(mu_log_sigma_vec[:, self.d_out:])).sample()
 
 
-# In[95]:
 
-
-import itertools
-
-
-class FunctionComposition:
-    def __init__(self, f_list):
-        assert (len(f_list) > 0)
-        # for i in range(len(f_list)-1):
-        # assert(f_list[i].d_out == f_list[i+1].d_in)
-        self.f_list = f_list
-
-    def __call__(self, x, *optional):
-        for f in self.f_list:
-            x = f(x, *optional)
-        return x
-
-    def parameters(self):
-        return list(itertools.chain(*list(map(lambda f: f.parameters(), self.f_list))))
-
-    @property
-    def d_in(self):
-        return self.f_list[0].d_in
-
-    @property
-    def d_out(self):
-        return self.f_list[-1].d_out
-
-
-# In[96]:
-
-
-import itertools
-
-
-class BayesianNet(FunctionComposition):
-    def __init__(self, f_list):
-        super().__init__(f_list)
-
-    def get_posterior(self):
-        return list(itertools.chain(*list(map(lambda f: f.get_posterior(), self.f_list))))
-
-
-# In[97]:
-
-
-class NNFactory:
-    @classmethod
-    def CreateNN(cls, dims, activations):
-        assert (len(dims) - 1 == len(activations))
-        layers = []
-        for i in range(len(dims) - 1):
-            layers.append(PrintLayer())
-            layers.append(mlp_layer(dims[i], dims[i + 1], activations[i]))
-        layers.append(PrintLayer())
-        return FunctionComposition(layers)
-
-    @classmethod
-    def CreateBayesianNet(cls, dims, activations):
-        assert (len(dims) - 1 == len(activations))
-        layers = []
-        for i in range(len(dims) - 1):
-            layers.append(bayesian_mlp_layer(dims[i], dims[i + 1], activations[i]))
-        return BayesianNet(layers)
 
 
 # In[98]:
 
 def KL_div_gaussian(mu_p, log_sig_p, mu_q, log_sig_q):
     # compute KL[p||q]
-    precision_q = torch.exp(-2*log_sig_q)
-    kl = 0.5 * (mu_p - mu_q)**2 * precision_q - 0.5
+    precision_q = torch.exp(-2 * log_sig_q)
+    kl = 0.5 * (mu_p - mu_q) ** 2 * precision_q - 0.5
     kl += log_sig_q - log_sig_p
     kl += 0.5 * torch.exp(2 * log_sig_p - 2 * log_sig_q)
-    #ind = list(range(1, len(mu_p.get_shape().as_list())))
-    return torch.sum(kl,dim=list(range(1,len(kl.shape))))
-
+    return torch.sum(kl, dim=list(range(1, len(kl.shape))))
 
 
 #def KL_div_gaussian(mu_q, log_sig_q, mu_p, log_sig_p):
 #    """
 #    KL(q||p), gets log of sigma rather than sigma
 #    """
-#    return log_sig_p - log_sig_q + (0.5) * torch.exp(-2 * log_sig_p) * (
+#    kl = log_sig_p - log_sig_q + (0.5) * torch.exp(-2 * log_sig_p) * (
 #            torch.exp(log_sig_q) ** 2 + (mu_q - mu_p) ** 2) - 1 / 2
+#    return torch.sum(kl, dim=list(range(1, len(kl.shape))))
 
 
 # In[99]:
@@ -245,42 +188,44 @@ def log_P_y_GIVEN_x(Xs, enc, sample_and_decode, NumLogPSamples=100):
 
 
 # In[110]:
+import itertools
 
 
 class SharedDecoder(nn.Module):
     def __init__(self, dims, activations):
         super().__init__()
-        self.net = NNFactory.CreateBayesianNet(dims, activations)
+        self.net = nn.Sequential(*[bayesian_mlp_layer(dims[i], dims[i + 1], activations[i]) \
+                                   for i in range(len(activations))])
         self._init_prior()
 
-    def __call__(self, Xs):
+    def forward(self, Xs):
         return self.net(Xs)
+
+    def _get_posterior(self):
+        return list(itertools.chain(*list(map(lambda f: f.get_posterior(), self.net.children()))))
 
     def _init_prior(self):
         """
         Initialize a constant tensor that corresponds to a prior distribution over all the weights
         which is standard normal
         """
-        self.prior = [(torch.zeros(mu.shape), torch.zeros(log_sig.shape)) for mu, log_sig in self.net.get_posterior()]
+        self.prior = [(torch.zeros(mu.shape), torch.zeros(log_sig.shape)) for mu, log_sig in self._get_posterior()]
 
     def update_prior(self):
         """
         Copy the current posterior to a constant tensor, which will be used as prior for the next task
         """
-        self.prior = [(mu.clone().detach(), log_sig.clone().detach()) for mu, log_sig in self.net.get_posterior()]
+        self.prior = [(mu.clone().detach(), log_sig.clone().detach()) for mu, log_sig in self._get_posterior()]
 
     def KL_from_prior(self):
-        params = [(*post, *prior) for (post, prior) in zip(self.net.get_posterior(), self.prior)]
+        params = [(*post, *prior) for (post, prior) in zip(self._get_posterior(), self.prior)]
         KL = torch.zeros(1)
         for param in params:
-            unsqueezed_param = list(map( lambda x: x.unsqueeze(0), param ))
+            unsqueezed_param = list(map(lambda x: x.unsqueeze(0), param))
             tmp = KL_div_gaussian(*unsqueezed_param)
             KL += tmp.squeeze()
 
         return KL.item()
-
-    def parameters(self, **kwargs):
-        return self.net.parameters()
 
     @property
     def d_in(self):
@@ -302,14 +247,21 @@ import torch.optim
 class TaskModel(nn.Module):
     def __init__(self, enc_dims_activations, dec_head_dims_activations, dec_shared, learning_rate=1e-4):
         super().__init__()
-        self.enc = NNFactory.CreateNN(*enc_dims_activations)
-        self.dec_head = NNFactory.CreateBayesianNet(*dec_head_dims_activations)
+        my_enc_dims, my_enc_activations = enc_dims_activations
+        self.enc = nn.Sequential(*[mlp_layer(my_enc_dims[i], my_enc_dims[i + 1], my_enc_activations[i])
+                                   for i in range(len(my_enc_activations))])
+
+        my_dec_head_dims, my_dec_head_activations = dec_head_dims_activations
+
+        self.dec_head = nn.Sequential(
+            *[bayesian_mlp_layer(my_dec_head_dims[i], my_dec_head_dims[i + 1], my_dec_head_activations[i])
+              for i in range(len(my_dec_head_activations))])
+
         self.dec_shared = dec_shared
         self.printer = PrintLayer()
 
-        self.sampler = NormalSamplingLayer(self.dec_head.d_in)
-        self.sample_and_decode = FunctionComposition(
-            [self.sampler, self.dec_head, self.dec_shared])
+        self.sampler = NormalSamplingLayer(my_dec_head_dims[0])
+        self.sample_and_decode = nn.Sequential(*[self.sampler, self.dec_head, self.dec_shared])
 
         # update just before training
         self.DatasetSize = None
@@ -323,7 +275,7 @@ class TaskModel(nn.Module):
         logp, kl_z = log_P_y_GIVEN_x(Xs, self.enc, self.sample_and_decode)
         kl_shared_dec_Qt_2_PREV_Qt = self.dec_shared.KL_from_prior()
 
-        if (loss_print):
+        if loss_print:
             print("Log_like", torch.mean(logp))
             print("KL Z", torch.mean(kl_z))
             print("KL Qt vs prev Qt", (kl_shared_dec_Qt_2_PREV_Qt / self.DatasetSize))
@@ -332,8 +284,8 @@ class TaskModel(nn.Module):
         ELBO = torch.mean(logp) - torch.mean(kl_z) - (kl_shared_dec_Qt_2_PREV_Qt / self.DatasetSize)
         return -ELBO
 
-    def parameters(self, **kwargs):
-        return self.enc.parameters() + self.dec_shared.parameters() + self.dec_head.parameters()
+    #def parameters(self, **kwargs):
+    #    return self.enc.parameters() + self.dec_shared.parameters() + self.dec_head.parameters()
 
     def _create_optimizer(self, learning_rate):
         return torch.optim.Adam(self.parameters(), lr=learning_rate)
@@ -403,7 +355,7 @@ def create_mnist_single_digit_loaders(b_size=10, train_data=True):
                                          transform=torchvision.transforms.ToTensor())
 
     for i in range(10):
-        partial_dataset = torch.utils.data.Subset(dataset, torch.nonzero(dataset.train_labels == i).squeeze())
+        partial_dataset = torch.utils.data.Subset(dataset, torch.nonzero(dataset.targets == i).squeeze())
 
         # NOT Repeating the original "mistake"
         # train_idx = len(partial_trainset) * 0.9
@@ -440,20 +392,21 @@ def main():
 
     # this can be any iterable
     task_loaders = list(create_mnist_single_digit_loaders(batch_size))
-
+    test_loaders = list(create_mnist_single_digit_loaders(batch_size, train_data=False))
     models = []
 
     # this may train the classifier to generate test_classifier
-    # evaluator = Evaluations()
+    evaluator = Evaluation(test_loaders, K=100, sample_W=False)
 
     # A task corresponds to a digit
     for task_id, loader in enumerate(task_loaders):
         print("starting task " + str(task_id))
         task_model = TaskModel((enc_dims, enc_activations), (dec_head_dims, dec_head_activations), dec_shared)
-        assert (len(task_model.parameters()) == 4 * (2 + 2) + 2 * 3)
+        assert (len(list(task_model.parameters())) == 4 * (2 + 2) + 2 * 3)
         models.append(task_model)
         print("starting training")
         task_model.train(n_epochs, loader)
+        evaluator(task_id, task_model.enc, task_model.dec_head, task_model.dec_shared, batch_size)
         # make sure you don't change the model params inside the eval
         # evaluator.create_task_evaluations(models)
 
