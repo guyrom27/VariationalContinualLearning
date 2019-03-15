@@ -49,13 +49,11 @@ def IS_estimate(x, enc, dec_head, dec_shared, K, sample_W=True):
 
 class Evaluation:
 
-    def __init__(self, test_loaders, K=100, sample_W=True):
-        self.test_loaders = test_loaders
+    def __init__(self, K=100, sample_W=True):
         self.K = K
         self.sample_W = sample_W
 
-    def __call__(self, task_id, enc, dec_head, dec_shared, my_batch_size):
-        loader = self.test_loaders[task_id]
+    def __call__(self, task_id, task_model, loader):
         N = 0
         n_iter_vae = len(loader)
         bound_tot = 0.0
@@ -64,8 +62,8 @@ class Evaluation:
         for j, data in enumerate(loader):
             inputs, labels = data
             N += len(inputs)
-            logp_mean, logp_var = IS_estimate(inputs, enc, dec_head,
-                                              dec_shared, self.K, self.sample_W)
+            logp_mean, logp_var = IS_estimate(inputs, task_model.enc, task_model.dec_head,
+                                              task_model.dec_shared, self.K, self.sample_W)
 
             bound_tot += logp_mean / n_iter_vae
             bound_var += logp_var / n_iter_vae

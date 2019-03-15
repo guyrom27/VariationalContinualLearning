@@ -9,6 +9,10 @@ import torch.nn.functional as F
 import numpy as np
 import torch
 
+import evaluate_YvsX_log_like
+import EvaluateClassifierUncertainty
+
+
 torch.manual_seed(123)
 weight_print = False
 data_print = False
@@ -391,22 +395,24 @@ def main():
     # TODO: check dec_shared.parameters()
 
     # this can be any iterable
-    task_loaders = list(create_mnist_single_digit_loaders(batch_size))
-    test_loaders = list(create_mnist_single_digit_loaders(batch_size, train_data=False))
+    task_loaders = zip(create_mnist_single_digit_loaders(batch_size), create_mnist_single_digit_loaders(batch_size, train_data=False))
+
     models = []
 
     # this may train the classifier to generate test_classifier
-    evaluator = Evaluation(test_loaders, K=100, sample_W=False)
+    evaluators = [evaluate_YvsX_log_like.Evaluation(K=100, sample_W=False), \
+                  EvaluateClassifierUncertainty.EvaluateClassifierUncertainty('./classifier_params')]
 
     # A task corresponds to a digit
-    for task_id, loader in enumerate(task_loaders):
+    for task_id, (train_loader, test_loader)  in enumerate(task_loaders):
         print("starting task " + str(task_id))
         task_model = TaskModel((enc_dims, enc_activations), (dec_head_dims, dec_head_activations), dec_shared)
         assert (len(list(task_model.parameters())) == 4 * (2 + 2) + 2 * 3)
         models.append(task_model)
         print("starting training")
-        task_model.train(n_epochs, loader)
-        evaluator(task_id, task_model.enc, task_model.dec_head, task_model.dec_shared, batch_size)
+        task_model.train(n_epochs, train_loader)
+        for evaluator in evaluators:
+            evaluator(test_loader, task_id, task_model)
         # make sure you don't change the model params inside the eval
         # evaluator.create_task_evaluations(models)
 
