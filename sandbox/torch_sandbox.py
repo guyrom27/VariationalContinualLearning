@@ -9,7 +9,7 @@ import torch.nn.functional as F
 import numpy as np
 import torch
 
-import evaluate_YvsX_log_like
+from sandbox.evaluate_YvsX_log_like import Evaluation
 import EvaluateClassifierUncertainty
 
 
@@ -400,7 +400,7 @@ def main():
     models = []
 
     # this may train the classifier to generate test_classifier
-    evaluators = [evaluate_YvsX_log_like.Evaluation(K=100, sample_W=False), \
+    evaluators = [Evaluation(K=100), \
                   EvaluateClassifierUncertainty.EvaluateClassifierUncertainty('./classifier_params')]
 
     # A task corresponds to a digit
@@ -412,7 +412,7 @@ def main():
         print("starting training")
         task_model.train(n_epochs, train_loader)
         for evaluator in evaluators:
-            evaluator(test_loader, task_id, task_model)
+            evaluator(task_id, task_model, test_loader)
         # make sure you don't change the model params inside the eval
         # evaluator.create_task_evaluations(models)
 
