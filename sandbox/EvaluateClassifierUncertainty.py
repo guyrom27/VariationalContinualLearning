@@ -1,8 +1,9 @@
 import torch
 from torch import nn
+import numpy as np
 import torch.nn.modules
 import torch.optim as optim
-import torch.functional as F
+import torch.nn.functional as F
 import torchvision
 import torchvision.transforms
 
@@ -70,8 +71,9 @@ class Classifier(nn.Module):
 
 
 class EvaluateClassifierUncertainty:
-    def __init__(self, classifier_param_load_path):
+    def __init__(self, classifier_param_load_path, should_print = True):
         self.classifier = Classifier.load_model(classifier_param_load_path)
+        self.should_print = should_print
 
     def __call__(self, task_id, task_model, loader):
         dimZ = 50
@@ -82,12 +84,15 @@ class EvaluateClassifierUncertainty:
         for _ in range(num_iter):
             Zs_params = torch.ones(samples_per_iter, dimZ*2)
             reconstructed_Xs = task_model.sample_and_decode(Zs_params)
-            true_Ys = torch.ones(samples_per_iter) * task_id # these are the labels for the generated pictures
+            true_Ys = torch.ones(samples_per_iter, dtype=torch.long) * task_id # these are the labels for the generated pictures
             cross_entropies = F.cross_entropy(self.classifier(reconstructed_Xs), true_Ys, reduction='none')
             loss_mu += torch.mean(cross_entropies) / num_iter
-            loss_var += torch.mean((cross_entropies - loss_mu)**2)
+            loss_var += torch.mean((cross_entropies - loss_mu)**2) / num_iter
 
-        return loss_mu, loss_var
+        if self.should_print:
+            print("test_classifier=%.2f, std=%.2f" \
+                  % (loss_mu, np.sqrt(loss_var / (num_iter*samples_per_iter))))
+        return loss_mu, np.sqrt(loss_var / (num_iter*samples_per_iter))
 
 
 if __name__ == '__main__':

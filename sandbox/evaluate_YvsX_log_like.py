@@ -1,39 +1,24 @@
 import time
+import torch
+import math_utils
+import numpy as np
 
 
-def log_gaussian_prob(x, mu=0.0, log_sig=0.0):
-    logprob = -(0.5 * np.log(2 * np.pi) + log_sig) \
-              - 0.5 * ((x - mu) / torch.exp(log_sig)) ** 2
-    ind = list(range(1, len(x.size())))
-    return torch.sum(logprob, ind)
-
-
-def log_bernoulli_prob(x, p=0.5):
-    logprob = x * torch.log(torch.clamp(p, 1e-9, 1.0)) \
-              + (1 - x) * torch.log(torch.clamp(1.0 - p, 1e-9, 1.0))
-    ind = list(range(1, len(x.size())))
-    return torch.sum(logprob, ind)
-
-
-def IS_estimate(x, enc, dec_head, dec_shared, K, sample_W=True):
-    # Repeat depending on dimension (should be 4 for onlinevi)
+def IS_estimate(x, task_model, K):
     x = x.view(-1, 28 ** 2)
-    if len(x.size()) == 4:
-        x_rep = x.repeat([K, 1, 1, 1])
-    if len(x.size()) == 2:
-        x_rep = x.repeat([K, 1])
+    x_rep = x.repeat([K, 1]) # generate K replicas per image, which will be used to average likelihood of the original picture over Z samples
     assert(x_rep.size()[0] < 6000)
 
     N = x.size()[0]
-    Zs_params = enc(x_rep)
-    mu_qz, log_sig_qz = Zs_to_mu_sig(Zs_params)
-    z = Normal(mu_qz, torch.exp(log_sig_qz)).sample()
-    mu_x = dec_shared(dec_head(z))
+    Zs_params = task_model.enc(x_rep)
+    mu_qz, log_sig_qz = math_utils.Zs_to_mu_sig(Zs_params)
+    z = task_model.sampler(Zs_params)
+    mu_x = task_model.dec_shared(task_model.dec_head(z))
+    logp = math_utils.log_bernoulli(x_rep, mu_x)
 
-    log_prior = log_gaussian_prob(z, log_sig=torch.zeros(z.size()))
-    logq = log_gaussian_prob(z, mu_qz, log_sig_qz)
+    log_prior = math_utils.log_gaussian_prob(z)
+    logq = math_utils.log_gaussian_prob(z, mu_qz, log_sig_qz)
     kl_z = logq - log_prior
-    logp = log_bernoulli_prob(x_rep, mu_x)
 
     bound = torch.reshape(logp - kl_z, (K, N))
     bound_max = torch.max(bound, 0)[0]
@@ -49,9 +34,9 @@ def IS_estimate(x, enc, dec_head, dec_shared, K, sample_W=True):
 
 class Evaluation:
 
-    def __init__(self, K=100, sample_W=True):
+    def __init__(self, should_print=True, K=100):
+        self.should_print = should_print
         self.K = K
-        self.sample_W = sample_W
 
     def __call__(self, task_id, task_model, loader):
         N = 0
@@ -62,13 +47,12 @@ class Evaluation:
         for j, data in enumerate(loader):
             inputs, labels = data
             N += len(inputs)
-            logp_mean, logp_var = IS_estimate(inputs, task_model.enc, task_model.dec_head,
-                                              task_model.dec_shared, self.K, self.sample_W)
+            logp_mean, logp_var = IS_estimate(inputs, task_model, self.K)
 
             bound_tot += logp_mean / n_iter_vae
             bound_var += logp_var / n_iter_vae
         end = time.time()
-        if eval_print:
+        if self.should_print:
             print("test_ll=%.2f, ste=%.2f, time=%.2f" \
                   % (bound_tot, np.sqrt(bound_var / N), end - begin))
         return bound_tot, np.sqrt(bound_var / N)

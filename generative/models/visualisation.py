@@ -17,7 +17,7 @@ def reshape_and_tile_images(array, shape=(28, 28), n_cols=None):
     def cell(i, j):
         ind = i*n_cols+j
         if i*n_cols+j < array.shape[0]:
-            return array[ind].reshape(*shape, order='C')
+            return array[ind].reshape(*shape)
         else:
             return np.zeros(shape)
 
