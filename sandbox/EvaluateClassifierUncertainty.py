@@ -15,7 +15,7 @@ class Classifier(nn.Module):
     num_classes = 10
     dropout_p = 0.2
     batch_size = 100
-    epochs = 1#500
+    epochs = 500
 
     @classmethod
     def lin_with_dropout(cls, d_in, d_out):
@@ -96,9 +96,9 @@ class EvaluateClassifierUncertainty:
 
 
 if __name__ == '__main__':
-    #c = Classifier()
-    c = Classifier.load_model(PATH)
+    c = Classifier()
+    #c = Classifier.load_model(PATH)
     c.train_model(torchvision.datasets.MNIST(root='./data', train=True, download=True, transform=torchvision.transforms.ToTensor()))
-    #c.save_model(PATH)
+    c.save_model(PATH)
 
 
