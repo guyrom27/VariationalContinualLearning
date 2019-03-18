@@ -117,17 +117,17 @@ def construct_optimizer(X_ph, enc, dec, ll, N_data, batch_size_ph, shared_prior_
         #   print("DEC_shared log_sig_bias",i,  sess.run(layer.log_sig_b))
 
 
-        print()
-        print("Log_like", sess.run(tf.reduce_mean(my_logp),feed_dict={X_ph: X, lr_ph: lr,
-                                    batch_size_ph: X.shape[0]}))
-        print("KL Z", sess.run(tf.reduce_mean(my_kl_z),feed_dict={X_ph: X, lr_ph: lr,
-                                    batch_size_ph: X.shape[0]}))
-        print("Log_like - KL Z", sess.run(tf.reduce_mean(my_logp-my_kl_z), feed_dict={X_ph: X, lr_ph: lr,
-                                                                       batch_size_ph: X.shape[0]}))
-        print("Bound", sess.run(bound, feed_dict={X_ph: X, lr_ph: lr,
-                                                                   batch_size_ph: X.shape[0]}))
-        print("KL Qt vs prev Qt", sess.run(kl_theta,feed_dict={X_ph: X, lr_ph: lr,
-                                    batch_size_ph: X.shape[0]})/N_data)
+        #print()
+        #print("Log_like", sess.run(tf.reduce_mean(my_logp),feed_dict={X_ph: X, lr_ph: lr,
+        #                            batch_size_ph: X.shape[0]}))
+        #print("KL Z", sess.run(tf.reduce_mean(my_kl_z),feed_dict={X_ph: X, lr_ph: lr,
+        #                            batch_size_ph: X.shape[0]}))
+        #print("Log_like - KL Z", sess.run(tf.reduce_mean(my_logp-my_kl_z), feed_dict={X_ph: X, lr_ph: lr,
+        #                                                               batch_size_ph: X.shape[0]}))
+        #print("Bound", sess.run(bound, feed_dict={X_ph: X, lr_ph: lr,
+        #                                                           batch_size_ph: X.shape[0]}))
+        #print("KL Qt vs prev Qt", sess.run(kl_theta,feed_dict={X_ph: X, lr_ph: lr,
+        #                            batch_size_ph: X.shape[0]})/N_data)
 
         _, my_loss_total, my_my_logp, my_my_kl_z, my_bound, my_kl_theta = sess.run(ops, feed_dict={X_ph: X, lr_ph: lr,
                                     batch_size_ph: X.shape[0]})

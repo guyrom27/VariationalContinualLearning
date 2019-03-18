@@ -6,8 +6,10 @@
 import torch
 torch.manual_seed(123)
 
-
-
+print(torch.cuda.is_available())
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+print("Using device:", device)
+torch.backends.cudnn.benchmark = True
 
 import itertools
 import numpy as np
@@ -16,8 +18,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.distributions import Normal
 import torch.optim
-
-
 
 import torch.utils.data
 import torchvision
@@ -36,8 +36,8 @@ loss_print = False
 dimX = 28 * 28
 dimH = 500
 dimZ = 50
-batch_size = 50
-n_epochs = 1  # 200
+batch_size = 20
+n_epochs = 1 # 200
 
 # Shared decoder
 dec_shared_dims = [dimH, dimH, dimX]
@@ -58,7 +58,8 @@ class mlp_layer(nn.Module):
         Activation is a function (eg. torch.nn.functional.sigmoid/relu)
         """
         super().__init__()
-        self.mu = nn.Linear(d_in, d_out)
+        # Not sure if having device actually does anything
+        self.mu = nn.Linear(d_in, d_out).to(device=device)
         self._init_weights(d_in, d_out)
         self.activation = activation
 
@@ -95,12 +96,14 @@ class bayesian_mlp_layer(mlp_layer):
         Activation is a function (eg. torch.nn.functional.sigmoid/relu)
         """
         super().__init__(d_in, d_out, activation)
-        self.log_sigma = nn.Linear(d_in, d_out)
+        # Not sure if having device actually does anything
+        self.log_sigma = nn.Linear(d_in, d_out).to(device=device)
         self._init_log_sigma()
         # mu is initialized the same as non-Bayesian mlp
 
-        self.w_standard_normal_sampler = Normal(torch.zeros(self.mu.weight.shape), torch.ones(self.mu.weight.shape))
-        self.b_standard_normal_sampler = Normal(torch.zeros(self.mu.bias.shape), torch.ones(self.mu.bias.shape))
+        # Not sure if having device actually does anything
+        self.w_standard_normal_sampler = Normal(torch.zeros(self.mu.weight.shape, device=device), torch.ones(self.mu.weight.shape, device=device))
+        self.b_standard_normal_sampler = Normal(torch.zeros(self.mu.bias.shape, device=device), torch.ones(self.mu.bias.shape, device=device))
 
         self.sampling = True
 
@@ -113,8 +116,10 @@ class bayesian_mlp_layer(mlp_layer):
             print("bias of log_sig DEC ", self.log_sigma.bias)
 
         if self.sampling:
-            sampled_W = self.mu.weight + self.w_standard_normal_sampler.sample() * torch.exp(self.log_sigma.weight)
-            sampled_b = self.mu.bias + self.b_standard_normal_sampler.sample() * torch.exp(self.log_sigma.bias)
+
+            # Not sure if should have device
+            sampled_W = (self.mu.weight + self.w_standard_normal_sampler.sample() * torch.exp(self.log_sigma.weight)).to(device=device)
+            sampled_b = (self.mu.bias + self.b_standard_normal_sampler.sample() * torch.exp(self.log_sigma.bias)).to(device=device)
             return self.activation(torch.einsum('ij,bj->bi',[sampled_W, x]) + sampled_b)
         else:
             return super().forward(x)
@@ -136,9 +141,8 @@ class NormalSamplingLayer(nn.Module):
         self.d_out = d_out
 
     def forward(self, mu_log_sigma_vec):
-        return Normal(mu_log_sigma_vec[:, :self.d_out], torch.exp(mu_log_sigma_vec[:, self.d_out:])).sample()
-
-
+        # Not sure if should have device
+        return Normal(mu_log_sigma_vec[:, :self.d_out], torch.exp(mu_log_sigma_vec[:, self.d_out:])).sample().to(device=device)
 
 
 
@@ -152,8 +156,9 @@ class NormalSamplingLayer(nn.Module):
 class SharedDecoder(nn.Module):
     def __init__(self, dims, activations):
         super().__init__()
+        # Not sure if device does anything
         self.net = nn.Sequential(*[bayesian_mlp_layer(dims[i], dims[i + 1], activations[i]) \
-                                   for i in range(len(activations))])
+                                   for i in range(len(activations))]).to(device=device)
         self._init_prior()
 
     def forward(self, Xs):
@@ -167,7 +172,7 @@ class SharedDecoder(nn.Module):
         Initialize a constant tensor that corresponds to a prior distribution over all the weights
         which is standard normal
         """
-        self.prior = [(torch.zeros(mu.shape), torch.zeros(log_sig.shape)) for mu, log_sig in self._get_posterior()]
+        self.prior = [(torch.zeros(mu.shape, device=device), torch.zeros(log_sig.shape, device=device)) for mu, log_sig in self._get_posterior()]
 
     def update_prior(self):
         """
@@ -177,7 +182,7 @@ class SharedDecoder(nn.Module):
 
     def KL_from_prior(self):
         params = [(*post, *prior) for (post, prior) in zip(self._get_posterior(), self.prior)]
-        KL = torch.zeros(1)
+        KL = torch.zeros(1, device=device)
         for param in params:
             unsqueezed_param = list(map(lambda x: x.unsqueeze(0), param))
             tmp = math_utils.KL_div_gaussian(*unsqueezed_param)
@@ -204,21 +209,24 @@ class TaskModel(nn.Module):
     def __init__(self, enc_dims_activations, dec_head_dims_activations, dec_shared, learning_rate=1e-4):
         super().__init__()
         my_enc_dims, my_enc_activations = enc_dims_activations
+        # Not sure if device does anything
         self.enc = nn.Sequential(*[mlp_layer(my_enc_dims[i], my_enc_dims[i + 1], my_enc_activations[i])
-                                   for i in range(len(my_enc_activations))])
+                                   for i in range(len(my_enc_activations))]).to(device=device)
 
         my_dec_head_dims, my_dec_head_activations = dec_head_dims_activations
 
+        # Not sure if device does anything
         self.dec_head = nn.Sequential(
             *[bayesian_mlp_layer(my_dec_head_dims[i], my_dec_head_dims[i + 1], my_dec_head_activations[i])
-              for i in range(len(my_dec_head_activations))])
+              for i in range(len(my_dec_head_activations))]).to(device=device)
 
         self.dec_shared = dec_shared
         self.printer = PrintLayer()
 
-        self.sampler = NormalSamplingLayer(my_dec_head_dims[0])
-        self.sample_and_decode = nn.Sequential(*[self.sampler, self.dec_head, self.dec_shared])
-        self.decode = nn.Sequential(*[self.dec_head, self.dec_shared])
+        # Not sure if device does anything
+        self.sampler = NormalSamplingLayer(my_dec_head_dims[0]).to(device=device)
+        self.sample_and_decode = nn.Sequential(*[self.sampler, self.dec_head, self.dec_shared]).to(device=device)
+        self.decode = nn.Sequential(*[self.dec_head, self.dec_shared]).to(device=device)
 
         # update just before training
         self.DatasetSize = None
@@ -278,7 +286,8 @@ class TaskModel(nn.Module):
             for i, data in enumerate(task_trainloader):
                 # get the inputs
                 inputs, labels = data
-
+                #Migrate to device (gpu if possible)
+                inputs = inputs.to(device=device)
                 # step
                 self.optimizer.zero_grad()
                 # loss = self(inputs.view(-1, self.enc.d_in))
@@ -288,9 +297,9 @@ class TaskModel(nn.Module):
 
                 # print statistics
                 running_loss += loss.item()  # ?
-                if i % 1 == 0:  # print every 2000 mini-batches
+                if i % 50 == 49:  # print every 2000 mini-batches
                     print('[%d, %5d] loss: %.3f' %
-                          (epoch + 1, i + 1, running_loss))
+                          (epoch + 1, i + 1, running_loss/50))
                     running_loss = 0.0
         # This will set the prior to the current posterior, before we start to change it during training
         self._update_prior()
@@ -334,13 +343,14 @@ def create_mnist_single_digit_loaders(b_size=10, train_data=True):
 
 
 def path(after, i):
-    return 'checkpoint_params/after_task_' + str(after) + '_params_for_task_' + str(i) + '.pt'
+    return './checkpoint_params/after_task_' + str(after) + '_params_for_task_' + str(i) + '.pt'
 
 def load_models(after):
     dec_shared = SharedDecoder(dec_shared_dims, dec_shared_activations)
     models = []
     for task_id in range(after+1): #range is 0 based
-        task_model = TaskModel((enc_dims, enc_activations), (dec_head_dims, dec_head_activations), dec_shared)
+        # Not sure if device does anything
+        task_model = TaskModel((enc_dims, enc_activations), (dec_head_dims, dec_head_activations), dec_shared).to(device=device)
         models.append(TaskModel.load_model(path(after,task_id), task_model))
     return models
 
@@ -348,27 +358,30 @@ import generative.models.visualisation
 def generate_pictures(task_models, n_pics=100):
     with torch.no_grad():
         for task_id, task_model in enumerate(task_models):
-            pics = task_model.sample_and_decode(torch.ones(n_pics, dimZ * 2))
-            generative.models.visualisation.plot_images(pics, (28,28), './figs/', 'after_task_'+str(len(task_models))+'_task_'+str(task_id))
+            pics = task_model.sample_and_decode(torch.ones(n_pics, dimZ * 2, device=device))
+            pics = pics.cpu()
+            generative.models.visualisation.plot_images(pics, (28, 28), './figs/', 'after_task_'+str(len(task_models))+'_task_'+str(task_id))
 
 
 def main():
     Train = True
 
-    dec_shared = SharedDecoder(dec_shared_dims, dec_shared_activations)
+    # Not sure if device does anything
+    dec_shared = SharedDecoder(dec_shared_dims, dec_shared_activations).to(device=device)
 
     task_loaders = zip(create_mnist_single_digit_loaders(batch_size), create_mnist_single_digit_loaders(batch_size, train_data=False))
 
     models = []
 
-    evaluators = [evaluate_YvsX_log_like.Evaluation(), \
+    evaluators = [evaluate_YvsX_log_like.Evaluation(),
                   EvaluateClassifierUncertainty.EvaluateClassifierUncertainty('./classifier_params')] #classifier is loaded. asssumes already trained
 
     # A task corresponds to a digit
     for task_id, (train_loader, test_loader) in enumerate(task_loaders):
         print("starting task " + str(task_id))
         if (Train):
-            task_model = TaskModel((enc_dims, enc_activations), (dec_head_dims, dec_head_activations), dec_shared)
+            # Not sure if device does anything
+            task_model = TaskModel((enc_dims, enc_activations), (dec_head_dims, dec_head_activations), dec_shared).to(device=device)
             models.append(task_model)
             task_model.train_model(n_epochs, train_loader)
         else:
@@ -379,13 +392,12 @@ def main():
         with torch.no_grad():
             if (Train):
                 for i, model in enumerate(models):
-                    model.save_model(path(task_id,i))
+                    model.save_model(path(task_id, i))
             generate_pictures(models)
             for evaluator in evaluators:
                 evaluator(task_id, task_model, test_loader)
 
 # In[137]:
-
 
 main()
 

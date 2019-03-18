@@ -7,6 +7,8 @@ import torch.nn.functional as F
 import torchvision
 import torchvision.transforms
 
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
 PATH = './classifier_params'
 
 class Classifier(nn.Module):
@@ -20,7 +22,7 @@ class Classifier(nn.Module):
     @classmethod
     def lin_with_dropout(cls, d_in, d_out):
         return nn.Sequential( \
-            nn.Linear(d_in, d_out), \
+            nn.Linear(d_in, d_out).to(device=device), \
             nn.modules.ReLU(), \
             nn.Dropout(p=Classifier.dropout_p))
 
@@ -30,7 +32,7 @@ class Classifier(nn.Module):
             Classifier.lin_with_dropout(Classifier.dimX, Classifier.dimH), \
             Classifier.lin_with_dropout(Classifier.dimH, Classifier.dimH), \
             Classifier.lin_with_dropout(Classifier.dimH, Classifier.dimH), \
-            nn.Linear(Classifier.dimH, Classifier.num_classes),
+            nn.Linear(Classifier.dimH, Classifier.num_classes).to(device=device),
             nn.Softmax(dim=1))
 
 
@@ -48,6 +50,8 @@ class Classifier(nn.Module):
         for _ in range(Classifier.epochs):
             for i, batch in enumerate(trainloader):
                 data, labels = batch
+                data = data.to(device=device)
+                labels = labels.to(device=device)
                 optimizer.zero_grad()
                 batch_loss = loss(self(data.view(-1,Classifier.dimX)), labels)
                 batch_loss.backward()
@@ -72,7 +76,7 @@ class Classifier(nn.Module):
 
 class EvaluateClassifierUncertainty:
     def __init__(self, classifier_param_load_path, should_print = True):
-        self.classifier = Classifier.load_model(classifier_param_load_path)
+        self.classifier = Classifier.load_model(classifier_param_load_path).to(device=device)
         self.should_print = should_print
 
     def __call__(self, task_id, task_model, loader):
@@ -82,21 +86,21 @@ class EvaluateClassifierUncertainty:
         loss_mu = 0.0
         loss_var = 0.0
         for _ in range(num_iter):
-            Zs_params = torch.ones(samples_per_iter, dimZ*2)
+            Zs_params = torch.ones(samples_per_iter, dimZ*2, device=device)
             reconstructed_Xs = task_model.sample_and_decode(Zs_params)
-            true_Ys = torch.ones(samples_per_iter, dtype=torch.long) * task_id # these are the labels for the generated pictures
+            true_Ys = torch.ones(samples_per_iter, dtype=torch.long, device=device) * task_id # these are the labels for the generated pictures
             cross_entropies = F.cross_entropy(self.classifier(reconstructed_Xs), true_Ys, reduction='none')
             loss_mu += torch.mean(cross_entropies) / num_iter
             loss_var += torch.mean((cross_entropies - loss_mu)**2) / num_iter
 
         if self.should_print:
             print("test_classifier=%.2f, std=%.2f" \
-                  % (loss_mu, np.sqrt(loss_var / (num_iter*samples_per_iter))))
-        return loss_mu, np.sqrt(loss_var / (num_iter*samples_per_iter))
+                  % (loss_mu, np.sqrt(loss_var.cpu() / (num_iter*samples_per_iter))))
+        return loss_mu, np.sqrt(loss_var.cpu() / (num_iter*samples_per_iter))
 
 
 if __name__ == '__main__':
-    c = Classifier()
+    c = Classifier().to(device=device)
     #c = Classifier.load_model(PATH)
     c.train_model(torchvision.datasets.MNIST(root='./data', train=True, download=True, transform=torchvision.transforms.ToTensor()))
     c.save_model(PATH)

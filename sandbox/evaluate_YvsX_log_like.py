@@ -3,10 +3,11 @@ import torch
 import math_utils
 import numpy as np
 
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 def IS_estimate(x, task_model, K):
     x = x.view(-1, 28 ** 2)
-        x_rep = x.repeat([K, 1])
+    x_rep = x.repeat([K, 1]).to(device=device)
     assert(x_rep.size()[0] < 6000)
 
     N = x.size()[0]
@@ -20,7 +21,7 @@ def IS_estimate(x, task_model, K):
     logq = math_utils.log_gaussian_prob(z, mu_qz, log_sig_qz)
     kl_z = logq - log_prior
 
-    bound = torch.reshape(logp - kl_z, (1, N))
+    bound = torch.reshape(logp - kl_z, (K, N))
     bound_max = torch.max(bound, 0)[0]
     bound -= bound_max
     log_norm = torch.log(torch.clamp(torch.mean(torch.exp(bound), 0), 1e-9, np.inf))

@@ -1,7 +1,7 @@
-
-
 import numpy as np
 import torch
+
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
 def KL_div_gaussian(mu_p, log_sig_p, mu_q, log_sig_q):
@@ -13,7 +13,7 @@ def KL_div_gaussian(mu_p, log_sig_p, mu_q, log_sig_q):
     return torch.sum(kl, dim=list(range(1, len(kl.shape))))
 
 
-#def KL_div_gaussian(mu_q, log_sig_q, mu_p, log_sig_p):
+# def KL_div_gaussian(mu_q, log_sig_q, mu_p, log_sig_p):
 #    """
 #    KL(q||p), gets log of sigma rather than sigma
 #    """
@@ -27,7 +27,7 @@ def KL_div_gaussian(mu_p, log_sig_p, mu_q, log_sig_q):
 
 def KL_div_gaussian_from_standard_normal(mu_q, log_sig_q):
     # 0,0 corresponds to N(0,1) due to the log_sig representation, works for multidim normal as well.
-    return KL_div_gaussian(mu_q, log_sig_q, torch.zeros(1), torch.zeros(1))
+    return KL_div_gaussian(mu_q, log_sig_q, torch.zeros(1, device=device), torch.zeros(1, device=device))
 
 
 # In[100]:
@@ -53,14 +53,14 @@ def log_bernoulli(X, Mu_Reconstructed_X):
     logprob = X * torch.log(torch.clamp(Mu_Reconstructed_X, *forced_interval)) \
               + (1 - X) * torch.log(torch.clamp((1.0 - Mu_Reconstructed_X), *forced_interval))
 
-    return torch.sum(logprob.view(logprob.size()[0], -1), dim=1) #sum all but first dim
+    return torch.sum(logprob.view(logprob.size()[0], -1), dim=1)  # sum all but first dim
 
 
-
-def log_gaussian_prob(x, mu=torch.zeros(1), log_sig=torch.zeros(1)):
+def log_gaussian_prob(x, mu=torch.zeros(1, device=device), log_sig=torch.zeros(1, device=device)):
     logprob = -(0.5 * np.log(2 * np.pi) + log_sig) \
               - 0.5 * ((x - mu) / torch.exp(log_sig)) ** 2
-    return torch.sum(logprob.view(logprob.size()[0], -1), dim=1) #sum all but first dim
+    return torch.sum(logprob.view(logprob.size()[0], -1), dim=1)  # sum all but first dim
+
 
 # In[102]:
 
