@@ -58,7 +58,6 @@ class mlp_layer(nn.Module):
         Activation is a function (eg. torch.nn.functional.sigmoid/relu)
         """
         super().__init__()
-        # Not sure if having device actually does anything
         self.mu = nn.Linear(d_in, d_out).to(device=device)
         self._init_weights(d_in, d_out)
         self.activation = activation
@@ -96,12 +95,10 @@ class bayesian_mlp_layer(mlp_layer):
         Activation is a function (eg. torch.nn.functional.sigmoid/relu)
         """
         super().__init__(d_in, d_out, activation)
-        # Not sure if having device actually does anything
         self.log_sigma = nn.Linear(d_in, d_out).to(device=device)
         self._init_log_sigma()
         # mu is initialized the same as non-Bayesian mlp
 
-        # Not sure if having device actually does anything
         self.w_standard_normal_sampler = Normal(torch.zeros(self.mu.weight.shape, device=device), torch.ones(self.mu.weight.shape, device=device))
         self.b_standard_normal_sampler = Normal(torch.zeros(self.mu.bias.shape, device=device), torch.ones(self.mu.bias.shape, device=device))
 
@@ -117,9 +114,8 @@ class bayesian_mlp_layer(mlp_layer):
 
         if self.sampling:
 
-            # Not sure if should have device
-            sampled_W = (self.mu.weight + self.w_standard_normal_sampler.sample() * torch.exp(self.log_sigma.weight)).to(device=device)
-            sampled_b = (self.mu.bias + self.b_standard_normal_sampler.sample() * torch.exp(self.log_sigma.bias)).to(device=device)
+            sampled_W = (self.mu.weight + self.w_standard_normal_sampler.sample().to(device=device) * torch.exp(self.log_sigma.weight))
+            sampled_b = (self.mu.bias + self.b_standard_normal_sampler.sample().to(device=device) * torch.exp(self.log_sigma.bias))
             return self.activation(torch.einsum('ij,bj->bi',[sampled_W, x]) + sampled_b)
         else:
             return super().forward(x)
@@ -141,7 +137,6 @@ class NormalSamplingLayer(nn.Module):
         self.d_out = d_out
 
     def forward(self, mu_log_sigma_vec):
-        # Not sure if should have device
         return Normal(mu_log_sigma_vec[:, :self.d_out], torch.exp(mu_log_sigma_vec[:, self.d_out:])).sample().to(device=device)
 
 
@@ -158,7 +153,7 @@ class SharedDecoder(nn.Module):
         super().__init__()
         # Not sure if device does anything
         self.net = nn.Sequential(*[bayesian_mlp_layer(dims[i], dims[i + 1], activations[i]) \
-                                   for i in range(len(activations))]).to(device=device)
+                                   for i in range(len(activations))])
         self._init_prior()
 
     def forward(self, Xs):
@@ -211,22 +206,22 @@ class TaskModel(nn.Module):
         my_enc_dims, my_enc_activations = enc_dims_activations
         # Not sure if device does anything
         self.enc = nn.Sequential(*[mlp_layer(my_enc_dims[i], my_enc_dims[i + 1], my_enc_activations[i])
-                                   for i in range(len(my_enc_activations))]).to(device=device)
+                                   for i in range(len(my_enc_activations))])
 
         my_dec_head_dims, my_dec_head_activations = dec_head_dims_activations
 
         # Not sure if device does anything
         self.dec_head = nn.Sequential(
             *[bayesian_mlp_layer(my_dec_head_dims[i], my_dec_head_dims[i + 1], my_dec_head_activations[i])
-              for i in range(len(my_dec_head_activations))]).to(device=device)
+              for i in range(len(my_dec_head_activations))])
 
         self.dec_shared = dec_shared
         self.printer = PrintLayer()
 
         # Not sure if device does anything
-        self.sampler = NormalSamplingLayer(my_dec_head_dims[0]).to(device=device)
-        self.sample_and_decode = nn.Sequential(*[self.sampler, self.dec_head, self.dec_shared]).to(device=device)
-        self.decode = nn.Sequential(*[self.dec_head, self.dec_shared]).to(device=device)
+        self.sampler = NormalSamplingLayer(my_dec_head_dims[0])
+        self.sample_and_decode = nn.Sequential(*[self.sampler, self.dec_head, self.dec_shared])
+        self.decode = nn.Sequential(*[self.dec_head, self.dec_shared])
 
         # update just before training
         self.DatasetSize = None
@@ -350,7 +345,7 @@ def load_models(after):
     models = []
     for task_id in range(after+1): #range is 0 based
         # Not sure if device does anything
-        task_model = TaskModel((enc_dims, enc_activations), (dec_head_dims, dec_head_activations), dec_shared).to(device=device)
+        task_model = TaskModel((enc_dims, enc_activations), (dec_head_dims, dec_head_activations), dec_shared)
         models.append(TaskModel.load_model(path(after,task_id), task_model))
     return models
 
@@ -367,7 +362,7 @@ def main():
     Train = True
 
     # Not sure if device does anything
-    dec_shared = SharedDecoder(dec_shared_dims, dec_shared_activations).to(device=device)
+    dec_shared = SharedDecoder(dec_shared_dims, dec_shared_activations)
 
     task_loaders = zip(create_mnist_single_digit_loaders(batch_size), create_mnist_single_digit_loaders(batch_size, train_data=False))
 
@@ -381,7 +376,7 @@ def main():
         print("starting task " + str(task_id))
         if (Train):
             # Not sure if device does anything
-            task_model = TaskModel((enc_dims, enc_activations), (dec_head_dims, dec_head_activations), dec_shared).to(device=device)
+            task_model = TaskModel((enc_dims, enc_activations), (dec_head_dims, dec_head_activations), dec_shared)
             models.append(task_model)
             task_model.train_model(n_epochs, train_loader)
         else:

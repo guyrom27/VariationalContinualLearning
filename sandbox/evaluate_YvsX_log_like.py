@@ -3,7 +3,8 @@ import torch
 import math_utils
 import numpy as np
 
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+device = "cpu"
+#device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 def IS_estimate(x, task_model, K):
     x = x.view(-1, 28 ** 2)
@@ -54,7 +55,7 @@ class Evaluation:
             bound_var += logp_var / n_iter_vae
         end = time.time()
         if self.should_print:
-            print("test_ll=%.2f, ste=%.2f, time=%.2f" \
-                  % (bound_tot, np.sqrt(bound_var / N), end - begin))
+            print("task %d test_ll=%.2f, ste=%.2f, time=%.2f" \
+                  % (task_id, bound_tot, np.sqrt(bound_var / N), end - begin))
         return bound_tot, np.sqrt(bound_var / N)
 
