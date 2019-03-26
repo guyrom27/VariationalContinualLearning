@@ -36,8 +36,8 @@ loss_print = False
 dimX = 28 * 28
 dimH = 500
 dimZ = 50
-batch_size = 20
-n_epochs = 1 # 200
+batch_size = 50
+n_epochs = 6 # 200
 
 # Shared decoder
 dec_shared_dims = [dimH, dimH, dimX]
@@ -173,17 +173,21 @@ class SharedDecoder(nn.Module):
         """
         Copy the current posterior to a constant tensor, which will be used as prior for the next task
         """
+        #self.prior = [(mu.clone().detach(), log_sig.clone().detach()) for mu, log_sig in self._get_posterior()]
         self.prior = [(mu.clone().detach(), log_sig.clone().detach()) for mu, log_sig in self._get_posterior()]
+        for mu_sig in self.prior:
+            nn.init.constant_(mu_sig[1], -6.0)
+            
 
     def KL_from_prior(self):
         params = [(*post, *prior) for (post, prior) in zip(self._get_posterior(), self.prior)]
-        KL = torch.zeros(1, device=device)
+        KL = torch.zeros(1, device=device).squeeze() #don't know how to generate a zero scalar
         for param in params:
             unsqueezed_param = list(map(lambda x: x.unsqueeze(0), param))
             tmp = math_utils.KL_div_gaussian(*unsqueezed_param)
             KL += tmp.squeeze()
 
-        return KL.item()
+        return KL
 
     @property
     def d_in(self):
@@ -251,9 +255,8 @@ class TaskModel(nn.Module):
         kl_shared_dec_Qt_2_PREV_Qt = self.dec_shared.KL_from_prior()
 
         if loss_print:
-            print("Log_like", torch.mean(logp))
-            print("KL Z", torch.mean(kl_z))
-            print("KL Qt vs prev Qt", (kl_shared_dec_Qt_2_PREV_Qt / self.DatasetSize))
+            print("Log_like", "\tKL Z","\tKL Qt vs prev Qt")
+            print(int(torch.mean(logp).item()),'\t',int(torch.mean(kl_z).item()), '\t', int(kl_shared_dec_Qt_2_PREV_Qt / self.DatasetSize))
 
         # We ignore the kl(private dec || Normal(0,1) ) like the authors did
         ELBO = torch.mean(logp) - torch.mean(kl_z) - (kl_shared_dec_Qt_2_PREV_Qt / self.DatasetSize)
@@ -279,6 +282,8 @@ class TaskModel(nn.Module):
             print("starting epoch " + str(epoch))
             running_loss = 0.0
             for i, data in enumerate(task_trainloader):
+                global loss_print
+                loss_print = (i % 20 == 19)
                 # get the inputs
                 inputs, labels = data
                 #Migrate to device (gpu if possible)
@@ -292,9 +297,9 @@ class TaskModel(nn.Module):
 
                 # print statistics
                 running_loss += loss.item()  # ?
-                if i % 50 == 49:  # print every 2000 mini-batches
+                if i % 20 == 19:  # print every 2000 mini-batches
                     print('[%d, %5d] loss: %.3f' %
-                          (epoch + 1, i + 1, running_loss/50))
+                          (epoch + 1, i + 1, running_loss/20))
                     running_loss = 0.0
         # This will set the prior to the current posterior, before we start to change it during training
         self._update_prior()
@@ -367,8 +372,8 @@ def main():
     task_loaders = zip(create_mnist_single_digit_loaders(batch_size), create_mnist_single_digit_loaders(batch_size, train_data=False))
 
     models = []
-
-    evaluators = [evaluate_YvsX_log_like.Evaluation(),
+    #[evaluate_YvsX_log_like.Evaluation(),
+    evaluators =  [ \
                   EvaluateClassifierUncertainty.EvaluateClassifierUncertainty('./classifier_params')] #classifier is loaded. asssumes already trained
 
     # A task corresponds to a digit

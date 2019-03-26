@@ -108,7 +108,8 @@ def construct_optimizer(X_ph, enc, dec, ll, N_data, batch_size_ph, shared_prior_
     opt = tf.train.AdamOptimizer(learning_rate=lr_ph).minimize(loss_total)
     
     ops = [opt, loss_total, my_logp, my_kl_z, bound, kl_theta]
-    def train(sess, X, lr):
+    def train(sess, X, lr, prints = False):
+
 
         #for i, layer in enumerate(dec.shared_net.layers):
         #    print("DEC_shared mu_weigkl_thetahts",i,  sess.run(layer.mu_W))
@@ -116,21 +117,23 @@ def construct_optimizer(X_ph, enc, dec, ll, N_data, batch_size_ph, shared_prior_
         #   print("DEC_shared log_sig_weights",i,  sess.run(layer.log_sig_W))
         #   print("DEC_shared log_sig_bias",i,  sess.run(layer.log_sig_b))
 
-
-        #print()
-        #print("Log_like", sess.run(tf.reduce_mean(my_logp),feed_dict={X_ph: X, lr_ph: lr,
-        #                            batch_size_ph: X.shape[0]}))
-        #print("KL Z", sess.run(tf.reduce_mean(my_kl_z),feed_dict={X_ph: X, lr_ph: lr,
-        #                            batch_size_ph: X.shape[0]}))
-        #print("Log_like - KL Z", sess.run(tf.reduce_mean(my_logp-my_kl_z), feed_dict={X_ph: X, lr_ph: lr,
-        #                                                               batch_size_ph: X.shape[0]}))
-        #print("Bound", sess.run(bound, feed_dict={X_ph: X, lr_ph: lr,
-        #                                                           batch_size_ph: X.shape[0]}))
-        #print("KL Qt vs prev Qt", sess.run(kl_theta,feed_dict={X_ph: X, lr_ph: lr,
-        #                            batch_size_ph: X.shape[0]})/N_data)
+        if prints:
+            print()
+            Log_like =  sess.run(tf.reduce_mean(my_logp),feed_dict={X_ph: X, lr_ph: lr,
+                                        batch_size_ph: X.shape[0]})
+            KL_Z = sess.run(tf.reduce_mean(my_kl_z),feed_dict={X_ph: X, lr_ph: lr,
+                                        batch_size_ph: X.shape[0]})
+            Log_like_KL_Z = sess.run(tf.reduce_mean(my_logp-my_kl_z), feed_dict={X_ph: X, lr_ph: lr,
+                                                                           batch_size_ph: X.shape[0]})
+            Bound =  sess.run(bound, feed_dict={X_ph: X, lr_ph: lr,
+                                                                       batch_size_ph: X.shape[0]})
+            KL_Qt_vs_prev_Qt =  sess.run(kl_theta,feed_dict={X_ph: X, lr_ph: lr,
+                                        batch_size_ph: X.shape[0]})/N_data
+            print ("ll,\t     klz,\tll-klz,\tbound,\t klq_t2qt-1")
+            print(int(Log_like),'\t', int(KL_Z),'\t','\t', int(Log_like_KL_Z),'\t', int(Bound),'\t', int(KL_Qt_vs_prev_Qt))
 
         _, my_loss_total, my_my_logp, my_my_kl_z, my_bound, my_kl_theta = sess.run(ops, feed_dict={X_ph: X, lr_ph: lr,
-                                    batch_size_ph: X.shape[0]})
+                                        batch_size_ph: X.shape[0]})
 
         return my_loss_total, my_bound, my_kl_theta / N_data
 
@@ -143,16 +146,19 @@ def construct_optimizer(X_ph, enc, dec, ll, N_data, batch_size_ph, shared_prior_
             ind_s = np.random.permutation(list(range(N)))
             bound_total = 0.0
             kl_total = 0.0
+            print_counter = 0
             for j in range(0, n_iter_vae):
                 indl = j * batch_size
                 indr = (j+1) * batch_size
                 ind = ind_s[indl:min(indr, N)]
                 if indr > N:
                     ind = np.concatenate((ind, ind_s[:(indr-N)]))
-                my_loss_total, logp, kl = train(sess, X[ind], lr)
+                my_loss_total, logp, kl = train(sess, X[ind], lr, print_counter % 20 ==18)
                 bound_total += logp / n_iter_vae
                 kl_total += kl / n_iter_vae
-                print("Loss on iteration", j, my_loss_total)
+                print_counter +=1
+                if (print_counter % 20 ==19):
+                    print("Loss on iteration", j, my_loss_total)
             end = time.time()
             print("Iter %d, bound=%.2f, kl=%.2f, time=%.2f" \
                   % (iteration, bound_total, kl_total, end - begin))
