@@ -1,0 +1,1497 @@
+/data/anaconda/envs/py35/bin/python3 /home/aml12/AML2019/VCL/generative/exp.py
+/data/anaconda/envs/py35/lib/python3.5/site-packages/h5py/__init__.py:36: FutureWarning: Conversion of the second argument of issubdtype from `float` to `np.floating` is deprecated. In future, it will be treated as `np.float64 == np.dtype(float).type`.
+  from ._conv import register_converters as _register_converters
+Using TensorFlow backend.
+2019-03-25 18:07:42.285244: I tensorflow/core/platform/cpu_feature_guard.cc:141] Your CPU supports instructions that this TensorFlow binary was not compiled to use: AVX2 FMA
+decoder shared MLP of size [500, 500, 784]
+2019-03-25 18:07:42.429680: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1432] Found device 0 with properties: 
+name: Tesla K80 major: 3 minor: 7 memoryClockRate(GHz): 0.8235
+pciBusID: c49b:00:00.0
+totalMemory: 11.17GiB freeMemory: 11.10GiB
+2019-03-25 18:07:42.429713: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1511] Adding visible gpu devices: 0
+2019-03-25 18:07:42.753443: I tensorflow/core/common_runtime/gpu/gpu_device.cc:982] Device interconnect StreamExecutor with strength 1 edge matrix:
+2019-03-25 18:07:42.753487: I tensorflow/core/common_runtime/gpu/gpu_device.cc:988]      0 
+2019-03-25 18:07:42.753495: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1001] 0:   N 
+2019-03-25 18:07:42.753770: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1115] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:0 with 10758 MB memory) -> physical GPU (device: 0, name: Tesla K80, pci bus id: c49b:00:00.0, compute capability: 3.7)
+training from scratch
+WARNING:tensorflow:From models/utils.py:26: all_variables (from tensorflow.python.ops.variables) is deprecated and will be removed after 2017-03-02.
+Instructions for updating:
+Please use tf.global_variables instead.
+WARNING:tensorflow:From /data/anaconda/envs/py35/lib/python3.5/site-packages/tensorflow/python/util/tf_should_use.py:189: initialize_variables (from tensorflow.python.ops.variables) is deprecated and will be removed after 2017-03-02.
+Instructions for updating:
+Use `tf.variables_initializer` instead.
+decoder head MLP of size [50, 500, 500]
+encoder shared MLP of size [784, 500, 500, 500, 100]
+construct eval function...
+construct fit function...
+using K=10 theta samples for onlinevi
+training for 6 epochs with lr=0.00010
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-480 	 3 	 	 -483 	 -484 	 663
+Loss on iteration 18 1147.567
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-280 	 16 	 	 -297 	 -297 	 663
+Loss on iteration 38 961.032
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-213 	 4 	 	 -217 	 -218 	 663
+Loss on iteration 58 880.8114
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-216 	 2 	 	 -217 	 -217 	 663
+Loss on iteration 78 880.92615
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-206 	 1 	 	 -208 	 -208 	 662
+Loss on iteration 98 870.66907
+Iter 1, bound=-305.87, kl=663.30, time=10.72
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-203 	 1 	 	 -204 	 -205 	 662
+Loss on iteration 18 867.4812
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-208 	 1 	 	 -209 	 -209 	 662
+Loss on iteration 38 871.7291
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-201 	 1 	 	 -202 	 -203 	 662
+Loss on iteration 58 865.03284
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-195 	 1 	 	 -197 	 -197 	 661
+Loss on iteration 78 859.26636
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-193 	 2 	 	 -194 	 -194 	 661
+Loss on iteration 98 856.51624
+Iter 2, bound=-201.80, kl=662.09, time=8.84
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-191 	 3 	 	 -195 	 -195 	 661
+Loss on iteration 18 856.3145
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-187 	 4 	 	 -192 	 -192 	 661
+Loss on iteration 38 853.53326
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-187 	 6 	 	 -193 	 -194 	 660
+Loss on iteration 58 854.5843
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-180 	 6 	 	 -186 	 -186 	 660
+Loss on iteration 78 846.8585
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-160 	 7 	 	 -168 	 -168 	 660
+Loss on iteration 98 828.6858
+Iter 3, bound=-187.17, kl=660.87, time=9.24
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-161 	 8 	 	 -169 	 -169 	 660
+Loss on iteration 18 829.9687
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-165 	 8 	 	 -173 	 -174 	 659
+Loss on iteration 38 834.9154
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-161 	 8 	 	 -170 	 -170 	 659
+Loss on iteration 58 830.3127
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-159 	 8 	 	 -168 	 -167 	 659
+Loss on iteration 78 827.766
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-157 	 8 	 	 -166 	 -165 	 659
+Loss on iteration 98 824.9155
+Iter 4, bound=-166.67, kl=659.64, time=9.20
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-153 	 9 	 	 -161 	 -162 	 658
+Loss on iteration 18 820.9675
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-156 	 8 	 	 -165 	 -164 	 658
+Loss on iteration 38 823.77936
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-148 	 9 	 	 -158 	 -158 	 658
+Loss on iteration 58 816.6526
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-143 	 8 	 	 -152 	 -152 	 658
+Loss on iteration 78 810.8689
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-151 	 9 	 	 -160 	 -161 	 657
+Loss on iteration 98 818.7055
+Iter 5, bound=-160.78, kl=658.42, time=9.30
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-150 	 10 	 	 -160 	 -160 	 657
+Loss on iteration 18 818.54456
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-149 	 9 	 	 -159 	 -159 	 657
+Loss on iteration 38 817.06946
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-153 	 9 	 	 -163 	 -163 	 657
+Loss on iteration 58 820.42285
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-137 	 10 	 	 -147 	 -148 	 656
+Loss on iteration 78 804.79047
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-148 	 10 	 	 -158 	 -159 	 656
+Loss on iteration 98 815.58856
+Iter 6, bound=-157.03, kl=657.19, time=9.55
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task1_1.png
+task 1 test_ll=-146.49, ste=1.14, time=0.35
+parameters saved at save/mnist_onlinevi_K10/checkpoint_0.pkl
+update prior...
+reset the log sigma of q to -5
+decoder head MLP of size [50, 500, 500]
+encoder shared MLP of size [784, 500, 500, 500, 100]
+construct eval function...
+construct fit function...
+using K=10 theta samples for onlinevi
+training for 6 epochs with lr=0.00010
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-142 	 10 	 	 -153 	 -153 	 13
+Loss on iteration 18 166.13258
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-111 	 5 	 	 -116 	 -116 	 19
+Loss on iteration 38 135.59717
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-91 	 4 	 	 -96 	 -96 	 16
+Loss on iteration 58 112.60647
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-103 	 4 	 	 -106 	 -107 	 12
+Loss on iteration 78 119.42078
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-97 	 4 	 	 -101 	 -101 	 10
+Loss on iteration 98 111.66554
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-103 	 3 	 	 -106 	 -106 	 8
+Loss on iteration 118 115.51282
+Iter 1, bound=-129.13, kl=12.74, time=17.38
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-95 	 4 	 	 -100 	 -100 	 7
+Loss on iteration 18 108.535484
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-89 	 5 	 	 -95 	 -94 	 7
+Loss on iteration 38 102.519684
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-87 	 6 	 	 -94 	 -94 	 7
+Loss on iteration 58 101.358505
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-81 	 6 	 	 -87 	 -88 	 7
+Loss on iteration 78 95.7971
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-85 	 7 	 	 -92 	 -92 	 7
+Loss on iteration 98 100.50309
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-78 	 8 	 	 -86 	 -86 	 8
+Loss on iteration 118 94.36075
+Iter 2, bound=-94.26, kl=7.76, time=15.17
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-70 	 8 	 	 -78 	 -77 	 8
+Loss on iteration 18 85.950806
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-76 	 7 	 	 -84 	 -84 	 7
+Loss on iteration 38 92.011696
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-69 	 8 	 	 -77 	 -76 	 7
+Loss on iteration 58 84.52816
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-76 	 7 	 	 -84 	 -84 	 7
+Loss on iteration 78 92.158905
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-70 	 7 	 	 -78 	 -78 	 6
+Loss on iteration 98 86.27204
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-67 	 8 	 	 -74 	 -75 	 6
+Loss on iteration 118 82.1096
+Iter 3, bound=-80.66, kl=7.47, time=16.36
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-70 	 7 	 	 -78 	 -77 	 6
+Loss on iteration 18 85.04926
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-69 	 7 	 	 -77 	 -77 	 6
+Loss on iteration 38 84.44654
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-74 	 8 	 	 -82 	 -82 	 6
+Loss on iteration 58 88.48133
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-67 	 7 	 	 -75 	 -75 	 6
+Loss on iteration 78 81.391045
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-69 	 8 	 	 -77 	 -77 	 6
+Loss on iteration 98 83.638794
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-71 	 8 	 	 -80 	 -79 	 6
+Loss on iteration 118 86.025154
+Iter 4, bound=-75.49, kl=6.36, time=16.90
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-67 	 7 	 	 -75 	 -75 	 5
+Loss on iteration 18 80.64615
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-62 	 7 	 	 -70 	 -69 	 5
+Loss on iteration 38 75.816696
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-70 	 7 	 	 -78 	 -77 	 5
+Loss on iteration 58 83.69805
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-58 	 8 	 	 -67 	 -67 	 5
+Loss on iteration 78 73.18619
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-60 	 8 	 	 -68 	 -68 	 5
+Loss on iteration 98 75.14464
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-61 	 7 	 	 -69 	 -69 	 5
+Loss on iteration 118 75.46807
+Iter 5, bound=-72.67, kl=5.71, time=17.57
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-63 	 7 	 	 -71 	 -71 	 5
+Loss on iteration 18 76.57176
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-65 	 8 	 	 -73 	 -73 	 5
+Loss on iteration 38 78.702965
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-61 	 7 	 	 -68 	 -69 	 5
+Loss on iteration 58 74.33577
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-65 	 7 	 	 -73 	 -73 	 5
+Loss on iteration 78 79.04163
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-66 	 7 	 	 -74 	 -74 	 4
+Loss on iteration 98 79.394936
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-61 	 8 	 	 -70 	 -70 	 4
+Loss on iteration 118 74.91351
+Iter 6, bound=-71.15, kl=5.13, time=17.96
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task2_1.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task2_2.png
+task 1 test_ll=-176.82, ste=1.08, time=0.25
+task 2 test_ll=-63.91, ste=0.73, time=0.51
+parameters saved at save/mnist_onlinevi_K10/checkpoint_1.pkl
+update prior...
+reset the log sigma of q to -5
+decoder head MLP of size [50, 500, 500]
+encoder shared MLP of size [784, 500, 500, 500, 100]
+construct eval function...
+construct fit function...
+using K=10 theta samples for onlinevi
+training for 6 epochs with lr=0.00010
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-212 	 8 	 	 -220 	 -220 	 10
+Loss on iteration 18 231.31049
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-208 	 2 	 	 -210 	 -210 	 9
+Loss on iteration 38 220.65787
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-212 	 1 	 	 -214 	 -214 	 7
+Loss on iteration 58 220.94614
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-211 	 1 	 	 -213 	 -213 	 5
+Loss on iteration 78 219.2343
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-205 	 2 	 	 -208 	 -208 	 5
+Loss on iteration 98 213.62476
+Iter 1, bound=-219.46, kl=7.02, time=20.01
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-190 	 4 	 	 -195 	 -194 	 5
+Loss on iteration 18 199.897
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-190 	 4 	 	 -195 	 -194 	 5
+Loss on iteration 38 200.27345
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-188 	 4 	 	 -193 	 -193 	 5
+Loss on iteration 58 198.96465
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-189 	 4 	 	 -194 	 -194 	 5
+Loss on iteration 78 198.98015
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-181 	 5 	 	 -187 	 -187 	 4
+Loss on iteration 98 192.13367
+Iter 2, bound=-196.76, kl=5.17, time=18.58
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-188 	 6 	 	 -194 	 -194 	 4
+Loss on iteration 18 199.28694
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-180 	 5 	 	 -186 	 -186 	 5
+Loss on iteration 38 191.14522
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-177 	 5 	 	 -183 	 -183 	 5
+Loss on iteration 58 189.68073
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-179 	 6 	 	 -186 	 -185 	 4
+Loss on iteration 78 191.16946
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-177 	 6 	 	 -183 	 -183 	 5
+Loss on iteration 98 188.58717
+Iter 3, bound=-190.52, kl=5.10, time=19.68
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-184 	 5 	 	 -190 	 -190 	 5
+Loss on iteration 18 195.58633
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-185 	 6 	 	 -191 	 -192 	 4
+Loss on iteration 38 196.61986
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-185 	 6 	 	 -191 	 -191 	 4
+Loss on iteration 58 196.40112
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-182 	 6 	 	 -188 	 -187 	 5
+Loss on iteration 78 193.49883
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-178 	 7 	 	 -186 	 -186 	 4
+Loss on iteration 98 191.22064
+Iter 4, bound=-187.44, kl=4.96, time=19.78
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-180 	 7 	 	 -187 	 -187 	 4
+Loss on iteration 18 192.41481
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-173 	 8 	 	 -182 	 -182 	 5
+Loss on iteration 38 187.14293
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-177 	 8 	 	 -185 	 -185 	 4
+Loss on iteration 58 189.84674
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-167 	 8 	 	 -175 	 -175 	 4
+Loss on iteration 78 180.65411
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-169 	 7 	 	 -177 	 -177 	 5
+Loss on iteration 98 183.22337
+Iter 5, bound=-184.57, kl=4.93, time=21.04
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-175 	 8 	 	 -184 	 -184 	 5
+Loss on iteration 18 189.86449
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-173 	 8 	 	 -182 	 -181 	 4
+Loss on iteration 38 187.44019
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-173 	 8 	 	 -182 	 -182 	 5
+Loss on iteration 58 187.22067
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-175 	 8 	 	 -183 	 -184 	 5
+Loss on iteration 78 189.08168
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-176 	 9 	 	 -185 	 -184 	 5
+Loss on iteration 98 190.48643
+Iter 6, bound=-181.84, kl=5.07, time=21.61
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task3_1.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task3_2.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task3_3.png
+task 1 test_ll=-181.37, ste=1.01, time=0.25
+task 2 test_ll=-100.34, ste=0.60, time=0.29
+task 3 test_ll=-176.52, ste=1.11, time=0.65
+parameters saved at save/mnist_onlinevi_K10/checkpoint_2.pkl
+update prior...
+reset the log sigma of q to -5
+decoder head MLP of size [50, 500, 500]
+encoder shared MLP of size [784, 500, 500, 500, 100]
+construct eval function...
+construct fit function...
+using K=10 theta samples for onlinevi
+training for 6 epochs with lr=0.00010
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-201 	 9 	 	 -211 	 -211 	 11
+Loss on iteration 18 222.72214
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-193 	 2 	 	 -196 	 -195 	 10
+Loss on iteration 38 206.53133
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-190 	 2 	 	 -192 	 -192 	 6
+Loss on iteration 58 198.93314
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-193 	 2 	 	 -196 	 -196 	 4
+Loss on iteration 78 201.12894
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-184 	 5 	 	 -188 	 -189 	 4
+Loss on iteration 98 193.68892
+Iter 1, bound=-203.34, kl=6.87, time=27.53
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-183 	 4 	 	 -187 	 -187 	 4
+Loss on iteration 18 192.15492
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-174 	 5 	 	 -180 	 -180 	 4
+Loss on iteration 38 184.72949
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-173 	 5 	 	 -178 	 -178 	 4
+Loss on iteration 58 182.52785
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-170 	 5 	 	 -176 	 -175 	 3
+Loss on iteration 78 179.79765
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-174 	 5 	 	 -180 	 -180 	 3
+Loss on iteration 98 183.96977
+Iter 2, bound=-178.58, kl=4.14, time=26.03
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-165 	 6 	 	 -171 	 -171 	 3
+Loss on iteration 18 174.79463
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-169 	 6 	 	 -176 	 -176 	 3
+Loss on iteration 38 179.99808
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-161 	 6 	 	 -167 	 -168 	 3
+Loss on iteration 58 171.31175
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-166 	 6 	 	 -173 	 -173 	 3
+Loss on iteration 78 176.54599
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-166 	 6 	 	 -173 	 -173 	 3
+Loss on iteration 98 177.3381
+Iter 3, bound=-172.69, kl=3.86, time=27.16
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-164 	 7 	 	 -172 	 -172 	 3
+Loss on iteration 18 175.97787
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-164 	 6 	 	 -170 	 -170 	 3
+Loss on iteration 38 174.31108
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-155 	 7 	 	 -162 	 -162 	 3
+Loss on iteration 58 166.44643
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-160 	 8 	 	 -169 	 -169 	 3
+Loss on iteration 78 173.5646
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-155 	 7 	 	 -163 	 -163 	 3
+Loss on iteration 98 167.13303
+Iter 4, bound=-169.20, kl=3.80, time=28.16
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-147 	 7 	 	 -155 	 -155 	 3
+Loss on iteration 18 159.14304
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-156 	 7 	 	 -164 	 -164 	 3
+Loss on iteration 38 168.65463
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-161 	 9 	 	 -171 	 -171 	 3
+Loss on iteration 58 175.2386
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-151 	 9 	 	 -161 	 -161 	 4
+Loss on iteration 78 164.77074
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-157 	 8 	 	 -167 	 -166 	 4
+Loss on iteration 98 171.04588
+Iter 5, bound=-165.76, kl=3.92, time=29.15
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-148 	 9 	 	 -158 	 -158 	 4
+Loss on iteration 18 162.2029
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-152 	 9 	 	 -162 	 -162 	 4
+Loss on iteration 38 166.52867
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-153 	 9 	 	 -163 	 -163 	 4
+Loss on iteration 58 167.29845
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-148 	 9 	 	 -158 	 -158 	 4
+Loss on iteration 78 162.62634
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-144 	 9 	 	 -154 	 -154 	 4
+Loss on iteration 98 159.28989
+Iter 6, bound=-162.00, kl=4.36, time=30.59
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task4_1.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task4_2.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task4_3.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task4_4.png
+task 1 test_ll=-183.01, ste=0.92, time=0.25
+task 2 test_ll=-100.22, ste=0.54, time=0.29
+task 3 test_ll=-193.12, ste=1.06, time=0.17
+task 4 test_ll=-152.40, ste=1.23, time=0.73
+parameters saved at save/mnist_onlinevi_K10/checkpoint_3.pkl
+update prior...
+reset the log sigma of q to -5
+decoder head MLP of size [50, 500, 500]
+encoder shared MLP of size [784, 500, 500, 500, 100]
+construct eval function...
+construct fit function...
+using K=10 theta samples for onlinevi
+training for 6 epochs with lr=0.00010
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-184 	 11 	 	 -195 	 -196 	 13
+Loss on iteration 18 209.07117
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-175 	 2 	 	 -178 	 -178 	 13
+Loss on iteration 38 191.41972
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-182 	 3 	 	 -185 	 -185 	 9
+Loss on iteration 58 194.42618
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-172 	 2 	 	 -175 	 -174 	 7
+Loss on iteration 78 181.73378
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-171 	 3 	 	 -175 	 -174 	 6
+Loss on iteration 98 181.1931
+Iter 1, bound=-194.26, kl=9.10, time=38.46
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-163 	 4 	 	 -168 	 -168 	 5
+Loss on iteration 18 174.12549
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-174 	 5 	 	 -178 	 -179 	 5
+Loss on iteration 38 184.92746
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-160 	 5 	 	 -165 	 -165 	 5
+Loss on iteration 58 170.83463
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-158 	 5 	 	 -163 	 -163 	 5
+Loss on iteration 78 168.98471
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-161 	 6 	 	 -167 	 -167 	 5
+Loss on iteration 98 172.80298
+Iter 2, bound=-168.42, kl=5.54, time=34.57
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-151 	 5 	 	 -157 	 -157 	 5
+Loss on iteration 18 162.67679
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-148 	 6 	 	 -154 	 -154 	 5
+Loss on iteration 38 159.97005
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-156 	 5 	 	 -162 	 -162 	 5
+Loss on iteration 58 167.94244
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-158 	 5 	 	 -164 	 -164 	 5
+Loss on iteration 78 169.74165
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-149 	 6 	 	 -157 	 -157 	 5
+Loss on iteration 98 161.74686
+Iter 3, bound=-160.86, kl=5.42, time=35.69
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-151 	 7 	 	 -159 	 -159 	 5
+Loss on iteration 18 164.83955
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-146 	 7 	 	 -153 	 -153 	 5
+Loss on iteration 38 158.96194
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-151 	 7 	 	 -158 	 -158 	 5
+Loss on iteration 58 164.17183
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-151 	 7 	 	 -159 	 -158 	 5
+Loss on iteration 78 164.25813
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-145 	 6 	 	 -150 	 -151 	 5
+Loss on iteration 98 156.79672
+Iter 4, bound=-156.36, kl=5.37, time=36.48
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-149 	 7 	 	 -156 	 -156 	 5
+Loss on iteration 18 161.92546
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-145 	 8 	 	 -153 	 -153 	 5
+Loss on iteration 38 158.67068
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-139 	 8 	 	 -147 	 -147 	 5
+Loss on iteration 58 152.23227
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-144 	 8 	 	 -152 	 -152 	 5
+Loss on iteration 78 158.17538
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-144 	 8 	 	 -152 	 -152 	 5
+Loss on iteration 98 157.84961
+Iter 5, bound=-153.12, kl=5.24, time=36.57
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-149 	 8 	 	 -158 	 -158 	 5
+Loss on iteration 18 163.77165
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-146 	 7 	 	 -154 	 -154 	 5
+Loss on iteration 38 159.81895
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-132 	 9 	 	 -141 	 -142 	 5
+Loss on iteration 58 147.45377
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-142 	 7 	 	 -150 	 -151 	 5
+Loss on iteration 78 156.66104
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-146 	 8 	 	 -154 	 -155 	 4
+Loss on iteration 98 160.21873
+Iter 6, bound=-150.47, kl=5.22, time=38.08
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task5_1.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task5_2.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task5_3.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task5_4.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task5_5.png
+task 1 test_ll=-186.46, ste=0.90, time=0.25
+task 2 test_ll=-126.22, ste=0.62, time=0.29
+task 3 test_ll=-205.84, ste=1.12, time=0.26
+task 4 test_ll=-176.11, ste=1.10, time=0.19
+task 5 test_ll=-139.72, ste=1.16, time=0.85
+parameters saved at save/mnist_onlinevi_K10/checkpoint_4.pkl
+update prior...
+reset the log sigma of q to -5
+decoder head MLP of size [50, 500, 500]
+encoder shared MLP of size [784, 500, 500, 500, 100]
+construct eval function...
+construct fit function...
+using K=10 theta samples for onlinevi
+training for 6 epochs with lr=0.00010
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-204 	 10 	 	 -215 	 -215 	 12
+Loss on iteration 18 227.69809
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-200 	 2 	 	 -202 	 -202 	 8
+Loss on iteration 38 211.7433
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-198 	 4 	 	 -202 	 -201 	 5
+Loss on iteration 58 207.25398
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-185 	 5 	 	 -191 	 -190 	 4
+Loss on iteration 78 195.31693
+Iter 1, bound=-208.60, kl=6.68, time=37.73
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-172 	 7 	 	 -179 	 -179 	 4
+Loss on iteration 18 184.05144
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-172 	 6 	 	 -179 	 -179 	 4
+Loss on iteration 38 182.67563
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-164 	 6 	 	 -171 	 -171 	 3
+Loss on iteration 58 174.45845
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-171 	 6 	 	 -178 	 -177 	 3
+Loss on iteration 78 181.54317
+Iter 2, bound=-176.68, kl=3.89, time=32.91
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-162 	 7 	 	 -170 	 -170 	 3
+Loss on iteration 18 173.76001
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-161 	 7 	 	 -169 	 -169 	 3
+Loss on iteration 38 172.31172
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-155 	 7 	 	 -163 	 -163 	 3
+Loss on iteration 58 167.5336
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-166 	 6 	 	 -173 	 -174 	 3
+Loss on iteration 78 177.28137
+Iter 3, bound=-169.98, kl=3.41, time=33.96
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-162 	 7 	 	 -169 	 -169 	 3
+Loss on iteration 18 172.96205
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-166 	 7 	 	 -173 	 -173 	 3
+Loss on iteration 38 177.68045
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-150 	 8 	 	 -159 	 -158 	 3
+Loss on iteration 58 162.2887
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-164 	 7 	 	 -172 	 -172 	 3
+Loss on iteration 78 175.6543
+Iter 4, bound=-166.80, kl=3.14, time=34.68
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-159 	 8 	 	 -169 	 -169 	 3
+Loss on iteration 18 172.60106
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-159 	 9 	 	 -168 	 -168 	 3
+Loss on iteration 38 171.98705
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-160 	 9 	 	 -170 	 -169 	 3
+Loss on iteration 58 172.72542
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-151 	 9 	 	 -160 	 -160 	 3
+Loss on iteration 78 163.21199
+Iter 5, bound=-163.34, kl=3.25, time=35.10
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-155 	 10 	 	 -166 	 -166 	 3
+Loss on iteration 18 169.54968
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-148 	 9 	 	 -158 	 -157 	 3
+Loss on iteration 38 161.16367
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-155 	 9 	 	 -165 	 -165 	 3
+Loss on iteration 58 168.87907
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-146 	 9 	 	 -155 	 -155 	 3
+Loss on iteration 78 159.10414
+Iter 6, bound=-160.03, kl=3.43, time=36.84
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task6_1.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task6_2.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task6_3.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task6_4.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task6_5.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task6_6.png
+task 1 test_ll=-183.82, ste=0.89, time=0.25
+task 2 test_ll=-107.39, ste=0.55, time=0.30
+task 3 test_ll=-202.95, ste=1.16, time=0.24
+task 4 test_ll=-167.06, ste=1.17, time=0.19
+task 5 test_ll=-153.16, ste=1.17, time=0.18
+task 6 test_ll=-154.17, ste=1.24, time=1.01
+parameters saved at save/mnist_onlinevi_K10/checkpoint_5.pkl
+update prior...
+reset the log sigma of q to -5
+decoder head MLP of size [50, 500, 500]
+encoder shared MLP of size [784, 500, 500, 500, 100]
+construct eval function...
+construct fit function...
+using K=10 theta samples for onlinevi
+training for 6 epochs with lr=0.00010
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-183 	 12 	 	 -196 	 -196 	 12
+Loss on iteration 18 208.8653
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-185 	 3 	 	 -189 	 -189 	 13
+Loss on iteration 38 202.42082
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-177 	 4 	 	 -182 	 -181 	 9
+Loss on iteration 58 192.05283
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-177 	 5 	 	 -182 	 -182 	 7
+Loss on iteration 78 190.25107
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-172 	 6 	 	 -178 	 -178 	 7
+Loss on iteration 98 185.42249
+Iter 1, bound=-197.56, kl=9.27, time=54.35
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-153 	 7 	 	 -161 	 -161 	 6
+Loss on iteration 18 167.44362
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-151 	 7 	 	 -159 	 -159 	 7
+Loss on iteration 38 166.8859
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-157 	 7 	 	 -165 	 -165 	 7
+Loss on iteration 58 172.79124
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-153 	 7 	 	 -161 	 -161 	 7
+Loss on iteration 78 168.5685
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-147 	 8 	 	 -156 	 -156 	 7
+Loss on iteration 98 163.89912
+Iter 2, bound=-163.23, kl=7.21, time=50.38
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-149 	 8 	 	 -157 	 -158 	 7
+Loss on iteration 18 165.57492
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-153 	 8 	 	 -162 	 -161 	 7
+Loss on iteration 38 169.47653
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-146 	 9 	 	 -156 	 -156 	 7
+Loss on iteration 58 163.27509
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-141 	 9 	 	 -151 	 -151 	 7
+Loss on iteration 78 158.11382
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-138 	 9 	 	 -148 	 -148 	 7
+Loss on iteration 98 155.3172
+Iter 3, bound=-153.08, kl=7.15, time=51.31
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-135 	 10 	 	 -145 	 -146 	 6
+Loss on iteration 18 153.1495
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-140 	 9 	 	 -150 	 -150 	 6
+Loss on iteration 38 156.83652
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-140 	 9 	 	 -150 	 -150 	 6
+Loss on iteration 58 156.99226
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-144 	 9 	 	 -154 	 -154 	 6
+Loss on iteration 78 161.33498
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-133 	 9 	 	 -142 	 -142 	 6
+Loss on iteration 98 149.02278
+Iter 4, bound=-148.33, kl=6.79, time=52.82
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-139 	 9 	 	 -149 	 -149 	 6
+Loss on iteration 18 156.05257
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-133 	 10 	 	 -143 	 -143 	 6
+Loss on iteration 38 150.2469
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-130 	 10 	 	 -141 	 -141 	 6
+Loss on iteration 58 147.82693
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-138 	 10 	 	 -148 	 -149 	 6
+Loss on iteration 78 155.43723
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-129 	 10 	 	 -139 	 -139 	 6
+Loss on iteration 98 144.8206
+Iter 5, bound=-145.39, kl=6.44, time=54.74
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-137 	 10 	 	 -148 	 -148 	 6
+Loss on iteration 18 154.04507
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-134 	 10 	 	 -144 	 -145 	 6
+Loss on iteration 38 150.37402
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-125 	 11 	 	 -137 	 -137 	 6
+Loss on iteration 58 143.46669
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-133 	 10 	 	 -143 	 -143 	 6
+Loss on iteration 78 150.11664
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-126 	 10 	 	 -136 	 -136 	 6
+Loss on iteration 98 143.12517
+Iter 6, bound=-142.99, kl=6.21, time=55.53
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task7_1.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task7_2.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task7_3.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task7_4.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task7_5.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task7_6.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task7_7.png
+task 1 test_ll=-181.05, ste=0.96, time=0.25
+task 2 test_ll=-110.45, ste=0.56, time=0.30
+task 3 test_ll=-194.51, ste=1.08, time=0.18
+task 4 test_ll=-179.91, ste=1.06, time=0.19
+task 5 test_ll=-165.99, ste=1.10, time=0.18
+task 6 test_ll=-172.23, ste=1.21, time=0.16
+task 7 test_ll=-136.46, ste=1.26, time=1.06
+parameters saved at save/mnist_onlinevi_K10/checkpoint_6.pkl
+update prior...
+reset the log sigma of q to -5
+decoder head MLP of size [50, 500, 500]
+encoder shared MLP of size [784, 500, 500, 500, 100]
+construct eval function...
+construct fit function...
+using K=10 theta samples for onlinevi
+training for 6 epochs with lr=0.00010
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-188 	 13 	 	 -202 	 -202 	 13
+Loss on iteration 18 216.92111
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-167 	 3 	 	 -170 	 -171 	 17
+Loss on iteration 38 187.75352
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-164 	 2 	 	 -167 	 -167 	 13
+Loss on iteration 58 180.48294
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-167 	 3 	 	 -170 	 -170 	 11
+Loss on iteration 78 181.28339
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-154 	 3 	 	 -157 	 -157 	 10
+Loss on iteration 98 167.7897
+Iter 1, bound=-185.33, kl=11.88, time=66.83
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-144 	 5 	 	 -149 	 -149 	 9
+Loss on iteration 18 159.43118
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-157 	 5 	 	 -163 	 -162 	 9
+Loss on iteration 38 171.96535
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-147 	 6 	 	 -153 	 -153 	 9
+Loss on iteration 58 162.89511
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-141 	 6 	 	 -147 	 -147 	 9
+Loss on iteration 78 157.3442
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-139 	 6 	 	 -145 	 -145 	 9
+Loss on iteration 98 155.50821
+Iter 2, bound=-153.83, kl=9.46, time=61.18
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-129 	 7 	 	 -136 	 -136 	 9
+Loss on iteration 18 146.45183
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-129 	 8 	 	 -137 	 -137 	 9
+Loss on iteration 38 147.05211
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-140 	 7 	 	 -147 	 -147 	 9
+Loss on iteration 58 157.13324
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-129 	 7 	 	 -137 	 -137 	 9
+Loss on iteration 78 146.42934
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-127 	 8 	 	 -135 	 -135 	 9
+Loss on iteration 98 145.25609
+Iter 3, bound=-143.89, kl=9.45, time=61.72
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-122 	 7 	 	 -129 	 -129 	 9
+Loss on iteration 18 139.90855
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-126 	 8 	 	 -134 	 -134 	 9
+Loss on iteration 38 144.26454
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-130 	 8 	 	 -138 	 -138 	 9
+Loss on iteration 58 147.6002
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-130 	 9 	 	 -139 	 -140 	 8
+Loss on iteration 78 148.54735
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-121 	 9 	 	 -131 	 -131 	 9
+Loss on iteration 98 140.57666
+Iter 4, bound=-138.11, kl=9.22, time=62.41
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-123 	 8 	 	 -132 	 -132 	 9
+Loss on iteration 18 141.24281
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-116 	 9 	 	 -125 	 -126 	 8
+Loss on iteration 38 134.923
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-124 	 9 	 	 -133 	 -133 	 9
+Loss on iteration 58 142.95946
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-122 	 10 	 	 -132 	 -132 	 9
+Loss on iteration 78 141.93394
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-126 	 10 	 	 -136 	 -136 	 8
+Loss on iteration 98 145.32817
+Iter 5, bound=-133.96, kl=8.92, time=62.20
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-125 	 10 	 	 -136 	 -136 	 8
+Loss on iteration 18 145.59433
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-125 	 10 	 	 -136 	 -135 	 8
+Loss on iteration 38 145.20496
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-115 	 10 	 	 -126 	 -126 	 8
+Loss on iteration 58 135.89566
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-124 	 10 	 	 -135 	 -134 	 8
+Loss on iteration 78 143.15207
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-116 	 11 	 	 -127 	 -127 	 8
+Loss on iteration 98 136.7715
+Iter 6, bound=-130.68, kl=8.81, time=62.52
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task8_1.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task8_2.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task8_3.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task8_4.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task8_5.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task8_6.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task8_7.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task8_8.png
+task 1 test_ll=-186.33, ste=0.90, time=0.26
+task 2 test_ll=-110.27, ste=0.64, time=0.29
+task 3 test_ll=-207.24, ste=1.30, time=0.25
+task 4 test_ll=-176.44, ste=1.14, time=0.19
+task 5 test_ll=-160.61, ste=1.12, time=0.18
+task 6 test_ll=-173.64, ste=1.13, time=0.16
+task 7 test_ll=-171.33, ste=1.18, time=0.17
+task 8 test_ll=-122.82, ste=1.22, time=1.26
+parameters saved at save/mnist_onlinevi_K10/checkpoint_7.pkl
+update prior...
+reset the log sigma of q to -5
+decoder head MLP of size [50, 500, 500]
+encoder shared MLP of size [784, 500, 500, 500, 100]
+construct eval function...
+construct fit function...
+using K=10 theta samples for onlinevi
+training for 6 epochs with lr=0.00010
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-198 	 13 	 	 -210 	 -210 	 12
+Loss on iteration 18 223.55162
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-195 	 3 	 	 -198 	 -199 	 10
+Loss on iteration 38 208.96407
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-196 	 2 	 	 -199 	 -200 	 6
+Loss on iteration 58 206.12523
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-186 	 4 	 	 -190 	 -190 	 4
+Loss on iteration 78 195.02675
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-182 	 6 	 	 -189 	 -189 	 3
+Loss on iteration 98 194.09605
+Iter 1, bound=-207.58, kl=6.87, time=72.72
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-172 	 6 	 	 -178 	 -179 	 3
+Loss on iteration 18 182.98051
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-170 	 5 	 	 -177 	 -176 	 3
+Loss on iteration 38 181.09863
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-170 	 5 	 	 -176 	 -176 	 3
+Loss on iteration 58 180.41734
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-170 	 6 	 	 -177 	 -177 	 3
+Loss on iteration 78 180.2674
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-172 	 6 	 	 -178 	 -177 	 2
+Loss on iteration 98 181.15659
+Iter 2, bound=-178.33, kl=3.34, time=67.01
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-170 	 7 	 	 -177 	 -177 	 2
+Loss on iteration 18 180.52551
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-158 	 7 	 	 -166 	 -166 	 2
+Loss on iteration 38 169.29489
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-157 	 8 	 	 -166 	 -166 	 2
+Loss on iteration 58 169.21458
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-161 	 7 	 	 -169 	 -168 	 2
+Loss on iteration 78 171.56998
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-158 	 8 	 	 -167 	 -167 	 2
+Loss on iteration 98 170.24419
+Iter 3, bound=-171.12, kl=2.87, time=67.41
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-162 	 8 	 	 -171 	 -171 	 2
+Loss on iteration 18 174.1386
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-160 	 8 	 	 -168 	 -168 	 2
+Loss on iteration 38 170.81625
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-153 	 8 	 	 -162 	 -162 	 2
+Loss on iteration 58 164.32346
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-154 	 9 	 	 -163 	 -163 	 2
+Loss on iteration 78 166.22142
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-147 	 9 	 	 -157 	 -156 	 2
+Loss on iteration 98 159.93268
+Iter 4, bound=-166.40, kl=2.73, time=68.18
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-148 	 8 	 	 -156 	 -156 	 2
+Loss on iteration 18 158.83821
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-153 	 10 	 	 -163 	 -163 	 2
+Loss on iteration 38 165.9626
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-156 	 10 	 	 -166 	 -166 	 2
+Loss on iteration 58 169.18909
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-151 	 9 	 	 -161 	 -161 	 2
+Loss on iteration 78 164.57681
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-153 	 9 	 	 -163 	 -163 	 2
+Loss on iteration 98 166.12903
+Iter 5, bound=-163.11, kl=2.68, time=69.50
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-148 	 9 	 	 -157 	 -157 	 2
+Loss on iteration 18 160.19011
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-145 	 9 	 	 -155 	 -155 	 2
+Loss on iteration 38 158.03456
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-152 	 10 	 	 -162 	 -162 	 2
+Loss on iteration 58 164.59685
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-152 	 9 	 	 -162 	 -162 	 2
+Loss on iteration 78 165.35161
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-151 	 9 	 	 -161 	 -161 	 2
+Loss on iteration 98 163.75827
+Iter 6, bound=-160.66, kl=2.62, time=69.14
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task9_1.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task9_2.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task9_3.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task9_4.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task9_5.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task9_6.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task9_7.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task9_8.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task9_9.png
+task 1 test_ll=-187.31, ste=0.82, time=0.20
+task 2 test_ll=-95.40, ste=0.57, time=0.23
+task 3 test_ll=-199.93, ste=1.24, time=0.19
+task 4 test_ll=-170.91, ste=1.15, time=0.20
+task 5 test_ll=-160.12, ste=1.17, time=0.18
+task 6 test_ll=-167.90, ste=1.14, time=0.16
+task 7 test_ll=-167.49, ste=1.22, time=0.18
+task 8 test_ll=-140.24, ste=1.06, time=0.19
+task 9 test_ll=-154.44, ste=1.28, time=1.54
+parameters saved at save/mnist_onlinevi_K10/checkpoint_8.pkl
+update prior...
+reset the log sigma of q to -5
+decoder head MLP of size [50, 500, 500]
+encoder shared MLP of size [784, 500, 500, 500, 100]
+construct eval function...
+construct fit function...
+using K=10 theta samples for onlinevi
+training for 6 epochs with lr=0.00010
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-179 	 15 	 	 -195 	 -194 	 14
+Loss on iteration 18 209.16438
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-165 	 3 	 	 -169 	 -169 	 12
+Loss on iteration 38 181.54076
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-166 	 4 	 	 -170 	 -170 	 7
+Loss on iteration 58 178.89075
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-168 	 4 	 	 -172 	 -172 	 5
+Loss on iteration 78 178.53133
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-154 	 6 	 	 -160 	 -160 	 4
+Loss on iteration 98 165.08507
+Iter 1, bound=-185.17, kl=8.13, time=79.09
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-152 	 7 	 	 -160 	 -160 	 4
+Loss on iteration 18 165.43336
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-147 	 7 	 	 -154 	 -153 	 4
+Loss on iteration 38 158.87424
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-147 	 8 	 	 -155 	 -155 	 4
+Loss on iteration 58 159.65353
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-143 	 7 	 	 -150 	 -150 	 4
+Loss on iteration 78 154.58496
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-136 	 7 	 	 -143 	 -143 	 4
+Loss on iteration 98 148.61946
+Iter 2, bound=-151.36, kl=4.36, time=71.62
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-135 	 8 	 	 -143 	 -143 	 3
+Loss on iteration 18 147.06996
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-142 	 8 	 	 -150 	 -151 	 3
+Loss on iteration 38 154.85382
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-136 	 8 	 	 -145 	 -144 	 3
+Loss on iteration 58 148.75072
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-128 	 8 	 	 -136 	 -136 	 3
+Loss on iteration 78 140.47025
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-120 	 8 	 	 -130 	 -130 	 3
+Loss on iteration 98 133.63239
+Iter 3, bound=-142.20, kl=3.66, time=71.52
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-130 	 9 	 	 -140 	 -139 	 3
+Loss on iteration 18 143.59207
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-118 	 8 	 	 -127 	 -127 	 3
+Loss on iteration 38 130.02478
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-131 	 9 	 	 -140 	 -140 	 3
+Loss on iteration 58 144.17589
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-129 	 8 	 	 -138 	 -138 	 2
+Loss on iteration 78 141.05267
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-124 	 9 	 	 -134 	 -134 	 3
+Loss on iteration 98 137.63531
+Iter 4, bound=-137.44, kl=3.26, time=69.88
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-133 	 9 	 	 -143 	 -142 	 2
+Loss on iteration 18 146.27737
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-123 	 9 	 	 -134 	 -134 	 3
+Loss on iteration 38 137.4041
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-120 	 9 	 	 -130 	 -130 	 2
+Loss on iteration 58 133.61655
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-127 	 9 	 	 -137 	 -137 	 2
+Loss on iteration 78 140.57796
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-127 	 10 	 	 -138 	 -138 	 2
+Loss on iteration 98 141.04721
+Iter 5, bound=-134.45, kl=2.95, time=69.44
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-109 	 10 	 	 -119 	 -120 	 2
+Loss on iteration 18 122.765236
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-118 	 10 	 	 -128 	 -128 	 2
+Loss on iteration 38 131.6912
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-119 	 9 	 	 -129 	 -129 	 2
+Loss on iteration 58 131.99333
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-127 	 10 	 	 -137 	 -137 	 2
+Loss on iteration 78 140.04608
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-120 	 10 	 	 -131 	 -131 	 2
+Loss on iteration 98 134.22935
+Iter 6, bound=-131.96, kl=2.81, time=66.51
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task10_1.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task10_2.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task10_3.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task10_4.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task10_5.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task10_6.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task10_7.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task10_8.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task10_9.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task10_10.png
+task 1 test_ll=-194.32, ste=0.89, time=0.25
+task 2 test_ll=-112.19, ste=0.61, time=0.29
+task 3 test_ll=-210.75, ste=1.34, time=0.25
+task 4 test_ll=-176.91, ste=1.24, time=0.28
+task 5 test_ll=-152.10, ste=1.22, time=0.25
+task 6 test_ll=-170.15, ste=1.17, time=0.23
+task 7 test_ll=-179.21, ste=1.22, time=0.25
+task 8 test_ll=-135.05, ste=1.23, time=0.19
+task 9 test_ll=-166.58, ste=1.23, time=0.18
+task 10 test_ll=-124.31, ste=1.23, time=1.39
+parameters saved at save/mnist_onlinevi_K10/checkpoint_9.pkl
+update prior...
+reset the log sigma of q to -5
+saving image to figs/mnist_onlinevi_K10/mnist_gen_all.png
+[(-146.4928117231889, 1.1395898000300124)]
+[(-176.82382340864703, 1.0803980406611797), (-63.91429783747745, 0.7308551616427855)]
+[(-181.37470314719462, 1.0130486716891005), (-100.34075223482571, 0.5952749416400404), (-176.51545854048294, 1.1101783073342644)]
+[(-183.00567210804334, 0.9157493723784533), (-100.21564601017882, 0.5359663784380977), (-193.11900607022375, 1.0606914385375548), (-152.40178934733072, 1.2331240039572573)]
+[(-186.45845864035866, 0.8970868576808178), (-126.21734501765326, 0.6198539522745989), (-205.8372872092507, 1.1200476040794227), (-176.10799662272137, 1.1027498734900207), (-139.72218184037644, 1.156189348543917)]
+[(-183.81587080522013, 0.8897588284433293), (-107.38882563664363, 0.5461488711818319), (-202.95336220481175, 1.1616734463755671), (-167.05834960937497, 1.1666044843198715), (-153.15553006258878, 1.1658907357423676), (-154.1710067749023, 1.2422785958915281)]
+[(-181.0474687056108, 0.9598989791307712), (-110.45197178767276, 0.5589538283590819), (-194.50593983043322, 1.0813698010780954), (-179.9110438028971, 1.0585587253242894), (-165.98530717329544, 1.100364467423486), (-172.23148803710941, 1.2067593600970457), (-136.45863758433947, 1.2645778824973086)]
+[(-186.32505798339844, 0.9009268558108174), (-110.27117098294771, 0.636697318621675), (-207.23678172718394, 1.2990735391498698), (-176.44209162394208, 1.136451322655212), (-160.60589877041903, 1.1243986922813722), (-173.63605957031248, 1.1264377449861667), (-171.32814580743965, 1.177520429484855), (-122.82237243652344, 1.222985980928088)]
+[(-187.30529507723722, 0.8244557341250305), (-95.40398172231822, 0.5666491989581179), (-199.9291728626598, 1.2420753761768173), (-170.90914154052734, 1.1464270905438019), (-160.12408447265628, 1.1673415450934344), (-167.89957275390626, 1.1385861905393921), (-167.49044106223369, 1.2186128237163862), (-140.24146906534833, 1.059623807157081), (-154.4368369362571, 1.2817073788057298)]
+[(-194.31860212846235, 0.8909042663656505), (-112.18841552734374, 0.6092159627121673), (-210.74539600719106, 1.3364786829267592), (-176.914067586263, 1.2411700549499247), (-152.10000610351562, 1.2236150202935623), (-170.1543441772461, 1.1717449115371898), (-179.21295166015625, 1.220676493106294), (-135.04842313130698, 1.2315396209465745), (-166.58433116566053, 1.2295853159023342), (-124.3149386319247, 1.2345241606239996)]
+test-ll results saved in results/mnist_onlinevi_K10.pkl
+
+Process finished with exit code 0
+

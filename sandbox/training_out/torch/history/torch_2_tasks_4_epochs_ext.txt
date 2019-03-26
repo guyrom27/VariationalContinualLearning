@@ -1,0 +1,153 @@
+/data/anaconda/envs/py35/bin/python3 /home/aml12/AML2019/VCL/sandbox/torch_sandbox.py
+True
+Using device: cuda:0
+starting task 0
+starting epoch 0
+Log_like 	KL Z 	KL Qt vs prev Qt
+-493 	 1 	 597
+[1,    20] loss: 1123.630
+Log_like 	KL Z 	KL Qt vs prev Qt
+-336 	 0 	 597
+[1,    40] loss: 1017.195
+Log_like 	KL Z 	KL Qt vs prev Qt
+-225 	 0 	 597
+[1,    60] loss: 862.109
+Log_like 	KL Z 	KL Qt vs prev Qt
+-200 	 0 	 597
+[1,    80] loss: 813.008
+Log_like 	KL Z 	KL Qt vs prev Qt
+-203 	 0 	 597
+[1,   100] loss: 804.114
+starting epoch 1
+Log_like 	KL Z 	KL Qt vs prev Qt
+-201 	 0 	 597
+[2,    20] loss: 803.416
+Log_like 	KL Z 	KL Qt vs prev Qt
+-203 	 0 	 597
+[2,    40] loss: 801.248
+Log_like 	KL Z 	KL Qt vs prev Qt
+-200 	 0 	 597
+[2,    60] loss: 803.775
+Log_like 	KL Z 	KL Qt vs prev Qt
+-202 	 0 	 597
+[2,    80] loss: 801.036
+Log_like 	KL Z 	KL Qt vs prev Qt
+-216 	 0 	 597
+[2,   100] loss: 802.431
+starting epoch 2
+Log_like 	KL Z 	KL Qt vs prev Qt
+-212 	 0 	 597
+[3,    20] loss: 803.575
+Log_like 	KL Z 	KL Qt vs prev Qt
+-205 	 0 	 597
+[3,    40] loss: 801.080
+Log_like 	KL Z 	KL Qt vs prev Qt
+-198 	 0 	 597
+[3,    60] loss: 800.451
+Log_like 	KL Z 	KL Qt vs prev Qt
+-201 	 0 	 597
+[3,    80] loss: 802.087
+Log_like 	KL Z 	KL Qt vs prev Qt
+-204 	 0 	 597
+[3,   100] loss: 801.988
+starting epoch 3
+Log_like 	KL Z 	KL Qt vs prev Qt
+-201 	 0 	 597
+[4,    20] loss: 800.345
+Log_like 	KL Z 	KL Qt vs prev Qt
+-200 	 0 	 597
+[4,    40] loss: 802.670
+Log_like 	KL Z 	KL Qt vs prev Qt
+-209 	 0 	 597
+[4,    60] loss: 800.945
+Log_like 	KL Z 	KL Qt vs prev Qt
+-196 	 0 	 597
+[4,    80] loss: 801.065
+Log_like 	KL Z 	KL Qt vs prev Qt
+-197 	 0 	 597
+[4,   100] loss: 801.129
+saving image to ./figs/after_task_1_task_0.png
+test_classifier=1.46, std=0.02
+starting task 1
+starting epoch 0
+Log_like 	KL Z 	KL Qt vs prev Qt
+-178 	 0 	 23
+[1,    20] loss: 251.273
+Log_like 	KL Z 	KL Qt vs prev Qt
+-111 	 0 	 70
+[1,    40] loss: 182.042
+Log_like 	KL Z 	KL Qt vs prev Qt
+-104 	 0 	 95
+[1,    60] loss: 192.277
+Log_like 	KL Z 	KL Qt vs prev Qt
+-100 	 0 	 106
+[1,    80] loss: 201.528
+Log_like 	KL Z 	KL Qt vs prev Qt
+-98 	 0 	 111
+[1,   100] loss: 209.141
+Log_like 	KL Z 	KL Qt vs prev Qt
+-106 	 0 	 114
+[1,   120] loss: 213.525
+starting epoch 1
+Log_like 	KL Z 	KL Qt vs prev Qt
+-93 	 0 	 123
+[2,    20] loss: 218.893
+Log_like 	KL Z 	KL Qt vs prev Qt
+-104 	 0 	 127
+[2,    40] loss: 225.086
+Log_like 	KL Z 	KL Qt vs prev Qt
+-96 	 0 	 131
+[2,    60] loss: 228.045
+Log_like 	KL Z 	KL Qt vs prev Qt
+-94 	 0 	 135
+[2,    80] loss: 232.894
+Log_like 	KL Z 	KL Qt vs prev Qt
+-90 	 0 	 138
+[2,   100] loss: 236.501
+Log_like 	KL Z 	KL Qt vs prev Qt
+-101 	 0 	 143
+[2,   120] loss: 239.695
+starting epoch 2
+Log_like 	KL Z 	KL Qt vs prev Qt
+-105 	 0 	 151
+[3,    20] loss: 248.757
+Log_like 	KL Z 	KL Qt vs prev Qt
+-95 	 0 	 155
+[3,    40] loss: 251.520
+Log_like 	KL Z 	KL Qt vs prev Qt
+-102 	 0 	 159
+[3,    60] loss: 256.227
+Log_like 	KL Z 	KL Qt vs prev Qt
+-111 	 0 	 165
+[3,    80] loss: 260.953
+Log_like 	KL Z 	KL Qt vs prev Qt
+-95 	 0 	 168
+[3,   100] loss: 266.286
+Log_like 	KL Z 	KL Qt vs prev Qt
+-97 	 0 	 175
+[3,   120] loss: 268.847
+starting epoch 3
+Log_like 	KL Z 	KL Qt vs prev Qt
+-91 	 0 	 185
+[4,    20] loss: 279.666
+Log_like 	KL Z 	KL Qt vs prev Qt
+-99 	 0 	 189
+[4,    40] loss: 285.454
+Log_like 	KL Z 	KL Qt vs prev Qt
+-102 	 0 	 192
+[4,    60] loss: 291.153
+Log_like 	KL Z 	KL Qt vs prev Qt
+-93 	 0 	 198
+[4,    80] loss: 295.544
+Log_like 	KL Z 	KL Qt vs prev Qt
+-100 	 0 	 205
+[4,   100] loss: 300.680
+Log_like 	KL Z 	KL Qt vs prev Qt
+-86 	 0 	 210
+[4,   120] loss: 305.215
+saving image to ./figs/after_task_2_task_0.png
+saving image to ./figs/after_task_2_task_1.png
+test_classifier=2.46, std=0.04
+
+Process finished with exit code 0
+

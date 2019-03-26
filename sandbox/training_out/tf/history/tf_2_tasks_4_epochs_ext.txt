@@ -1,0 +1,242 @@
+/data/anaconda/envs/py35/bin/python3 /home/aml12/AML2019/VCL/generative/exp.py
+decoder shared MLP of size [500, 500, 784]
+/data/anaconda/envs/py35/lib/python3.5/site-packages/h5py/__init__.py:36: FutureWarning: Conversion of the second argument of issubdtype from `float` to `np.floating` is deprecated. In future, it will be treated as `np.float64 == np.dtype(float).type`.
+  from ._conv import register_converters as _register_converters
+Using TensorFlow backend.
+2019-03-25 13:55:42.959504: I tensorflow/core/platform/cpu_feature_guard.cc:141] Your CPU supports instructions that this TensorFlow binary was not compiled to use: AVX2 FMA
+2019-03-25 13:55:43.059210: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1432] Found device 0 with properties: 
+name: Tesla K80 major: 3 minor: 7 memoryClockRate(GHz): 0.8235
+pciBusID: c49b:00:00.0
+totalMemory: 11.17GiB freeMemory: 11.10GiB
+2019-03-25 13:55:43.059243: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1511] Adding visible gpu devices: 0
+2019-03-25 13:55:43.346712: I tensorflow/core/common_runtime/gpu/gpu_device.cc:982] Device interconnect StreamExecutor with strength 1 edge matrix:
+2019-03-25 13:55:43.346752: I tensorflow/core/common_runtime/gpu/gpu_device.cc:988]      0 
+2019-03-25 13:55:43.346761: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1001] 0:   N 
+2019-03-25 13:55:43.347005: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1115] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:0 with 10758 MB memory) -> physical GPU (device: 0, name: Tesla K80, pci bus id: c49b:00:00.0, compute capability: 3.7)
+training from scratch
+WARNING:tensorflow:From models/utils.py:26: all_variables (from tensorflow.python.ops.variables) is deprecated and will be removed after 2017-03-02.
+Instructions for updating:
+Please use tf.global_variables instead.
+WARNING:tensorflow:From /data/anaconda/envs/py35/lib/python3.5/site-packages/tensorflow/python/util/tf_should_use.py:189: initialize_variables (from tensorflow.python.ops.variables) is deprecated and will be removed after 2017-03-02.
+Instructions for updating:
+Use `tf.variables_initializer` instead.
+decoder head MLP of size [50, 500, 500]
+encoder shared MLP of size [784, 500, 500, 500, 100]
+construct eval function...
+construct fit function...
+using K=10 theta samples for onlinevi
+training for 4 epochs with lr=0.00010
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-479 	 3 	 	 -483 	 -482 	 663
+Loss on iteration 18 1146.2456
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-287 	 16 	 	 -303 	 -304 	 663
+Loss on iteration 38 967.99146
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-225 	 3 	 	 -228 	 -229 	 663
+Loss on iteration 58 891.7225
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-208 	 2 	 	 -210 	 -210 	 663
+Loss on iteration 78 873.64557
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-203 	 1 	 	 -205 	 -205 	 662
+Loss on iteration 98 868.08606
+Iter 1, bound=-305.78, kl=663.30, time=10.63
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-209 	 1 	 	 -210 	 -210 	 662
+Loss on iteration 18 872.9227
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-205 	 1 	 	 -207 	 -207 	 662
+Loss on iteration 38 869.41986
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-195 	 1 	 	 -197 	 -197 	 662
+Loss on iteration 58 859.07214
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-209 	 1 	 	 -211 	 -211 	 661
+Loss on iteration 78 873.47485
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-196 	 2 	 	 -198 	 -198 	 661
+Loss on iteration 98 859.8783
+Iter 2, bound=-201.77, kl=662.09, time=8.69
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-196 	 2 	 	 -199 	 -199 	 661
+Loss on iteration 18 860.62994
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-188 	 5 	 	 -194 	 -193 	 661
+Loss on iteration 38 855.1122
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-176 	 6 	 	 -182 	 -182 	 660
+Loss on iteration 58 843.7386
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-177 	 6 	 	 -184 	 -184 	 660
+Loss on iteration 78 844.6115
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-174 	 7 	 	 -182 	 -182 	 660
+Loss on iteration 98 842.30035
+Iter 3, bound=-187.64, kl=660.87, time=9.28
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-157 	 8 	 	 -166 	 -165 	 660
+Loss on iteration 18 826.26514
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-168 	 8 	 	 -176 	 -176 	 659
+Loss on iteration 38 837.16327
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-153 	 9 	 	 -162 	 -162 	 659
+Loss on iteration 58 821.4245
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-160 	 8 	 	 -168 	 -169 	 659
+Loss on iteration 78 828.26953
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-150 	 8 	 	 -160 	 -159 	 659
+Loss on iteration 98 818.4521
+Iter 4, bound=-166.54, kl=659.64, time=9.22
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task1_1.png
+task 1 test_ll=-154.09, ste=1.22, time=0.37
+parameters saved at save/mnist_onlinevi_K10/checkpoint_0.pkl
+update prior...
+reset the log sigma of q to -5
+decoder head MLP of size [50, 500, 500]
+encoder shared MLP of size [784, 500, 500, 500, 100]
+construct eval function...
+construct fit function...
+using K=10 theta samples for onlinevi
+training for 4 epochs with lr=0.00010
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-149 	 11 	 	 -160 	 -160 	 13
+Loss on iteration 18 174.71423
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-113 	 5 	 	 -119 	 -118 	 20
+Loss on iteration 38 140.03801
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-109 	 3 	 	 -113 	 -112 	 17
+Loss on iteration 58 130.17383
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-102 	 3 	 	 -106 	 -106 	 13
+Loss on iteration 78 119.76178
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-100 	 4 	 	 -104 	 -104 	 10
+Loss on iteration 98 115.119
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-91 	 4 	 	 -96 	 -96 	 9
+Loss on iteration 118 105.75758
+Iter 1, bound=-130.24, kl=13.43, time=16.98
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-98 	 4 	 	 -102 	 -102 	 8
+Loss on iteration 18 110.82501
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-93 	 4 	 	 -97 	 -97 	 7
+Loss on iteration 38 105.91858
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-86 	 5 	 	 -91 	 -91 	 7
+Loss on iteration 58 99.24914
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-82 	 7 	 	 -89 	 -89 	 7
+Loss on iteration 78 97.21469
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-86 	 7 	 	 -94 	 -94 	 8
+Loss on iteration 98 103.111786
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-77 	 8 	 	 -86 	 -86 	 8
+Loss on iteration 118 94.43181
+Iter 2, bound=-95.40, kl=8.09, time=15.43
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-75 	 7 	 	 -83 	 -83 	 8
+Loss on iteration 18 91.664734
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-73 	 7 	 	 -81 	 -81 	 8
+Loss on iteration 38 89.34838
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-71 	 7 	 	 -79 	 -79 	 7
+Loss on iteration 58 87.35261
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-72 	 7 	 	 -80 	 -80 	 7
+Loss on iteration 78 88.361
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-73 	 7 	 	 -81 	 -81 	 7
+Loss on iteration 98 88.81218
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-73 	 7 	 	 -81 	 -81 	 7
+Loss on iteration 118 89.08963
+Iter 3, bound=-81.80, kl=7.79, time=16.14
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-79 	 7 	 	 -87 	 -87 	 6
+Loss on iteration 18 94.571785
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-62 	 8 	 	 -71 	 -71 	 6
+Loss on iteration 38 77.95279
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-70 	 7 	 	 -77 	 -77 	 6
+Loss on iteration 58 84.49113
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-68 	 7 	 	 -77 	 -77 	 6
+Loss on iteration 78 83.60323
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-65 	 7 	 	 -73 	 -73 	 6
+Loss on iteration 98 79.684235
+
+ll,	     klz,	ll-klz,	bound,	 klq_t2qt-1
+-65 	 8 	 	 -73 	 -73 	 6
+Loss on iteration 118 80.000626
+Iter 4, bound=-76.72, kl=6.66, time=16.62
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task2_1.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task2_2.png
+task 1 test_ll=-202.63, ste=1.25, time=0.20
+task 2 test_ll=-68.24, ste=0.80, time=0.41
+parameters saved at save/mnist_onlinevi_K10/checkpoint_1.pkl
+update prior...
+reset the log sigma of q to -5
+saving image to figs/mnist_onlinevi_K10/mnist_gen_all.png
+[(-154.08806956898084, 1.2221903124100753)]
+[(-202.62793523615056, 1.2465588953318982), (-68.24344987135667, 0.799517957434029)]
+Traceback (most recent call last):
+  File "/home/aml12/AML2019/VCL/generative/exp.py", line 233, in <module>
+    main(data_name, method, dimZ, dimH, n_channel, batch_size, K_mc, checkpoint, lbd)
+  File "/home/aml12/AML2019/VCL/generative/exp.py", line 217, in main
+    pickle.dump(result_list, open(fname, 'wb'))
+FileNotFoundError: [Errno 2] No such file or directory: 'results/mnist_onlinevi_K10.pkl'
+
+Process finished with exit code 1
+

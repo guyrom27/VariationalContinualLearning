@@ -1,0 +1,84 @@
+/data/anaconda/envs/py35/bin/python3 /home/aml12/AML2019/VCL/sandbox/torch_sandbox.py
+True
+Using device: cuda:0
+starting task 0
+starting epoch 0
+[1,    20] loss: 1124.048
+[1,    40] loss: 1018.992
+[1,    60] loss: 866.815
+[1,    80] loss: 814.179
+[1,   100] loss: 803.700
+[1,   120] loss: 804.541
+[1,   140] loss: 803.212
+[1,   160] loss: 804.042
+[1,   180] loss: 803.949
+[1,   200] loss: 801.448
+[1,   220] loss: 800.510
+[1,   240] loss: 801.607
+[1,   260] loss: 801.932
+[1,   280] loss: 801.773
+saving image to ./figs/after_task_1_task_0.png
+test_classifier=1.46, std=0.02
+starting task 1
+starting epoch 0
+[1,    20] loss: 259.484
+[1,    40] loss: 189.586
+[1,    60] loss: 194.604
+[1,    80] loss: 203.401
+[1,   100] loss: 210.943
+[1,   120] loss: 214.998
+[1,   140] loss: 221.636
+[1,   160] loss: 223.809
+[1,   180] loss: 231.034
+[1,   200] loss: 231.246
+[1,   220] loss: 235.561
+[1,   240] loss: 237.149
+[1,   260] loss: 246.910
+[1,   280] loss: 246.070
+[1,   300] loss: 250.486
+[1,   320] loss: 257.691
+saving image to ./figs/after_task_2_task_0.png
+saving image to ./figs/after_task_2_task_1.png
+test_classifier=2.46, std=0.04
+starting task 2
+starting epoch 0
+[1,    20] loss: 242.597
+[1,    40] loss: 251.649
+[1,    60] loss: 275.515
+[1,    80] loss: 288.075
+[1,   100] loss: 299.983
+[1,   120] loss: 312.820
+[1,   140] loss: 323.490
+Traceback (most recent call last):
+  File "/home/aml12/AML2019/VCL/sandbox/torch_sandbox.py", line 397, in <module>
+    main()
+  File "/home/aml12/AML2019/VCL/sandbox/torch_sandbox.py", line 381, in main
+    task_model.train_model(n_epochs, train_loader)
+  File "/home/aml12/AML2019/VCL/sandbox/torch_sandbox.py", line 289, in train_model
+    loss = self(inputs.view(-1, 28 ** 2))
+  File "/data/anaconda/envs/py35/lib/python3.5/site-packages/torch/nn/modules/module.py", line 489, in __call__
+    result = self.forward(*input, **kwargs)
+  File "/home/aml12/AML2019/VCL/sandbox/torch_sandbox.py", line 250, in forward
+    logp, kl_z = math_utils.log_P_y_GIVEN_x(Xs, self.enc, self.sample_and_decode)
+  File "/data/home/aml12/AML2019/VCL/sandbox/math_utils.py", line 78, in log_P_y_GIVEN_x
+    Mu_Ys = sample_and_decode(Zs_params)
+  File "/data/anaconda/envs/py35/lib/python3.5/site-packages/torch/nn/modules/module.py", line 489, in __call__
+    result = self.forward(*input, **kwargs)
+  File "/data/anaconda/envs/py35/lib/python3.5/site-packages/torch/nn/modules/container.py", line 92, in forward
+    input = module(input)
+  File "/data/anaconda/envs/py35/lib/python3.5/site-packages/torch/nn/modules/module.py", line 489, in __call__
+    result = self.forward(*input, **kwargs)
+  File "/home/aml12/AML2019/VCL/sandbox/torch_sandbox.py", line 160, in forward
+    return self.net(Xs)
+  File "/data/anaconda/envs/py35/lib/python3.5/site-packages/torch/nn/modules/module.py", line 489, in __call__
+    result = self.forward(*input, **kwargs)
+  File "/data/anaconda/envs/py35/lib/python3.5/site-packages/torch/nn/modules/container.py", line 92, in forward
+    input = module(input)
+  File "/data/anaconda/envs/py35/lib/python3.5/site-packages/torch/nn/modules/module.py", line 489, in __call__
+    result = self.forward(*input, **kwargs)
+  File "/home/aml12/AML2019/VCL/sandbox/torch_sandbox.py", line 118, in forward
+    sampled_b = (self.mu.bias + self.b_standard_normal_sampler.sample().to(device=device) * torch.exp(self.log_sigma.bias))
+KeyboardInterrupt
+
+Process finished with exit code 1
+

@@ -1,0 +1,1113 @@
+/data/anaconda/envs/py35/bin/python3 /home/aml12/AML2019/VCL/sandbox/torch_sandbox.py
+True
+Using device: cuda:0
+starting task 0
+starting epoch 0
+Log_like 	KL Z 	KL Qt vs prev Qt
+-493 	 1 	 597
+[1,    20] loss: 1123.527
+Log_like 	KL Z 	KL Qt vs prev Qt
+-336 	 0 	 597
+[1,    40] loss: 1016.876
+Log_like 	KL Z 	KL Qt vs prev Qt
+-225 	 0 	 596
+[1,    60] loss: 861.572
+Log_like 	KL Z 	KL Qt vs prev Qt
+-200 	 0 	 596
+[1,    80] loss: 812.254
+Log_like 	KL Z 	KL Qt vs prev Qt
+-203 	 0 	 596
+[1,   100] loss: 803.141
+starting epoch 1
+Log_like 	KL Z 	KL Qt vs prev Qt
+-201 	 0 	 595
+[2,    20] loss: 802.011
+Log_like 	KL Z 	KL Qt vs prev Qt
+-203 	 0 	 595
+[2,    40] loss: 799.620
+Log_like 	KL Z 	KL Qt vs prev Qt
+-200 	 0 	 595
+[2,    60] loss: 801.924
+Log_like 	KL Z 	KL Qt vs prev Qt
+-202 	 0 	 595
+[2,    80] loss: 798.963
+Log_like 	KL Z 	KL Qt vs prev Qt
+-216 	 0 	 595
+[2,   100] loss: 800.135
+starting epoch 2
+Log_like 	KL Z 	KL Qt vs prev Qt
+-212 	 0 	 594
+[3,    20] loss: 800.844
+Log_like 	KL Z 	KL Qt vs prev Qt
+-205 	 0 	 594
+[3,    40] loss: 798.126
+Log_like 	KL Z 	KL Qt vs prev Qt
+-198 	 0 	 594
+[3,    60] loss: 797.272
+Log_like 	KL Z 	KL Qt vs prev Qt
+-201 	 0 	 594
+[3,    80] loss: 798.685
+Log_like 	KL Z 	KL Qt vs prev Qt
+-204 	 0 	 593
+[3,   100] loss: 798.363
+starting epoch 3
+Log_like 	KL Z 	KL Qt vs prev Qt
+-201 	 0 	 593
+[4,    20] loss: 796.284
+Log_like 	KL Z 	KL Qt vs prev Qt
+-200 	 0 	 593
+[4,    40] loss: 798.385
+Log_like 	KL Z 	KL Qt vs prev Qt
+-209 	 0 	 592
+[4,    60] loss: 796.437
+Log_like 	KL Z 	KL Qt vs prev Qt
+-196 	 0 	 592
+[4,    80] loss: 796.333
+Log_like 	KL Z 	KL Qt vs prev Qt
+-197 	 0 	 592
+[4,   100] loss: 796.172
+starting epoch 4
+Log_like 	KL Z 	KL Qt vs prev Qt
+-201 	 0 	 592
+[5,    20] loss: 796.160
+Log_like 	KL Z 	KL Qt vs prev Qt
+-205 	 0 	 591
+[5,    40] loss: 797.002
+Log_like 	KL Z 	KL Qt vs prev Qt
+-197 	 0 	 591
+[5,    60] loss: 794.890
+Log_like 	KL Z 	KL Qt vs prev Qt
+-205 	 0 	 591
+[5,    80] loss: 794.037
+Log_like 	KL Z 	KL Qt vs prev Qt
+-212 	 0 	 591
+[5,   100] loss: 795.231
+starting epoch 5
+Log_like 	KL Z 	KL Qt vs prev Qt
+-202 	 0 	 590
+[6,    20] loss: 794.980
+Log_like 	KL Z 	KL Qt vs prev Qt
+-213 	 0 	 590
+[6,    40] loss: 795.522
+Log_like 	KL Z 	KL Qt vs prev Qt
+-206 	 0 	 590
+[6,    60] loss: 792.495
+Log_like 	KL Z 	KL Qt vs prev Qt
+-200 	 0 	 590
+[6,    80] loss: 793.841
+Log_like 	KL Z 	KL Qt vs prev Qt
+-210 	 0 	 589
+[6,   100] loss: 794.560
+saving image to ./figs/after_task_1_task_0.png
+test_classifier=1.46, std=0.02
+starting task 1
+starting epoch 0
+Log_like 	KL Z 	KL Qt vs prev Qt
+-179 	 0 	 14
+[1,    20] loss: 248.863
+Log_like 	KL Z 	KL Qt vs prev Qt
+-120 	 0 	 25
+[1,    40] loss: 164.727
+Log_like 	KL Z 	KL Qt vs prev Qt
+-101 	 0 	 24
+[1,    60] loss: 135.128
+Log_like 	KL Z 	KL Qt vs prev Qt
+-100 	 0 	 19
+[1,    80] loss: 126.950
+Log_like 	KL Z 	KL Qt vs prev Qt
+-96 	 0 	 16
+[1,   100] loss: 121.407
+Log_like 	KL Z 	KL Qt vs prev Qt
+-98 	 0 	 14
+[1,   120] loss: 119.640
+starting epoch 1
+Log_like 	KL Z 	KL Qt vs prev Qt
+-95 	 0 	 13
+[2,    20] loss: 115.593
+Log_like 	KL Z 	KL Qt vs prev Qt
+-109 	 0 	 12
+[2,    40] loss: 114.787
+Log_like 	KL Z 	KL Qt vs prev Qt
+-105 	 0 	 11
+[2,    60] loss: 115.639
+Log_like 	KL Z 	KL Qt vs prev Qt
+-97 	 0 	 10
+[2,    80] loss: 114.706
+Log_like 	KL Z 	KL Qt vs prev Qt
+-99 	 0 	 10
+[2,   100] loss: 111.155
+Log_like 	KL Z 	KL Qt vs prev Qt
+-102 	 0 	 10
+[2,   120] loss: 111.143
+starting epoch 2
+Log_like 	KL Z 	KL Qt vs prev Qt
+-103 	 0 	 9
+[3,    20] loss: 110.772
+Log_like 	KL Z 	KL Qt vs prev Qt
+-105 	 0 	 9
+[3,    40] loss: 110.793
+Log_like 	KL Z 	KL Qt vs prev Qt
+-112 	 0 	 9
+[3,    60] loss: 111.962
+Log_like 	KL Z 	KL Qt vs prev Qt
+-104 	 0 	 9
+[3,    80] loss: 109.600
+Log_like 	KL Z 	KL Qt vs prev Qt
+-98 	 0 	 8
+[3,   100] loss: 112.240
+Log_like 	KL Z 	KL Qt vs prev Qt
+-105 	 0 	 8
+[3,   120] loss: 109.739
+starting epoch 3
+Log_like 	KL Z 	KL Qt vs prev Qt
+-100 	 0 	 8
+[4,    20] loss: 109.573
+Log_like 	KL Z 	KL Qt vs prev Qt
+-98 	 0 	 8
+[4,    40] loss: 108.572
+Log_like 	KL Z 	KL Qt vs prev Qt
+-106 	 0 	 8
+[4,    60] loss: 111.188
+Log_like 	KL Z 	KL Qt vs prev Qt
+-102 	 0 	 7
+[4,    80] loss: 109.888
+Log_like 	KL Z 	KL Qt vs prev Qt
+-99 	 0 	 7
+[4,   100] loss: 107.169
+Log_like 	KL Z 	KL Qt vs prev Qt
+-104 	 0 	 7
+[4,   120] loss: 109.154
+starting epoch 4
+Log_like 	KL Z 	KL Qt vs prev Qt
+-96 	 0 	 7
+[5,    20] loss: 109.851
+Log_like 	KL Z 	KL Qt vs prev Qt
+-92 	 0 	 7
+[5,    40] loss: 108.770
+Log_like 	KL Z 	KL Qt vs prev Qt
+-107 	 0 	 7
+[5,    60] loss: 107.414
+Log_like 	KL Z 	KL Qt vs prev Qt
+-98 	 0 	 6
+[5,    80] loss: 107.223
+Log_like 	KL Z 	KL Qt vs prev Qt
+-102 	 0 	 7
+[5,   100] loss: 107.079
+Log_like 	KL Z 	KL Qt vs prev Qt
+-99 	 0 	 6
+[5,   120] loss: 108.599
+starting epoch 5
+Log_like 	KL Z 	KL Qt vs prev Qt
+-102 	 0 	 6
+[6,    20] loss: 105.885
+Log_like 	KL Z 	KL Qt vs prev Qt
+-101 	 0 	 6
+[6,    40] loss: 107.475
+Log_like 	KL Z 	KL Qt vs prev Qt
+-94 	 0 	 6
+[6,    60] loss: 107.992
+Log_like 	KL Z 	KL Qt vs prev Qt
+-90 	 0 	 6
+[6,    80] loss: 108.587
+Log_like 	KL Z 	KL Qt vs prev Qt
+-102 	 0 	 6
+[6,   100] loss: 108.952
+Log_like 	KL Z 	KL Qt vs prev Qt
+-103 	 0 	 6
+[6,   120] loss: 106.643
+saving image to ./figs/after_task_2_task_0.png
+saving image to ./figs/after_task_2_task_1.png
+test_classifier=2.46, std=0.04
+starting task 2
+starting epoch 0
+Log_like 	KL Z 	KL Qt vs prev Qt
+-225 	 1 	 11
+[1,    20] loss: 262.847
+Log_like 	KL Z 	KL Qt vs prev Qt
+-215 	 0 	 10
+[1,    40] loss: 225.634
+Log_like 	KL Z 	KL Qt vs prev Qt
+-207 	 0 	 6
+[1,    60] loss: 217.006
+Log_like 	KL Z 	KL Qt vs prev Qt
+-206 	 0 	 5
+[1,    80] loss: 215.276
+Log_like 	KL Z 	KL Qt vs prev Qt
+-207 	 0 	 4
+[1,   100] loss: 214.401
+Log_like 	KL Z 	KL Qt vs prev Qt
+-205 	 0 	 4
+[1,   120] loss: 211.385
+starting epoch 1
+Log_like 	KL Z 	KL Qt vs prev Qt
+-208 	 0 	 4
+[2,    20] loss: 212.184
+Log_like 	KL Z 	KL Qt vs prev Qt
+-209 	 0 	 4
+[2,    40] loss: 211.143
+Log_like 	KL Z 	KL Qt vs prev Qt
+-203 	 0 	 4
+[2,    60] loss: 212.396
+Log_like 	KL Z 	KL Qt vs prev Qt
+-218 	 0 	 4
+[2,    80] loss: 214.154
+Log_like 	KL Z 	KL Qt vs prev Qt
+-200 	 0 	 4
+[2,   100] loss: 209.430
+Log_like 	KL Z 	KL Qt vs prev Qt
+-212 	 0 	 3
+[2,   120] loss: 212.747
+starting epoch 2
+Log_like 	KL Z 	KL Qt vs prev Qt
+-215 	 0 	 3
+[3,    20] loss: 211.301
+Log_like 	KL Z 	KL Qt vs prev Qt
+-203 	 0 	 3
+[3,    40] loss: 211.051
+Log_like 	KL Z 	KL Qt vs prev Qt
+-204 	 0 	 3
+[3,    60] loss: 208.820
+Log_like 	KL Z 	KL Qt vs prev Qt
+-208 	 0 	 3
+[3,    80] loss: 211.123
+Log_like 	KL Z 	KL Qt vs prev Qt
+-215 	 0 	 3
+[3,   100] loss: 212.295
+Log_like 	KL Z 	KL Qt vs prev Qt
+-190 	 0 	 3
+[3,   120] loss: 210.704
+starting epoch 3
+Log_like 	KL Z 	KL Qt vs prev Qt
+-201 	 0 	 3
+[4,    20] loss: 211.631
+Log_like 	KL Z 	KL Qt vs prev Qt
+-202 	 0 	 3
+[4,    40] loss: 211.200
+Log_like 	KL Z 	KL Qt vs prev Qt
+-205 	 0 	 3
+[4,    60] loss: 208.490
+Log_like 	KL Z 	KL Qt vs prev Qt
+-211 	 0 	 3
+[4,    80] loss: 210.789
+Log_like 	KL Z 	KL Qt vs prev Qt
+-209 	 0 	 3
+[4,   100] loss: 211.629
+Log_like 	KL Z 	KL Qt vs prev Qt
+-187 	 0 	 3
+[4,   120] loss: 208.010
+starting epoch 4
+Log_like 	KL Z 	KL Qt vs prev Qt
+-209 	 0 	 3
+[5,    20] loss: 208.782
+Log_like 	KL Z 	KL Qt vs prev Qt
+-207 	 0 	 3
+[5,    40] loss: 210.008
+Log_like 	KL Z 	KL Qt vs prev Qt
+-210 	 0 	 3
+[5,    60] loss: 210.583
+Log_like 	KL Z 	KL Qt vs prev Qt
+-216 	 0 	 3
+[5,    80] loss: 210.513
+Log_like 	KL Z 	KL Qt vs prev Qt
+-213 	 0 	 3
+[5,   100] loss: 209.864
+Log_like 	KL Z 	KL Qt vs prev Qt
+-197 	 0 	 3
+[5,   120] loss: 210.242
+starting epoch 5
+Log_like 	KL Z 	KL Qt vs prev Qt
+-205 	 0 	 2
+[6,    20] loss: 209.674
+Log_like 	KL Z 	KL Qt vs prev Qt
+-209 	 0 	 2
+[6,    40] loss: 210.403
+Log_like 	KL Z 	KL Qt vs prev Qt
+-207 	 0 	 3
+[6,    60] loss: 209.796
+Log_like 	KL Z 	KL Qt vs prev Qt
+-203 	 0 	 2
+[6,    80] loss: 209.886
+Log_like 	KL Z 	KL Qt vs prev Qt
+-210 	 0 	 2
+[6,   100] loss: 209.280
+Log_like 	KL Z 	KL Qt vs prev Qt
+-199 	 0 	 3
+[6,   120] loss: 208.629
+saving image to ./figs/after_task_3_task_0.png
+saving image to ./figs/after_task_3_task_1.png
+saving image to ./figs/after_task_3_task_2.png
+test_classifier=1.46, std=0.02
+starting task 3
+starting epoch 0
+Log_like 	KL Z 	KL Qt vs prev Qt
+-213 	 0 	 11
+[1,    20] loss: 253.823
+Log_like 	KL Z 	KL Qt vs prev Qt
+-195 	 0 	 11
+[1,    40] loss: 211.843
+Log_like 	KL Z 	KL Qt vs prev Qt
+-192 	 0 	 7
+[1,    60] loss: 201.331
+Log_like 	KL Z 	KL Qt vs prev Qt
+-192 	 0 	 5
+[1,    80] loss: 199.859
+Log_like 	KL Z 	KL Qt vs prev Qt
+-180 	 0 	 5
+[1,   100] loss: 194.662
+Log_like 	KL Z 	KL Qt vs prev Qt
+-195 	 0 	 4
+[1,   120] loss: 195.551
+starting epoch 1
+Log_like 	KL Z 	KL Qt vs prev Qt
+-192 	 0 	 4
+[2,    20] loss: 197.356
+Log_like 	KL Z 	KL Qt vs prev Qt
+-196 	 0 	 4
+[2,    40] loss: 193.960
+Log_like 	KL Z 	KL Qt vs prev Qt
+-188 	 0 	 3
+[2,    60] loss: 195.117
+Log_like 	KL Z 	KL Qt vs prev Qt
+-192 	 0 	 4
+[2,    80] loss: 195.609
+Log_like 	KL Z 	KL Qt vs prev Qt
+-183 	 0 	 3
+[2,   100] loss: 195.019
+Log_like 	KL Z 	KL Qt vs prev Qt
+-192 	 0 	 3
+[2,   120] loss: 193.842
+starting epoch 2
+Log_like 	KL Z 	KL Qt vs prev Qt
+-195 	 0 	 3
+[3,    20] loss: 195.370
+Log_like 	KL Z 	KL Qt vs prev Qt
+-198 	 0 	 3
+[3,    40] loss: 193.986
+Log_like 	KL Z 	KL Qt vs prev Qt
+-194 	 0 	 3
+[3,    60] loss: 194.015
+Log_like 	KL Z 	KL Qt vs prev Qt
+-188 	 0 	 3
+[3,    80] loss: 194.916
+Log_like 	KL Z 	KL Qt vs prev Qt
+-184 	 0 	 3
+[3,   100] loss: 195.564
+Log_like 	KL Z 	KL Qt vs prev Qt
+-187 	 0 	 3
+[3,   120] loss: 192.161
+starting epoch 3
+Log_like 	KL Z 	KL Qt vs prev Qt
+-184 	 0 	 3
+[4,    20] loss: 193.718
+Log_like 	KL Z 	KL Qt vs prev Qt
+-194 	 0 	 3
+[4,    40] loss: 193.505
+Log_like 	KL Z 	KL Qt vs prev Qt
+-193 	 0 	 3
+[4,    60] loss: 194.866
+Log_like 	KL Z 	KL Qt vs prev Qt
+-183 	 0 	 3
+[4,    80] loss: 194.004
+Log_like 	KL Z 	KL Qt vs prev Qt
+-189 	 0 	 3
+[4,   100] loss: 194.328
+Log_like 	KL Z 	KL Qt vs prev Qt
+-197 	 0 	 3
+[4,   120] loss: 193.176
+starting epoch 4
+Log_like 	KL Z 	KL Qt vs prev Qt
+-186 	 0 	 3
+[5,    20] loss: 193.243
+Log_like 	KL Z 	KL Qt vs prev Qt
+-202 	 0 	 3
+[5,    40] loss: 194.126
+Log_like 	KL Z 	KL Qt vs prev Qt
+-184 	 0 	 3
+[5,    60] loss: 193.106
+Log_like 	KL Z 	KL Qt vs prev Qt
+-192 	 0 	 3
+[5,    80] loss: 193.124
+Log_like 	KL Z 	KL Qt vs prev Qt
+-196 	 0 	 3
+[5,   100] loss: 194.607
+Log_like 	KL Z 	KL Qt vs prev Qt
+-191 	 0 	 3
+[5,   120] loss: 193.102
+starting epoch 5
+Log_like 	KL Z 	KL Qt vs prev Qt
+-190 	 0 	 3
+[6,    20] loss: 190.770
+Log_like 	KL Z 	KL Qt vs prev Qt
+-198 	 0 	 2
+[6,    40] loss: 193.141
+Log_like 	KL Z 	KL Qt vs prev Qt
+-196 	 0 	 2
+[6,    60] loss: 194.526
+Log_like 	KL Z 	KL Qt vs prev Qt
+-193 	 0 	 2
+[6,    80] loss: 193.056
+Log_like 	KL Z 	KL Qt vs prev Qt
+-193 	 0 	 2
+[6,   100] loss: 193.175
+Log_like 	KL Z 	KL Qt vs prev Qt
+-182 	 0 	 3
+[6,   120] loss: 193.732
+saving image to ./figs/after_task_4_task_0.png
+saving image to ./figs/after_task_4_task_1.png
+saving image to ./figs/after_task_4_task_2.png
+saving image to ./figs/after_task_4_task_3.png
+test_classifier=1.46, std=0.02
+starting task 4
+starting epoch 0
+Log_like 	KL Z 	KL Qt vs prev Qt
+-197 	 0 	 14
+[1,    20] loss: 254.455
+Log_like 	KL Z 	KL Qt vs prev Qt
+-186 	 0 	 15
+[1,    40] loss: 204.086
+Log_like 	KL Z 	KL Qt vs prev Qt
+-177 	 0 	 10
+[1,    60] loss: 189.649
+Log_like 	KL Z 	KL Qt vs prev Qt
+-182 	 0 	 8
+[1,    80] loss: 187.054
+Log_like 	KL Z 	KL Qt vs prev Qt
+-174 	 0 	 7
+[1,   100] loss: 184.268
+starting epoch 1
+Log_like 	KL Z 	KL Qt vs prev Qt
+-176 	 0 	 6
+[2,    20] loss: 184.518
+Log_like 	KL Z 	KL Qt vs prev Qt
+-176 	 0 	 5
+[2,    40] loss: 180.210
+Log_like 	KL Z 	KL Qt vs prev Qt
+-173 	 0 	 6
+[2,    60] loss: 182.670
+Log_like 	KL Z 	KL Qt vs prev Qt
+-177 	 0 	 5
+[2,    80] loss: 181.876
+Log_like 	KL Z 	KL Qt vs prev Qt
+-177 	 0 	 5
+[2,   100] loss: 182.930
+starting epoch 2
+Log_like 	KL Z 	KL Qt vs prev Qt
+-187 	 0 	 5
+[3,    20] loss: 180.595
+Log_like 	KL Z 	KL Qt vs prev Qt
+-173 	 0 	 5
+[3,    40] loss: 180.444
+Log_like 	KL Z 	KL Qt vs prev Qt
+-183 	 0 	 5
+[3,    60] loss: 183.176
+Log_like 	KL Z 	KL Qt vs prev Qt
+-169 	 0 	 5
+[3,    80] loss: 180.768
+Log_like 	KL Z 	KL Qt vs prev Qt
+-174 	 0 	 5
+[3,   100] loss: 180.136
+starting epoch 3
+Log_like 	KL Z 	KL Qt vs prev Qt
+-181 	 0 	 5
+[4,    20] loss: 181.838
+Log_like 	KL Z 	KL Qt vs prev Qt
+-175 	 0 	 4
+[4,    40] loss: 180.002
+Log_like 	KL Z 	KL Qt vs prev Qt
+-181 	 0 	 4
+[4,    60] loss: 179.085
+Log_like 	KL Z 	KL Qt vs prev Qt
+-179 	 0 	 4
+[4,    80] loss: 181.126
+Log_like 	KL Z 	KL Qt vs prev Qt
+-171 	 0 	 4
+[4,   100] loss: 179.471
+starting epoch 4
+Log_like 	KL Z 	KL Qt vs prev Qt
+-173 	 0 	 4
+[5,    20] loss: 179.596
+Log_like 	KL Z 	KL Qt vs prev Qt
+-173 	 0 	 4
+[5,    40] loss: 180.326
+Log_like 	KL Z 	KL Qt vs prev Qt
+-173 	 0 	 4
+[5,    60] loss: 179.885
+Log_like 	KL Z 	KL Qt vs prev Qt
+-165 	 0 	 4
+[5,    80] loss: 179.306
+Log_like 	KL Z 	KL Qt vs prev Qt
+-174 	 0 	 4
+[5,   100] loss: 180.430
+starting epoch 5
+Log_like 	KL Z 	KL Qt vs prev Qt
+-180 	 0 	 4
+[6,    20] loss: 179.866
+Log_like 	KL Z 	KL Qt vs prev Qt
+-173 	 0 	 4
+[6,    40] loss: 180.715
+Log_like 	KL Z 	KL Qt vs prev Qt
+-175 	 0 	 4
+[6,    60] loss: 177.463
+Log_like 	KL Z 	KL Qt vs prev Qt
+-169 	 0 	 4
+[6,    80] loss: 179.624
+Log_like 	KL Z 	KL Qt vs prev Qt
+-171 	 0 	 4
+[6,   100] loss: 180.153
+saving image to ./figs/after_task_5_task_0.png
+saving image to ./figs/after_task_5_task_1.png
+saving image to ./figs/after_task_5_task_2.png
+saving image to ./figs/after_task_5_task_3.png
+saving image to ./figs/after_task_5_task_4.png
+test_classifier=1.46, std=0.02
+starting task 5
+starting epoch 0
+Log_like 	KL Z 	KL Qt vs prev Qt
+-210 	 0 	 13
+[1,    20] loss: 256.077
+Log_like 	KL Z 	KL Qt vs prev Qt
+-204 	 0 	 10
+[1,    40] loss: 214.888
+Log_like 	KL Z 	KL Qt vs prev Qt
+-194 	 0 	 6
+[1,    60] loss: 205.260
+Log_like 	KL Z 	KL Qt vs prev Qt
+-191 	 0 	 4
+[1,    80] loss: 202.445
+Log_like 	KL Z 	KL Qt vs prev Qt
+-202 	 0 	 3
+[1,   100] loss: 203.259
+starting epoch 1
+Log_like 	KL Z 	KL Qt vs prev Qt
+-191 	 0 	 3
+[2,    20] loss: 201.278
+Log_like 	KL Z 	KL Qt vs prev Qt
+-196 	 0 	 3
+[2,    40] loss: 198.506
+Log_like 	KL Z 	KL Qt vs prev Qt
+-188 	 0 	 3
+[2,    60] loss: 200.873
+Log_like 	KL Z 	KL Qt vs prev Qt
+-190 	 0 	 3
+[2,    80] loss: 201.425
+Log_like 	KL Z 	KL Qt vs prev Qt
+-200 	 0 	 2
+[2,   100] loss: 199.848
+starting epoch 2
+Log_like 	KL Z 	KL Qt vs prev Qt
+-201 	 0 	 2
+[3,    20] loss: 200.393
+Log_like 	KL Z 	KL Qt vs prev Qt
+-190 	 0 	 2
+[3,    40] loss: 198.010
+Log_like 	KL Z 	KL Qt vs prev Qt
+-193 	 0 	 2
+[3,    60] loss: 199.161
+Log_like 	KL Z 	KL Qt vs prev Qt
+-200 	 0 	 2
+[3,    80] loss: 199.740
+Log_like 	KL Z 	KL Qt vs prev Qt
+-202 	 0 	 2
+[3,   100] loss: 198.829
+starting epoch 3
+Log_like 	KL Z 	KL Qt vs prev Qt
+-197 	 0 	 2
+[4,    20] loss: 199.353
+Log_like 	KL Z 	KL Qt vs prev Qt
+-193 	 0 	 2
+[4,    40] loss: 198.620
+Log_like 	KL Z 	KL Qt vs prev Qt
+-194 	 0 	 2
+[4,    60] loss: 198.481
+Log_like 	KL Z 	KL Qt vs prev Qt
+-195 	 0 	 2
+[4,    80] loss: 198.983
+Log_like 	KL Z 	KL Qt vs prev Qt
+-196 	 0 	 2
+[4,   100] loss: 199.276
+starting epoch 4
+Log_like 	KL Z 	KL Qt vs prev Qt
+-193 	 0 	 2
+[5,    20] loss: 199.446
+Log_like 	KL Z 	KL Qt vs prev Qt
+-192 	 0 	 2
+[5,    40] loss: 199.730
+Log_like 	KL Z 	KL Qt vs prev Qt
+-193 	 0 	 2
+[5,    60] loss: 198.942
+Log_like 	KL Z 	KL Qt vs prev Qt
+-184 	 0 	 2
+[5,    80] loss: 196.242
+Log_like 	KL Z 	KL Qt vs prev Qt
+-194 	 0 	 2
+[5,   100] loss: 197.770
+starting epoch 5
+Log_like 	KL Z 	KL Qt vs prev Qt
+-192 	 0 	 2
+[6,    20] loss: 197.535
+Log_like 	KL Z 	KL Qt vs prev Qt
+-196 	 0 	 2
+[6,    40] loss: 198.839
+Log_like 	KL Z 	KL Qt vs prev Qt
+-199 	 0 	 2
+[6,    60] loss: 199.574
+Log_like 	KL Z 	KL Qt vs prev Qt
+-191 	 0 	 2
+[6,    80] loss: 195.967
+Log_like 	KL Z 	KL Qt vs prev Qt
+-202 	 0 	 2
+[6,   100] loss: 201.041
+saving image to ./figs/after_task_6_task_0.png
+saving image to ./figs/after_task_6_task_1.png
+saving image to ./figs/after_task_6_task_2.png
+saving image to ./figs/after_task_6_task_3.png
+saving image to ./figs/after_task_6_task_4.png
+saving image to ./figs/after_task_6_task_5.png
+test_classifier=1.46, std=0.02
+starting task 6
+starting epoch 0
+Log_like 	KL Z 	KL Qt vs prev Qt
+-207 	 0 	 12
+[1,    20] loss: 254.880
+Log_like 	KL Z 	KL Qt vs prev Qt
+-185 	 0 	 13
+[1,    40] loss: 206.903
+Log_like 	KL Z 	KL Qt vs prev Qt
+-177 	 0 	 9
+[1,    60] loss: 195.799
+Log_like 	KL Z 	KL Qt vs prev Qt
+-173 	 0 	 7
+[1,    80] loss: 192.642
+Log_like 	KL Z 	KL Qt vs prev Qt
+-182 	 0 	 7
+[1,   100] loss: 192.234
+starting epoch 1
+Log_like 	KL Z 	KL Qt vs prev Qt
+-175 	 0 	 6
+[2,    20] loss: 188.924
+Log_like 	KL Z 	KL Qt vs prev Qt
+-179 	 0 	 6
+[2,    40] loss: 188.397
+Log_like 	KL Z 	KL Qt vs prev Qt
+-199 	 0 	 6
+[2,    60] loss: 189.796
+Log_like 	KL Z 	KL Qt vs prev Qt
+-181 	 0 	 6
+[2,    80] loss: 188.500
+Log_like 	KL Z 	KL Qt vs prev Qt
+-194 	 0 	 5
+[2,   100] loss: 189.495
+starting epoch 2
+Log_like 	KL Z 	KL Qt vs prev Qt
+-184 	 0 	 5
+[3,    20] loss: 187.305
+Log_like 	KL Z 	KL Qt vs prev Qt
+-184 	 0 	 5
+[3,    40] loss: 188.019
+Log_like 	KL Z 	KL Qt vs prev Qt
+-183 	 0 	 5
+[3,    60] loss: 189.782
+Log_like 	KL Z 	KL Qt vs prev Qt
+-179 	 0 	 5
+[3,    80] loss: 186.557
+Log_like 	KL Z 	KL Qt vs prev Qt
+-186 	 0 	 5
+[3,   100] loss: 186.160
+starting epoch 3
+Log_like 	KL Z 	KL Qt vs prev Qt
+-171 	 0 	 5
+[4,    20] loss: 184.946
+Log_like 	KL Z 	KL Qt vs prev Qt
+-183 	 0 	 5
+[4,    40] loss: 186.852
+Log_like 	KL Z 	KL Qt vs prev Qt
+-180 	 0 	 5
+[4,    60] loss: 186.753
+Log_like 	KL Z 	KL Qt vs prev Qt
+-180 	 0 	 5
+[4,    80] loss: 187.022
+Log_like 	KL Z 	KL Qt vs prev Qt
+-178 	 0 	 5
+[4,   100] loss: 186.239
+starting epoch 4
+Log_like 	KL Z 	KL Qt vs prev Qt
+-178 	 0 	 5
+[5,    20] loss: 184.397
+Log_like 	KL Z 	KL Qt vs prev Qt
+-170 	 0 	 5
+[5,    40] loss: 187.371
+Log_like 	KL Z 	KL Qt vs prev Qt
+-191 	 0 	 4
+[5,    60] loss: 186.144
+Log_like 	KL Z 	KL Qt vs prev Qt
+-180 	 0 	 4
+[5,    80] loss: 186.069
+Log_like 	KL Z 	KL Qt vs prev Qt
+-185 	 0 	 4
+[5,   100] loss: 185.707
+starting epoch 5
+Log_like 	KL Z 	KL Qt vs prev Qt
+-186 	 0 	 4
+[6,    20] loss: 185.848
+Log_like 	KL Z 	KL Qt vs prev Qt
+-174 	 0 	 4
+[6,    40] loss: 184.639
+Log_like 	KL Z 	KL Qt vs prev Qt
+-180 	 0 	 4
+[6,    60] loss: 185.392
+Log_like 	KL Z 	KL Qt vs prev Qt
+-179 	 0 	 4
+[6,    80] loss: 184.246
+Log_like 	KL Z 	KL Qt vs prev Qt
+-185 	 0 	 4
+[6,   100] loss: 186.901
+saving image to ./figs/after_task_7_task_0.png
+saving image to ./figs/after_task_7_task_1.png
+saving image to ./figs/after_task_7_task_2.png
+saving image to ./figs/after_task_7_task_3.png
+saving image to ./figs/after_task_7_task_4.png
+saving image to ./figs/after_task_7_task_5.png
+saving image to ./figs/after_task_7_task_6.png
+test_classifier=1.46, std=0.02
+starting task 7
+starting epoch 0
+Log_like 	KL Z 	KL Qt vs prev Qt
+-196 	 0 	 13
+[1,    20] loss: 249.013
+Log_like 	KL Z 	KL Qt vs prev Qt
+-166 	 0 	 17
+[1,    40] loss: 194.621
+Log_like 	KL Z 	KL Qt vs prev Qt
+-163 	 0 	 13
+[1,    60] loss: 182.180
+Log_like 	KL Z 	KL Qt vs prev Qt
+-172 	 0 	 11
+[1,    80] loss: 179.593
+Log_like 	KL Z 	KL Qt vs prev Qt
+-160 	 0 	 10
+[1,   100] loss: 177.313
+Log_like 	KL Z 	KL Qt vs prev Qt
+-161 	 0 	 10
+[1,   120] loss: 174.686
+starting epoch 1
+Log_like 	KL Z 	KL Qt vs prev Qt
+-160 	 0 	 9
+[2,    20] loss: 174.540
+Log_like 	KL Z 	KL Qt vs prev Qt
+-165 	 0 	 9
+[2,    40] loss: 174.008
+Log_like 	KL Z 	KL Qt vs prev Qt
+-159 	 0 	 8
+[2,    60] loss: 172.927
+Log_like 	KL Z 	KL Qt vs prev Qt
+-167 	 0 	 8
+[2,    80] loss: 173.307
+Log_like 	KL Z 	KL Qt vs prev Qt
+-162 	 0 	 8
+[2,   100] loss: 172.493
+Log_like 	KL Z 	KL Qt vs prev Qt
+-169 	 0 	 8
+[2,   120] loss: 170.384
+starting epoch 2
+Log_like 	KL Z 	KL Qt vs prev Qt
+-152 	 0 	 8
+[3,    20] loss: 172.885
+Log_like 	KL Z 	KL Qt vs prev Qt
+-152 	 0 	 8
+[3,    40] loss: 169.989
+Log_like 	KL Z 	KL Qt vs prev Qt
+-161 	 0 	 7
+[3,    60] loss: 169.658
+Log_like 	KL Z 	KL Qt vs prev Qt
+-163 	 0 	 8
+[3,    80] loss: 171.913
+Log_like 	KL Z 	KL Qt vs prev Qt
+-158 	 0 	 7
+[3,   100] loss: 171.946
+Log_like 	KL Z 	KL Qt vs prev Qt
+-162 	 0 	 8
+[3,   120] loss: 171.066
+starting epoch 3
+Log_like 	KL Z 	KL Qt vs prev Qt
+-169 	 0 	 7
+[4,    20] loss: 170.565
+Log_like 	KL Z 	KL Qt vs prev Qt
+-165 	 0 	 7
+[4,    40] loss: 170.142
+Log_like 	KL Z 	KL Qt vs prev Qt
+-165 	 0 	 6
+[4,    60] loss: 169.854
+Log_like 	KL Z 	KL Qt vs prev Qt
+-164 	 0 	 7
+[4,    80] loss: 170.444
+Log_like 	KL Z 	KL Qt vs prev Qt
+-158 	 0 	 6
+[4,   100] loss: 168.701
+Log_like 	KL Z 	KL Qt vs prev Qt
+-163 	 0 	 6
+[4,   120] loss: 169.428
+starting epoch 4
+Log_like 	KL Z 	KL Qt vs prev Qt
+-163 	 0 	 7
+[5,    20] loss: 167.584
+Log_like 	KL Z 	KL Qt vs prev Qt
+-164 	 0 	 6
+[5,    40] loss: 171.269
+Log_like 	KL Z 	KL Qt vs prev Qt
+-162 	 0 	 6
+[5,    60] loss: 168.261
+Log_like 	KL Z 	KL Qt vs prev Qt
+-156 	 0 	 6
+[5,    80] loss: 168.153
+Log_like 	KL Z 	KL Qt vs prev Qt
+-174 	 0 	 6
+[5,   100] loss: 169.016
+Log_like 	KL Z 	KL Qt vs prev Qt
+-161 	 0 	 6
+[5,   120] loss: 169.377
+starting epoch 5
+Log_like 	KL Z 	KL Qt vs prev Qt
+-154 	 0 	 5
+[6,    20] loss: 168.141
+Log_like 	KL Z 	KL Qt vs prev Qt
+-165 	 0 	 6
+[6,    40] loss: 168.577
+Log_like 	KL Z 	KL Qt vs prev Qt
+-166 	 0 	 6
+[6,    60] loss: 167.262
+Log_like 	KL Z 	KL Qt vs prev Qt
+-159 	 0 	 6
+[6,    80] loss: 168.199
+Log_like 	KL Z 	KL Qt vs prev Qt
+-166 	 0 	 6
+[6,   100] loss: 168.532
+Log_like 	KL Z 	KL Qt vs prev Qt
+-163 	 0 	 5
+[6,   120] loss: 168.699
+saving image to ./figs/after_task_8_task_0.png
+saving image to ./figs/after_task_8_task_1.png
+saving image to ./figs/after_task_8_task_2.png
+saving image to ./figs/after_task_8_task_3.png
+saving image to ./figs/after_task_8_task_4.png
+saving image to ./figs/after_task_8_task_5.png
+saving image to ./figs/after_task_8_task_6.png
+saving image to ./figs/after_task_8_task_7.png
+test_classifier=1.46, std=0.02
+starting task 8
+starting epoch 0
+Log_like 	KL Z 	KL Qt vs prev Qt
+-206 	 0 	 12
+[1,    20] loss: 256.298
+Log_like 	KL Z 	KL Qt vs prev Qt
+-192 	 0 	 11
+[1,    40] loss: 214.213
+Log_like 	KL Z 	KL Qt vs prev Qt
+-194 	 0 	 6
+[1,    60] loss: 204.569
+Log_like 	KL Z 	KL Qt vs prev Qt
+-196 	 0 	 5
+[1,    80] loss: 200.890
+Log_like 	KL Z 	KL Qt vs prev Qt
+-189 	 0 	 4
+[1,   100] loss: 197.121
+starting epoch 1
+Log_like 	KL Z 	KL Qt vs prev Qt
+-191 	 0 	 3
+[2,    20] loss: 197.491
+Log_like 	KL Z 	KL Qt vs prev Qt
+-193 	 0 	 3
+[2,    40] loss: 194.629
+Log_like 	KL Z 	KL Qt vs prev Qt
+-190 	 0 	 3
+[2,    60] loss: 195.121
+Log_like 	KL Z 	KL Qt vs prev Qt
+-195 	 0 	 3
+[2,    80] loss: 195.729
+Log_like 	KL Z 	KL Qt vs prev Qt
+-197 	 0 	 3
+[2,   100] loss: 197.264
+starting epoch 2
+Log_like 	KL Z 	KL Qt vs prev Qt
+-185 	 0 	 3
+[3,    20] loss: 195.597
+Log_like 	KL Z 	KL Qt vs prev Qt
+-194 	 0 	 3
+[3,    40] loss: 194.491
+Log_like 	KL Z 	KL Qt vs prev Qt
+-185 	 0 	 3
+[3,    60] loss: 194.974
+Log_like 	KL Z 	KL Qt vs prev Qt
+-188 	 0 	 3
+[3,    80] loss: 195.537
+Log_like 	KL Z 	KL Qt vs prev Qt
+-187 	 0 	 2
+[3,   100] loss: 194.749
+starting epoch 3
+Log_like 	KL Z 	KL Qt vs prev Qt
+-197 	 0 	 2
+[4,    20] loss: 195.774
+Log_like 	KL Z 	KL Qt vs prev Qt
+-203 	 0 	 3
+[4,    40] loss: 194.592
+Log_like 	KL Z 	KL Qt vs prev Qt
+-194 	 0 	 2
+[4,    60] loss: 196.149
+Log_like 	KL Z 	KL Qt vs prev Qt
+-188 	 0 	 2
+[4,    80] loss: 192.528
+Log_like 	KL Z 	KL Qt vs prev Qt
+-183 	 0 	 2
+[4,   100] loss: 195.155
+starting epoch 4
+Log_like 	KL Z 	KL Qt vs prev Qt
+-187 	 0 	 2
+[5,    20] loss: 194.283
+Log_like 	KL Z 	KL Qt vs prev Qt
+-200 	 0 	 2
+[5,    40] loss: 195.804
+Log_like 	KL Z 	KL Qt vs prev Qt
+-180 	 0 	 2
+[5,    60] loss: 193.249
+Log_like 	KL Z 	KL Qt vs prev Qt
+-185 	 0 	 2
+[5,    80] loss: 194.649
+Log_like 	KL Z 	KL Qt vs prev Qt
+-187 	 0 	 2
+[5,   100] loss: 195.603
+starting epoch 5
+Log_like 	KL Z 	KL Qt vs prev Qt
+-185 	 0 	 2
+[6,    20] loss: 194.474
+Log_like 	KL Z 	KL Qt vs prev Qt
+-202 	 0 	 2
+[6,    40] loss: 194.888
+Log_like 	KL Z 	KL Qt vs prev Qt
+-197 	 0 	 2
+[6,    60] loss: 193.611
+Log_like 	KL Z 	KL Qt vs prev Qt
+-195 	 0 	 2
+[6,    80] loss: 194.258
+Log_like 	KL Z 	KL Qt vs prev Qt
+-190 	 0 	 2
+[6,   100] loss: 194.185
+saving image to ./figs/after_task_9_task_0.png
+saving image to ./figs/after_task_9_task_1.png
+saving image to ./figs/after_task_9_task_2.png
+saving image to ./figs/after_task_9_task_3.png
+saving image to ./figs/after_task_9_task_4.png
+saving image to ./figs/after_task_9_task_5.png
+saving image to ./figs/after_task_9_task_6.png
+saving image to ./figs/after_task_9_task_7.png
+saving image to ./figs/after_task_9_task_8.png
+test_classifier=1.46, std=0.02
+starting task 9
+starting epoch 0
+Log_like 	KL Z 	KL Qt vs prev Qt
+-190 	 0 	 13
+[1,    20] loss: 241.320
+Log_like 	KL Z 	KL Qt vs prev Qt
+-168 	 0 	 13
+[1,    40] loss: 190.673
+Log_like 	KL Z 	KL Qt vs prev Qt
+-162 	 0 	 7
+[1,    60] loss: 180.467
+Log_like 	KL Z 	KL Qt vs prev Qt
+-171 	 0 	 5
+[1,    80] loss: 174.777
+Log_like 	KL Z 	KL Qt vs prev Qt
+-165 	 0 	 5
+[1,   100] loss: 171.988
+starting epoch 1
+Log_like 	KL Z 	KL Qt vs prev Qt
+-166 	 0 	 3
+[2,    20] loss: 171.953
+Log_like 	KL Z 	KL Qt vs prev Qt
+-174 	 0 	 3
+[2,    40] loss: 172.552
+Log_like 	KL Z 	KL Qt vs prev Qt
+-176 	 0 	 3
+[2,    60] loss: 171.247
+Log_like 	KL Z 	KL Qt vs prev Qt
+-166 	 0 	 3
+[2,    80] loss: 168.846
+Log_like 	KL Z 	KL Qt vs prev Qt
+-164 	 0 	 2
+[2,   100] loss: 168.271
+starting epoch 2
+Log_like 	KL Z 	KL Qt vs prev Qt
+-173 	 0 	 2
+[3,    20] loss: 170.765
+Log_like 	KL Z 	KL Qt vs prev Qt
+-167 	 0 	 2
+[3,    40] loss: 168.528
+Log_like 	KL Z 	KL Qt vs prev Qt
+-173 	 0 	 2
+[3,    60] loss: 169.446
+Log_like 	KL Z 	KL Qt vs prev Qt
+-174 	 0 	 2
+[3,    80] loss: 168.512
+Log_like 	KL Z 	KL Qt vs prev Qt
+-169 	 0 	 2
+[3,   100] loss: 168.211
+starting epoch 3
+Log_like 	KL Z 	KL Qt vs prev Qt
+-162 	 0 	 2
+[4,    20] loss: 166.992
+Log_like 	KL Z 	KL Qt vs prev Qt
+-163 	 0 	 1
+[4,    40] loss: 168.057
+Log_like 	KL Z 	KL Qt vs prev Qt
+-157 	 0 	 2
+[4,    60] loss: 168.393
+Log_like 	KL Z 	KL Qt vs prev Qt
+-163 	 0 	 2
+[4,    80] loss: 165.492
+Log_like 	KL Z 	KL Qt vs prev Qt
+-171 	 0 	 2
+[4,   100] loss: 169.391
+starting epoch 4
+Log_like 	KL Z 	KL Qt vs prev Qt
+-166 	 0 	 2
+[5,    20] loss: 167.199
+Log_like 	KL Z 	KL Qt vs prev Qt
+-161 	 0 	 1
+[5,    40] loss: 166.475
+Log_like 	KL Z 	KL Qt vs prev Qt
+-162 	 0 	 2
+[5,    60] loss: 168.103
+Log_like 	KL Z 	KL Qt vs prev Qt
+-162 	 0 	 1
+[5,    80] loss: 168.488
+Log_like 	KL Z 	KL Qt vs prev Qt
+-175 	 0 	 1
+[5,   100] loss: 168.368
+starting epoch 5
+Log_like 	KL Z 	KL Qt vs prev Qt
+-173 	 0 	 1
+[6,    20] loss: 168.787
+Log_like 	KL Z 	KL Qt vs prev Qt
+-170 	 0 	 1
+[6,    40] loss: 167.021
+Log_like 	KL Z 	KL Qt vs prev Qt
+-165 	 0 	 1
+[6,    60] loss: 168.061
+Log_like 	KL Z 	KL Qt vs prev Qt
+-177 	 0 	 1
+[6,    80] loss: 163.394
+Log_like 	KL Z 	KL Qt vs prev Qt
+-179 	 0 	 1
+[6,   100] loss: 169.097
+saving image to ./figs/after_task_10_task_0.png
+saving image to ./figs/after_task_10_task_1.png
+saving image to ./figs/after_task_10_task_2.png
+saving image to ./figs/after_task_10_task_3.png
+saving image to ./figs/after_task_10_task_4.png
+saving image to ./figs/after_task_10_task_5.png
+saving image to ./figs/after_task_10_task_6.png
+saving image to ./figs/after_task_10_task_7.png
+saving image to ./figs/after_task_10_task_8.png
+saving image to ./figs/after_task_10_task_9.png
+test_classifier=1.46, std=0.02
+
+Process finished with exit code 0
+

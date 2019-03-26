@@ -1,0 +1,482 @@
+/data/anaconda/envs/py35/bin/python3 /home/aml12/AML2019/VCL/generative/exp.py
+/data/anaconda/envs/py35/lib/python3.5/site-packages/h5py/__init__.py:36: FutureWarning: Conversion of the second argument of issubdtype from `float` to `np.floating` is deprecated. In future, it will be treated as `np.float64 == np.dtype(float).type`.
+  from ._conv import register_converters as _register_converters
+Using TensorFlow backend.
+decoder shared MLP of size [500, 500, 784]
+2019-03-25 13:25:20.120827: I tensorflow/core/platform/cpu_feature_guard.cc:141] Your CPU supports instructions that this TensorFlow binary was not compiled to use: AVX2 FMA
+2019-03-25 13:25:20.276880: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1432] Found device 0 with properties: 
+name: Tesla K80 major: 3 minor: 7 memoryClockRate(GHz): 0.8235
+pciBusID: c49b:00:00.0
+totalMemory: 11.17GiB freeMemory: 11.10GiB
+2019-03-25 13:25:20.276913: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1511] Adding visible gpu devices: 0
+2019-03-25 13:25:20.569518: I tensorflow/core/common_runtime/gpu/gpu_device.cc:982] Device interconnect StreamExecutor with strength 1 edge matrix:
+2019-03-25 13:25:20.569557: I tensorflow/core/common_runtime/gpu/gpu_device.cc:988]      0 
+2019-03-25 13:25:20.569565: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1001] 0:   N 
+2019-03-25 13:25:20.569816: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1115] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:0 with 10758 MB memory) -> physical GPU (device: 0, name: Tesla K80, pci bus id: c49b:00:00.0, compute capability: 3.7)
+training from scratch
+WARNING:tensorflow:From models/utils.py:26: all_variables (from tensorflow.python.ops.variables) is deprecated and will be removed after 2017-03-02.
+Instructions for updating:
+Please use tf.global_variables instead.
+WARNING:tensorflow:From /data/anaconda/envs/py35/lib/python3.5/site-packages/tensorflow/python/util/tf_should_use.py:189: initialize_variables (from tensorflow.python.ops.variables) is deprecated and will be removed after 2017-03-02.
+Instructions for updating:
+Use `tf.variables_initializer` instead.
+decoder head MLP of size [50, 500, 500]
+encoder shared MLP of size [784, 500, 500, 500, 100]
+construct eval function...
+construct fit function...
+using K=10 theta samples for onlinevi
+training for 4 epochs with lr=0.00010
+Loss on iteration 18 1147.6996
+Loss on iteration 38 959.3385
+Loss on iteration 58 879.77454
+Loss on iteration 78 873.55597
+Loss on iteration 98 865.95734
+Iter 1, bound=-305.64, kl=663.30, time=4.51
+Loss on iteration 18 861.5555
+Loss on iteration 38 864.22974
+Loss on iteration 58 863.8005
+Loss on iteration 78 864.42206
+Loss on iteration 98 864.04083
+Iter 2, bound=-201.76, kl=662.09, time=2.72
+Loss on iteration 18 855.77545
+Loss on iteration 38 847.2833
+Loss on iteration 58 841.41547
+Loss on iteration 78 838.70404
+Loss on iteration 98 831.44806
+Iter 3, bound=-187.25, kl=660.87, time=2.85
+Loss on iteration 18 829.221
+Loss on iteration 38 829.52045
+Loss on iteration 58 825.70197
+Loss on iteration 78 816.65454
+Loss on iteration 98 817.15576
+Iter 4, bound=-166.65, kl=659.64, time=2.71
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task1_1.png
+task 1 test_ll=-154.40, ste=1.22, time=0.35
+parameters saved at save/mnist_onlinevi_K10/checkpoint_0.pkl
+update prior...
+reset the log sigma of q to -5
+decoder head MLP of size [50, 500, 500]
+encoder shared MLP of size [784, 500, 500, 500, 100]
+construct eval function...
+construct fit function...
+using K=10 theta samples for onlinevi
+training for 4 epochs with lr=0.00010
+Loss on iteration 18 179.23973
+Loss on iteration 38 140.06845
+Loss on iteration 58 121.55426
+Loss on iteration 78 115.13969
+Loss on iteration 98 116.196075
+Loss on iteration 118 112.247635
+Iter 1, bound=-130.87, kl=13.67, time=5.28
+Loss on iteration 18 110.70998
+Loss on iteration 38 108.7917
+Loss on iteration 58 102.69537
+Loss on iteration 78 108.76123
+Loss on iteration 98 96.52787
+Loss on iteration 118 98.60819
+Iter 2, bound=-96.43, kl=8.18, time=3.23
+Loss on iteration 18 96.00133
+Loss on iteration 38 89.49115
+Loss on iteration 58 86.37237
+Loss on iteration 78 89.03742
+Loss on iteration 98 85.82282
+Loss on iteration 118 84.594536
+Iter 3, bound=-82.14, kl=7.97, time=3.14
+Loss on iteration 18 84.10855
+Loss on iteration 38 87.28648
+Loss on iteration 58 79.8197
+Loss on iteration 78 80.0038
+Loss on iteration 98 79.19818
+Loss on iteration 118 83.78586
+Iter 4, bound=-76.76, kl=6.91, time=3.24
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task2_1.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task2_2.png
+task 1 test_ll=-200.85, ste=1.23, time=0.25
+task 2 test_ll=-68.61, ste=0.78, time=0.42
+parameters saved at save/mnist_onlinevi_K10/checkpoint_1.pkl
+update prior...
+reset the log sigma of q to -5
+decoder head MLP of size [50, 500, 500]
+encoder shared MLP of size [784, 500, 500, 500, 100]
+construct eval function...
+construct fit function...
+using K=10 theta samples for onlinevi
+training for 4 epochs with lr=0.00010
+Loss on iteration 18 235.89278
+Loss on iteration 38 226.98622
+Loss on iteration 58 221.51894
+Loss on iteration 78 208.04521
+Loss on iteration 98 206.6095
+Iter 1, bound=-219.90, kl=6.77, time=4.65
+Loss on iteration 18 204.51466
+Loss on iteration 38 207.26675
+Loss on iteration 58 199.2108
+Loss on iteration 78 195.55293
+Loss on iteration 98 205.98413
+Iter 2, bound=-199.49, kl=5.03, time=2.86
+Loss on iteration 18 200.32123
+Loss on iteration 38 198.60548
+Loss on iteration 58 198.55461
+Loss on iteration 78 193.09
+Loss on iteration 98 198.66194
+Iter 3, bound=-193.53, kl=5.26, time=2.88
+Loss on iteration 18 195.67578
+Loss on iteration 38 194.68596
+Loss on iteration 58 203.6748
+Loss on iteration 78 196.43095
+Loss on iteration 98 188.93555
+Iter 4, bound=-190.18, kl=5.31, time=2.76
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task3_1.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task3_2.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task3_3.png
+task 1 test_ll=-206.44, ste=1.13, time=0.25
+task 2 test_ll=-110.28, ste=0.58, time=0.29
+task 3 test_ll=-186.45, ste=1.18, time=0.44
+parameters saved at save/mnist_onlinevi_K10/checkpoint_2.pkl
+update prior...
+reset the log sigma of q to -5
+decoder head MLP of size [50, 500, 500]
+encoder shared MLP of size [784, 500, 500, 500, 100]
+construct eval function...
+construct fit function...
+using K=10 theta samples for onlinevi
+training for 4 epochs with lr=0.00010
+Loss on iteration 18 229.02353
+Loss on iteration 38 207.7381
+Loss on iteration 58 200.4839
+Loss on iteration 78 200.08981
+Loss on iteration 98 195.4968
+Iter 1, bound=-204.15, kl=6.67, time=5.51
+Loss on iteration 18 185.24733
+Loss on iteration 38 184.5524
+Loss on iteration 58 184.35895
+Loss on iteration 78 180.27576
+Loss on iteration 98 170.09741
+Iter 2, bound=-180.53, kl=4.18, time=2.96
+Loss on iteration 18 172.98312
+Loss on iteration 38 176.35097
+Loss on iteration 58 181.18875
+Loss on iteration 78 175.60542
+Loss on iteration 98 179.77325
+Iter 3, bound=-174.94, kl=4.01, time=2.84
+Loss on iteration 18 179.65396
+Loss on iteration 38 174.7033
+Loss on iteration 58 184.1002
+Loss on iteration 78 172.33492
+Loss on iteration 98 171.65022
+Iter 4, bound=-171.89, kl=4.01, time=2.96
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task4_1.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task4_2.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task4_3.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task4_4.png
+task 1 test_ll=-204.77, ste=1.06, time=0.25
+task 2 test_ll=-114.60, ste=0.48, time=0.29
+task 3 test_ll=-207.01, ste=1.13, time=0.26
+task 4 test_ll=-162.71, ste=1.33, time=0.53
+parameters saved at save/mnist_onlinevi_K10/checkpoint_3.pkl
+update prior...
+reset the log sigma of q to -5
+decoder head MLP of size [50, 500, 500]
+encoder shared MLP of size [784, 500, 500, 500, 100]
+construct eval function...
+construct fit function...
+using K=10 theta samples for onlinevi
+training for 4 epochs with lr=0.00010
+Loss on iteration 18 228.37459
+Loss on iteration 38 201.92801
+Loss on iteration 58 188.08855
+Loss on iteration 78 184.94514
+Loss on iteration 98 180.6591
+Iter 1, bound=-194.16, kl=8.97, time=5.15
+Loss on iteration 18 178.99936
+Loss on iteration 38 178.07344
+Loss on iteration 58 166.23018
+Loss on iteration 78 173.7198
+Loss on iteration 98 171.4897
+Iter 2, bound=-170.18, kl=5.69, time=2.83
+Loss on iteration 18 159.90962
+Loss on iteration 38 162.7904
+Loss on iteration 58 161.73404
+Loss on iteration 78 162.29614
+Loss on iteration 98 167.9697
+Iter 3, bound=-163.03, kl=5.72, time=2.72
+Loss on iteration 18 170.19635
+Loss on iteration 38 166.0274
+Loss on iteration 58 161.65536
+Loss on iteration 78 162.96532
+Loss on iteration 98 161.59535
+Iter 4, bound=-158.16, kl=5.90, time=2.83
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task5_1.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task5_2.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task5_3.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task5_4.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task5_5.png
+task 1 test_ll=-213.56, ste=1.00, time=0.25
+task 2 test_ll=-143.22, ste=0.63, time=0.29
+task 3 test_ll=-221.56, ste=1.23, time=0.25
+task 4 test_ll=-193.21, ste=1.20, time=0.26
+task 5 test_ll=-147.07, ste=1.22, time=0.52
+parameters saved at save/mnist_onlinevi_K10/checkpoint_4.pkl
+update prior...
+reset the log sigma of q to -5
+decoder head MLP of size [50, 500, 500]
+encoder shared MLP of size [784, 500, 500, 500, 100]
+construct eval function...
+construct fit function...
+using K=10 theta samples for onlinevi
+training for 4 epochs with lr=0.00010
+Loss on iteration 18 231.5956
+Loss on iteration 38 211.5033
+Loss on iteration 58 197.7655
+Loss on iteration 78 190.26201
+Iter 1, bound=-208.69, kl=6.36, time=4.72
+Loss on iteration 18 184.52496
+Loss on iteration 38 188.10194
+Loss on iteration 58 182.3097
+Loss on iteration 78 181.45271
+Iter 2, bound=-178.93, kl=3.97, time=2.62
+Loss on iteration 18 175.59534
+Loss on iteration 38 185.61432
+Loss on iteration 58 179.88596
+Loss on iteration 78 172.4133
+Iter 3, bound=-172.06, kl=3.73, time=2.51
+Loss on iteration 18 173.4362
+Loss on iteration 38 169.6709
+Loss on iteration 58 177.28427
+Loss on iteration 78 167.88039
+Iter 4, bound=-169.07, kl=3.59, time=2.61
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task6_1.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task6_2.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task6_3.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task6_4.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task6_5.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task6_6.png
+task 1 test_ll=-202.74, ste=1.09, time=0.26
+task 2 test_ll=-118.05, ste=0.55, time=0.29
+task 3 test_ll=-220.39, ste=1.31, time=0.17
+task 4 test_ll=-181.69, ste=1.31, time=0.19
+task 5 test_ll=-167.22, ste=1.29, time=0.18
+task 6 test_ll=-164.50, ste=1.35, time=0.55
+parameters saved at save/mnist_onlinevi_K10/checkpoint_5.pkl
+update prior...
+reset the log sigma of q to -5
+decoder head MLP of size [50, 500, 500]
+encoder shared MLP of size [784, 500, 500, 500, 100]
+construct eval function...
+construct fit function...
+using K=10 theta samples for onlinevi
+training for 4 epochs with lr=0.00010
+Loss on iteration 18 223.86023
+Loss on iteration 38 193.40547
+Loss on iteration 58 190.24739
+Loss on iteration 78 185.68205
+Loss on iteration 98 186.52177
+Iter 1, bound=-196.73, kl=9.11, time=5.21
+Loss on iteration 18 176.68594
+Loss on iteration 38 180.63617
+Loss on iteration 58 168.0402
+Loss on iteration 78 170.61
+Loss on iteration 98 163.35883
+Iter 2, bound=-165.48, kl=7.81, time=2.85
+Loss on iteration 18 163.70723
+Loss on iteration 38 166.16876
+Loss on iteration 58 160.10788
+Loss on iteration 78 156.85672
+Loss on iteration 98 159.24165
+Iter 3, bound=-156.40, kl=8.16, time=2.74
+Loss on iteration 18 165.816
+Loss on iteration 38 157.65616
+Loss on iteration 58 159.68483
+Loss on iteration 78 151.68552
+Loss on iteration 98 152.63358
+Iter 4, bound=-151.42, kl=8.05, time=2.86
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task7_1.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task7_2.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task7_3.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task7_4.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task7_5.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task7_6.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task7_7.png
+task 1 test_ll=-205.89, ste=1.18, time=0.25
+task 2 test_ll=-126.13, ste=0.53, time=0.29
+task 3 test_ll=-209.62, ste=1.21, time=0.25
+task 4 test_ll=-202.69, ste=1.18, time=0.19
+task 5 test_ll=-183.69, ste=1.10, time=0.18
+task 6 test_ll=-192.03, ste=1.31, time=0.16
+task 7 test_ll=-144.09, ste=1.31, time=0.62
+parameters saved at save/mnist_onlinevi_K10/checkpoint_6.pkl
+update prior...
+reset the log sigma of q to -5
+decoder head MLP of size [50, 500, 500]
+encoder shared MLP of size [784, 500, 500, 500, 100]
+construct eval function...
+construct fit function...
+using K=10 theta samples for onlinevi
+training for 4 epochs with lr=0.00010
+Loss on iteration 18 211.47354
+Loss on iteration 38 184.50127
+Loss on iteration 58 185.87769
+Loss on iteration 78 170.23154
+Loss on iteration 98 168.70224
+Iter 1, bound=-184.09, kl=11.67, time=5.53
+Loss on iteration 18 178.08017
+Loss on iteration 38 164.37401
+Loss on iteration 58 168.88632
+Loss on iteration 78 150.2997
+Loss on iteration 98 167.00269
+Iter 2, bound=-154.48, kl=9.74, time=2.90
+Loss on iteration 18 156.38724
+Loss on iteration 38 168.23318
+Loss on iteration 58 158.55318
+Loss on iteration 78 150.13647
+Loss on iteration 98 149.32544
+Iter 3, bound=-144.79, kl=10.01, time=3.00
+Loss on iteration 18 151.84499
+Loss on iteration 38 152.11343
+Loss on iteration 58 159.83473
+Loss on iteration 78 146.74678
+Loss on iteration 98 152.30847
+Iter 4, bound=-139.35, kl=9.89, time=2.90
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task8_1.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task8_2.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task8_3.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task8_4.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task8_5.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task8_6.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task8_7.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task8_8.png
+task 1 test_ll=-219.44, ste=1.08, time=0.26
+task 2 test_ll=-127.66, ste=0.59, time=0.21
+task 3 test_ll=-227.04, ste=1.47, time=0.17
+task 4 test_ll=-200.03, ste=1.30, time=0.19
+task 5 test_ll=-172.57, ste=1.21, time=0.18
+task 6 test_ll=-192.14, ste=1.23, time=0.16
+task 7 test_ll=-190.22, ste=1.25, time=0.18
+task 8 test_ll=-131.07, ste=1.27, time=0.64
+parameters saved at save/mnist_onlinevi_K10/checkpoint_7.pkl
+update prior...
+reset the log sigma of q to -5
+decoder head MLP of size [50, 500, 500]
+encoder shared MLP of size [784, 500, 500, 500, 100]
+construct eval function...
+construct fit function...
+using K=10 theta samples for onlinevi
+training for 4 epochs with lr=0.00010
+Loss on iteration 18 227.83664
+Loss on iteration 38 218.33716
+Loss on iteration 58 200.57936
+Loss on iteration 78 202.42429
+Loss on iteration 98 190.11183
+Iter 1, bound=-206.59, kl=6.71, time=5.38
+Loss on iteration 18 182.23773
+Loss on iteration 38 179.74988
+Loss on iteration 58 176.42354
+Loss on iteration 78 181.3208
+Loss on iteration 98 189.2803
+Iter 2, bound=-179.33, kl=3.72, time=2.71
+Loss on iteration 18 178.46732
+Loss on iteration 38 166.27708
+Loss on iteration 58 165.26802
+Loss on iteration 78 182.31322
+Loss on iteration 98 181.8115
+Iter 3, bound=-173.19, kl=3.36, time=2.83
+Loss on iteration 18 181.2987
+Loss on iteration 38 170.34448
+Loss on iteration 58 173.83047
+Loss on iteration 78 172.11897
+Loss on iteration 98 176.95259
+Iter 4, bound=-169.89, kl=3.24, time=2.71
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task9_1.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task9_2.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task9_3.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task9_4.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task9_5.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task9_6.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task9_7.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task9_8.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task9_9.png
+task 1 test_ll=-214.15, ste=0.99, time=0.25
+task 2 test_ll=-109.21, ste=0.51, time=0.29
+task 3 test_ll=-216.74, ste=1.39, time=0.25
+task 4 test_ll=-186.98, ste=1.35, time=0.28
+task 5 test_ll=-170.26, ste=1.28, time=0.26
+task 6 test_ll=-182.06, ste=1.24, time=0.15
+task 7 test_ll=-189.98, ste=1.30, time=0.18
+task 8 test_ll=-151.85, ste=1.10, time=0.19
+task 9 test_ll=-163.06, ste=1.38, time=0.78
+parameters saved at save/mnist_onlinevi_K10/checkpoint_8.pkl
+update prior...
+reset the log sigma of q to -5
+decoder head MLP of size [50, 500, 500]
+encoder shared MLP of size [784, 500, 500, 500, 100]
+construct eval function...
+construct fit function...
+using K=10 theta samples for onlinevi
+training for 4 epochs with lr=0.00010
+Loss on iteration 18 203.84396
+Loss on iteration 38 182.97827
+Loss on iteration 58 173.13986
+Loss on iteration 78 173.9513
+Loss on iteration 98 162.72551
+Iter 1, bound=-183.52, kl=7.43, time=5.76
+Loss on iteration 18 168.35867
+Loss on iteration 38 154.92963
+Loss on iteration 58 156.53699
+Loss on iteration 78 155.85812
+Loss on iteration 98 142.53368
+Iter 2, bound=-151.36, kl=4.07, time=2.89
+Loss on iteration 18 150.64813
+Loss on iteration 38 142.281
+Loss on iteration 58 132.61917
+Loss on iteration 78 146.47316
+Loss on iteration 98 145.52855
+Iter 3, bound=-142.75, kl=3.63, time=2.76
+Loss on iteration 18 144.88489
+Loss on iteration 38 143.02478
+Loss on iteration 58 145.84406
+Loss on iteration 78 138.96439
+Loss on iteration 98 138.774
+Iter 4, bound=-138.75, kl=3.31, time=2.88
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task10_1.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task10_2.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task10_3.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task10_4.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task10_5.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task10_6.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task10_7.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task10_8.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task10_9.png
+saving image to figs/mnist_onlinevi_K10/mnist_gen_task10_10.png
+task 1 test_ll=-226.43, ste=1.10, time=0.25
+task 2 test_ll=-124.21, ste=0.56, time=0.28
+task 3 test_ll=-230.50, ste=1.51, time=0.17
+task 4 test_ll=-198.48, ste=1.48, time=0.19
+task 5 test_ll=-159.48, ste=1.30, time=0.18
+task 6 test_ll=-187.22, ste=1.33, time=0.16
+task 7 test_ll=-200.51, ste=1.29, time=0.18
+task 8 test_ll=-143.53, ste=1.29, time=0.20
+task 9 test_ll=-177.47, ste=1.32, time=0.18
+task 10 test_ll=-131.16, ste=1.29, time=0.82
+parameters saved at save/mnist_onlinevi_K10/checkpoint_9.pkl
+update prior...
+reset the log sigma of q to -5
+Traceback (most recent call last):
+  File "/home/aml12/AML2019/VCL/generative/exp.py", line 232, in <module>
+    main(data_name, method, dimZ, dimH, n_channel, batch_size, K_mc, checkpoint, lbd)
+  File "/home/aml12/AML2019/VCL/generative/exp.py", line 216, in main
+    pickle.dump(result_list, open(fname, 'wb'))
+FileNotFoundError: [Errno 2] No such file or directory: 'results/mnist_onlinevi_K10.pkl'
+saving image to figs/mnist_onlinevi_K10/mnist_gen_all.png
+[(-154.4001104181463, 1.2186311469895228)]
+[(-200.84973283247513, 1.2274762375082875), (-68.61290623591496, 0.779429768324111)]
+[(-206.43713933771306, 1.1259739306150482), (-110.27936025766226, 0.5792147744680777), (-186.44606989080256, 1.1795990556484024)]
+[(-204.7677071311257, 1.0578298871667173), (-114.59757584791916, 0.4797387931384692), (-207.01136918501422, 1.1328821029286644), (-162.71228790283203, 1.3313078567094456)]
+[(-213.5618965842507, 1.0033823299365323), (-143.22203650841348, 0.6275326900107597), (-221.55808188698506, 1.226089455877197), (-193.20732243855792, 1.2030204773699393), (-147.06884626908735, 1.2176491018887454)]
+[(-202.7383991588246, 1.094741383686183), (-118.05468339186449, 0.5539327994445442), (-220.38772860440343, 1.3089208721794272), (-181.68605931599933, 1.3121108664668057), (-167.2231209494851, 1.288059248819396), (-164.49678802490234, 1.3511094664026015)]
+[(-205.89174444025213, 1.184992812465164), (-126.13425973745495, 0.5252452641263905), (-209.61544661088428, 1.205338898631478), (-202.68605550130206, 1.1806849965657547), (-183.6874708695845, 1.1033532285371077), (-192.0273162841797, 1.3143042400840808), (-144.08570445667615, 1.3089462126234945)]
+[(-219.44497541947797, 1.082761162594347), (-127.65746307373047, 0.5900640658404875), (-227.03945367986506, 1.4721857360336659), (-200.0336888631185, 1.3013819624875247), (-172.57197709517047, 1.2113391631516144), (-192.13687286376953, 1.2282582813603358), (-190.21539306640625, 1.245736842100875), (-131.07395108540854, 1.2681841961942881)]
+[(-214.15081648393112, 0.9879544847588818), (-109.20745556171124, 0.50666122080098), (-216.73962263627485, 1.3943527972009124), (-186.9829330444336, 1.3527614326089665), (-170.26476495916194, 1.2783013291071705), (-182.0643600463867, 1.240882319465862), (-189.97674421830607, 1.2977416333365572), (-151.8516794840495, 1.0953601133312003), (-163.06133339621806, 1.378573260502522)]
+[(-226.43047263405543, 1.1004689782505641), (-124.21380145733173, 0.5612272001898413), (-230.50112360174006, 1.5054652583867563), (-198.47967274983725, 1.4764861122993653), (-159.47691761363635, 1.2996307612934805), (-187.22209930419922, 1.3339040486708609), (-200.51196011629975, 1.2857644584333892), (-143.5262680053711, 1.2852278748013783), (-177.46898720481175, 1.3232326132881296), (-131.16475677490234, 1.293714289921124)]
+
+Process finished with exit code 1
+

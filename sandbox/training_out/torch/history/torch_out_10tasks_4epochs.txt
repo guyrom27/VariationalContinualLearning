@@ -1,0 +1,337 @@
+/data/anaconda/envs/py35/bin/python3 /home/aml12/AML2019/VCL/sandbox/torch_sandbox.py
+True
+Using device: cuda:0
+starting task 0
+starting epoch 0
+[1,    20] loss: 1123.630
+[1,    40] loss: 1017.195
+[1,    60] loss: 862.109
+[1,    80] loss: 813.008
+[1,   100] loss: 804.114
+starting epoch 1
+[2,    20] loss: 803.416
+[2,    40] loss: 801.248
+[2,    60] loss: 803.775
+[2,    80] loss: 801.036
+[2,   100] loss: 802.431
+starting epoch 2
+[3,    20] loss: 803.575
+[3,    40] loss: 801.080
+[3,    60] loss: 800.451
+[3,    80] loss: 802.087
+[3,   100] loss: 801.988
+starting epoch 3
+[4,    20] loss: 800.345
+[4,    40] loss: 802.670
+[4,    60] loss: 800.945
+[4,    80] loss: 801.065
+[4,   100] loss: 801.129
+saving image to ./figs/after_task_1_task_0.png
+test_classifier=1.46, std=0.02
+starting task 1
+starting epoch 0
+[1,    20] loss: 251.303
+[1,    40] loss: 182.233
+[1,    60] loss: 192.616
+[1,    80] loss: 201.919
+[1,   100] loss: 209.552
+[1,   120] loss: 213.949
+starting epoch 1
+[2,    20] loss: 219.333
+[2,    40] loss: 225.538
+[2,    60] loss: 228.501
+[2,    80] loss: 233.358
+[2,   100] loss: 236.968
+[2,   120] loss: 240.170
+starting epoch 2
+[3,    20] loss: 249.243
+[3,    40] loss: 252.009
+[3,    60] loss: 256.719
+[3,    80] loss: 261.452
+[3,   100] loss: 266.792
+[3,   120] loss: 269.360
+starting epoch 3
+[4,    20] loss: 280.190
+[4,    40] loss: 285.985
+[4,    60] loss: 291.683
+[4,    80] loss: 296.075
+[4,   100] loss: 301.216
+[4,   120] loss: 305.756
+saving image to ./figs/after_task_2_task_0.png
+saving image to ./figs/after_task_2_task_1.png
+test_classifier=2.46, std=0.04
+starting task 2
+starting epoch 0
+[1,    20] loss: 241.496
+[1,    40] loss: 253.290
+[1,    60] loss: 281.414
+[1,    80] loss: 299.961
+[1,   100] loss: 309.129
+[1,   120] loss: 318.115
+starting epoch 1
+[2,    20] loss: 328.283
+[2,    40] loss: 337.139
+[2,    60] loss: 342.588
+[2,    80] loss: 350.620
+[2,   100] loss: 359.083
+[2,   120] loss: 364.158
+starting epoch 2
+[3,    20] loss: 372.107
+[3,    40] loss: 378.296
+[3,    60] loss: 387.107
+[3,    80] loss: 392.979
+[3,   100] loss: 399.218
+[3,   120] loss: 407.429
+starting epoch 3
+[4,    20] loss: 412.050
+[4,    40] loss: 419.783
+[4,    60] loss: 426.829
+[4,    80] loss: 432.387
+[4,   100] loss: 437.251
+[4,   120] loss: 443.899
+saving image to ./figs/after_task_3_task_0.png
+saving image to ./figs/after_task_3_task_1.png
+saving image to ./figs/after_task_3_task_2.png
+test_classifier=1.46, std=0.02
+starting task 3
+starting epoch 0
+[1,    20] loss: 227.488
+[1,    40] loss: 234.795
+[1,    60] loss: 259.109
+[1,    80] loss: 279.178
+[1,   100] loss: 290.662
+[1,   120] loss: 301.183
+starting epoch 1
+[2,    20] loss: 311.329
+[2,    40] loss: 325.055
+[2,    60] loss: 332.160
+[2,    80] loss: 341.014
+[2,   100] loss: 351.302
+[2,   120] loss: 358.357
+starting epoch 2
+[3,    20] loss: 368.664
+[3,    40] loss: 377.896
+[3,    60] loss: 382.353
+[3,    80] loss: 391.707
+[3,   100] loss: 401.000
+[3,   120] loss: 410.890
+starting epoch 3
+[4,    20] loss: 416.960
+[4,    40] loss: 428.771
+[4,    60] loss: 436.496
+[4,    80] loss: 444.412
+[4,   100] loss: 454.223
+[4,   120] loss: 460.802
+saving image to ./figs/after_task_4_task_0.png
+saving image to ./figs/after_task_4_task_1.png
+saving image to ./figs/after_task_4_task_2.png
+saving image to ./figs/after_task_4_task_3.png
+test_classifier=1.46, std=0.02
+starting task 4
+starting epoch 0
+[1,    20] loss: 228.372
+[1,    40] loss: 235.862
+[1,    60] loss: 264.697
+[1,    80] loss: 292.240
+[1,   100] loss: 306.453
+starting epoch 1
+[2,    20] loss: 324.626
+[2,    40] loss: 336.354
+[2,    60] loss: 345.357
+[2,    80] loss: 351.623
+[2,   100] loss: 363.904
+starting epoch 2
+[3,    20] loss: 375.396
+[3,    40] loss: 383.149
+[3,    60] loss: 394.506
+[3,    80] loss: 401.474
+[3,   100] loss: 412.366
+starting epoch 3
+[4,    20] loss: 427.305
+[4,    40] loss: 435.304
+[4,    60] loss: 443.599
+[4,    80] loss: 453.137
+[4,   100] loss: 459.165
+saving image to ./figs/after_task_5_task_0.png
+saving image to ./figs/after_task_5_task_1.png
+saving image to ./figs/after_task_5_task_2.png
+saving image to ./figs/after_task_5_task_3.png
+saving image to ./figs/after_task_5_task_4.png
+test_classifier=1.46, std=0.02
+starting task 5
+starting epoch 0
+[1,    20] loss: 224.837
+[1,    40] loss: 245.566
+[1,    60] loss: 279.818
+[1,    80] loss: 306.150
+[1,   100] loss: 325.757
+starting epoch 1
+[2,    20] loss: 351.004
+[2,    40] loss: 363.391
+[2,    60] loss: 376.260
+[2,    80] loss: 392.126
+[2,   100] loss: 405.277
+starting epoch 2
+[3,    20] loss: 425.111
+[3,    40] loss: 437.229
+[3,    60] loss: 450.417
+[3,    80] loss: 463.339
+[3,   100] loss: 476.539
+starting epoch 3
+[4,    20] loss: 496.644
+[4,    40] loss: 509.640
+[4,    60] loss: 519.440
+[4,    80] loss: 536.517
+[4,   100] loss: 550.329
+saving image to ./figs/after_task_6_task_0.png
+saving image to ./figs/after_task_6_task_1.png
+saving image to ./figs/after_task_6_task_2.png
+saving image to ./figs/after_task_6_task_3.png
+saving image to ./figs/after_task_6_task_4.png
+saving image to ./figs/after_task_6_task_5.png
+test_classifier=1.46, std=0.02
+starting task 6
+starting epoch 0
+[1,    20] loss: 233.704
+[1,    40] loss: 247.749
+[1,    60] loss: 287.151
+[1,    80] loss: 332.757
+[1,   100] loss: 377.340
+starting epoch 1
+[2,    20] loss: 453.527
+[2,    40] loss: 483.581
+[2,    60] loss: 511.800
+[2,    80] loss: 540.777
+[2,   100] loss: 570.139
+starting epoch 2
+[3,    20] loss: 619.560
+[3,    40] loss: 641.758
+[3,    60] loss: 662.442
+[3,    80] loss: 682.711
+[3,   100] loss: 703.489
+starting epoch 3
+[4,    20] loss: 741.071
+[4,    40] loss: 757.767
+[4,    60] loss: 774.315
+[4,    80] loss: 792.265
+[4,   100] loss: 810.671
+saving image to ./figs/after_task_7_task_0.png
+saving image to ./figs/after_task_7_task_1.png
+saving image to ./figs/after_task_7_task_2.png
+saving image to ./figs/after_task_7_task_3.png
+saving image to ./figs/after_task_7_task_4.png
+saving image to ./figs/after_task_7_task_5.png
+saving image to ./figs/after_task_7_task_6.png
+test_classifier=1.46, std=0.02
+starting task 7
+starting epoch 0
+[1,    20] loss: 252.967
+[1,    40] loss: 255.583
+[1,    60] loss: 298.964
+[1,    80] loss: 350.308
+[1,   100] loss: 408.561
+[1,   120] loss: 460.990
+starting epoch 1
+[2,    20] loss: 518.931
+[2,    40] loss: 555.326
+[2,    60] loss: 582.614
+[2,    80] loss: 608.631
+[2,   100] loss: 628.657
+[2,   120] loss: 648.950
+starting epoch 2
+[3,    20] loss: 667.662
+[3,    40] loss: 685.271
+[3,    60] loss: 700.586
+[3,    80] loss: 718.957
+[3,   100] loss: 731.870
+[3,   120] loss: 741.671
+starting epoch 3
+[4,    20] loss: 763.001
+[4,    40] loss: 774.787
+[4,    60] loss: 787.847
+[4,    80] loss: 797.331
+[4,   100] loss: 809.839
+[4,   120] loss: 817.121
+saving image to ./figs/after_task_8_task_0.png
+saving image to ./figs/after_task_8_task_1.png
+saving image to ./figs/after_task_8_task_2.png
+saving image to ./figs/after_task_8_task_3.png
+saving image to ./figs/after_task_8_task_4.png
+saving image to ./figs/after_task_8_task_5.png
+saving image to ./figs/after_task_8_task_6.png
+saving image to ./figs/after_task_8_task_7.png
+test_classifier=1.46, std=0.02
+starting task 8
+starting epoch 0
+[1,    20] loss: 256.393
+[1,    40] loss: 260.295
+[1,    60] loss: 307.825
+[1,    80] loss: 365.055
+[1,   100] loss: 427.480
+starting epoch 1
+[2,    20] loss: 537.778
+[2,    40] loss: 587.893
+[2,    60] loss: 623.738
+[2,    80] loss: 651.535
+[2,   100] loss: 673.677
+starting epoch 2
+[3,    20] loss: 709.251
+[3,    40] loss: 729.531
+[3,    60] loss: 743.864
+[3,    80] loss: 760.611
+[3,   100] loss: 779.019
+starting epoch 3
+[4,    20] loss: 812.798
+[4,    40] loss: 831.684
+[4,    60] loss: 848.328
+[4,    80] loss: 862.870
+[4,   100] loss: 876.923
+saving image to ./figs/after_task_9_task_0.png
+saving image to ./figs/after_task_9_task_1.png
+saving image to ./figs/after_task_9_task_2.png
+saving image to ./figs/after_task_9_task_3.png
+saving image to ./figs/after_task_9_task_4.png
+saving image to ./figs/after_task_9_task_5.png
+saving image to ./figs/after_task_9_task_6.png
+saving image to ./figs/after_task_9_task_7.png
+saving image to ./figs/after_task_9_task_8.png
+test_classifier=1.46, std=0.02
+starting task 9
+starting epoch 0
+[1,    20] loss: 204.732
+[1,    40] loss: 217.580
+[1,    60] loss: 258.138
+[1,    80] loss: 294.994
+[1,   100] loss: 327.099
+starting epoch 1
+[2,    20] loss: 377.365
+[2,    40] loss: 399.144
+[2,    60] loss: 419.363
+[2,    80] loss: 438.137
+[2,   100] loss: 454.006
+starting epoch 2
+[3,    20] loss: 487.663
+[3,    40] loss: 503.540
+[3,    60] loss: 521.600
+[3,    80] loss: 539.366
+[3,   100] loss: 557.248
+starting epoch 3
+[4,    20] loss: 589.861
+[4,    40] loss: 604.700
+[4,    60] loss: 618.589
+[4,    80] loss: 633.624
+[4,   100] loss: 645.853
+saving image to ./figs/after_task_10_task_0.png
+saving image to ./figs/after_task_10_task_1.png
+saving image to ./figs/after_task_10_task_2.png
+saving image to ./figs/after_task_10_task_3.png
+saving image to ./figs/after_task_10_task_4.png
+saving image to ./figs/after_task_10_task_5.png
+saving image to ./figs/after_task_10_task_6.png
+saving image to ./figs/after_task_10_task_7.png
+saving image to ./figs/after_task_10_task_8.png
+saving image to ./figs/after_task_10_task_9.png
+test_classifier=1.46, std=0.02
+
+Process finished with exit code 0
+
