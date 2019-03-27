@@ -37,7 +37,7 @@ dimX = 28 * 28
 dimH = 500
 dimZ = 50
 batch_size = 50
-n_epochs = 6 # 200
+n_epochs = 200
 
 # Shared decoder
 dec_shared_dims = [dimH, dimH, dimX]
@@ -372,8 +372,9 @@ def main():
     task_loaders = zip(create_mnist_single_digit_loaders(batch_size), create_mnist_single_digit_loaders(batch_size, train_data=False))
 
     models = []
-    #[evaluate_YvsX_log_like.Evaluation(),
-    evaluators =  [ \
+    test_loaders = []
+
+    evaluators =  [ evaluate_YvsX_log_like.Evaluation(),
                   EvaluateClassifierUncertainty.EvaluateClassifierUncertainty('./classifier_params')] #classifier is loaded. asssumes already trained
 
     # A task corresponds to a digit
@@ -387,15 +388,16 @@ def main():
         else:
             models = load_models(task_id)
             task_model = models[-1]
-
+        test_loaders.append(test_loader)
         #Disable gradient calculation during evaluation
         with torch.no_grad():
             if (Train):
                 for i, model in enumerate(models):
                     model.save_model(path(task_id, i))
             generate_pictures(models)
-            for evaluator in evaluators:
-                evaluator(task_id, task_model, test_loader)
+            for test_task_id, test_loader in enumerate(test_loaders):
+                for evaluator in evaluators:
+                    evaluator(test_task_id, models[test_task_id], test_loader)
 
 # In[137]:
 
