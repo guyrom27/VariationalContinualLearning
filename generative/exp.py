@@ -14,6 +14,7 @@ n_channel = 128
 batch_size = 50
 lr = 1e-4
 K_mc = 10
+train = False   # Trains a model if True, load parameters otherwise
 checkpoint = -1
 
 data_path = 'asdf'  # TODO
@@ -66,11 +67,12 @@ def main(data_name, method, dimZ, dimH, n_channel, batch_size, K_mc, checkpoint,
         os.mkdir('save/' + path_name)
         print('create path save/' + path_name)
     filename = 'save/' + path_name + 'checkpoint'
-    if checkpoint < 0:
+    if train:
         print('training from scratch')
         old_var_list = init_variables(sess)
-    else:
-        load_params(sess, filename, checkpoint)
+    #else:
+    #    load_params(sess, filename, checkpoint)
+    #   old_var_list = init_variables(sess, set(tf.trainable_variables()))
     checkpoint += 1
 
     # visualise the samples
@@ -120,38 +122,43 @@ def main(data_name, method, dimZ, dimH, n_channel, batch_size, K_mc, checkpoint,
         print('construct eval function...')
         eval_func_list.append(construct_eval_func(X_ph, enc, dec, ll, \
                                                   batch_size_ph, K=100, sample_W=False))
+        if not train:
+            load_params(sess, filename, task - 1)
+            old_var_list = init_variables(sess, set(tf.trainable_variables()))
 
         # then construct loss func and fit func
         print('construct fit function...')
-        if method == 'onlinevi':
-            fit = construct_optimizer(X_ph, enc, dec, ll, X_train.shape[0], batch_size_ph, \
-                                      shared_prior_params, task, K_mc)
-        if method in ['ewc', 'noreg']:
-            bound = lowerbound(X_ph, enc, dec, ll)
-            fit = construct_optimizer(X_ph, batch_size_ph, bound, X_train.shape[0], ewc_loss)
-            if method == 'ewc':
+        if train:
+            if method == 'onlinevi':
+                fit = construct_optimizer(X_ph, enc, dec, ll, X_train.shape[0], batch_size_ph, \
+                                          shared_prior_params, task, K_mc)
+            if method in ['ewc', 'noreg']:
+                bound = lowerbound(X_ph, enc, dec, ll)
+                fit = construct_optimizer(X_ph, batch_size_ph, bound, X_train.shape[0], ewc_loss)
+                if method == 'ewc':
+                    fisher, var_list = compute_fisher(X_ph, batch_size_ph, bound, X_train.shape[0])
+
+            if method == 'laplace':
+                bound = lowerbound(X_ph, enc, dec, ll)
+                fit = construct_optimizer(X_ph, batch_size_ph, bound, X_train.shape[0], laplace_loss)
                 fisher, var_list = compute_fisher(X_ph, batch_size_ph, bound, X_train.shape[0])
 
-        if method == 'laplace':
-            bound = lowerbound(X_ph, enc, dec, ll)
-            fit = construct_optimizer(X_ph, batch_size_ph, bound, X_train.shape[0], laplace_loss)
-            fisher, var_list = compute_fisher(X_ph, batch_size_ph, bound, X_train.shape[0])
-
-        if method == 'si':
-            bound = lowerbound(X_ph, enc, dec, ll)
-            fit, shared_var_list = construct_optimizer(X_ph, batch_size_ph, bound, X_train.shape[0],
-                                                       si_reg, old_params_shared, lbd)
-            if old_params_shared is None:
-                old_params_shared = sess.run(shared_var_list)
+            if method == 'si':
+                bound = lowerbound(X_ph, enc, dec, ll)
+                fit, shared_var_list = construct_optimizer(X_ph, batch_size_ph, bound, X_train.shape[0],
+                                                           si_reg, old_params_shared, lbd)
+                if old_params_shared is None:
+                    old_params_shared = sess.run(shared_var_list)
 
         # initialise all the uninitialised stuff
         old_var_list = init_variables(sess, old_var_list)
 
-        # start training for each task
-        if method == 'si':
-            new_params_shared, w_params_shared = fit(sess, X_train, n_iter, lr)
-        else:
-            fit(sess, X_train, n_iter, lr)
+        if train:
+            # start training for each task
+            if method == 'si':
+                new_params_shared, w_params_shared = fit(sess, X_train, n_iter, lr)
+            else:
+                fit(sess, X_train, n_iter, lr)
 
         # plot samples
         x_gen_list = sess.run(gen_ops, feed_dict={batch_size_ph: N_gen})
@@ -177,7 +184,8 @@ def main(data_name, method, dimZ, dimH, n_channel, batch_size, K_mc, checkpoint,
         result_list.append(tmp_list)
 
         # save param values
-        save_params(sess, filename, checkpoint)
+        if train:
+            save_params(sess, filename, checkpoint)
         checkpoint += 1
 
         # update regularisers/priors
@@ -204,6 +212,8 @@ def main(data_name, method, dimZ, dimH, n_channel, batch_size, K_mc, checkpoint,
             si_reg, _ = update_si_reg(sess, si_reg, new_params_shared, \
                                       old_params_shared, w_params_shared)
             old_params_shared = new_params_shared
+
+        print()
 
     plot_images(x_gen_all, shape_high, path, data_name + '_gen_all')
 

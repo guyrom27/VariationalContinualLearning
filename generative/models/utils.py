@@ -42,7 +42,7 @@ def save_params(sess, filename, checkpoint):
 def load_params(sess, filename, checkpoint, init_all = True):
     params = tf.trainable_variables()
     filename = filename + '_' + str(checkpoint)
-    f = open(filename + '.pkl', 'r')
+    f = open(filename + '.pkl', 'rb')
     param_dict = pickle.load(f)
     print('param loaded', len(param_dict))
     f.close()

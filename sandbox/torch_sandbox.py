@@ -177,7 +177,7 @@ class SharedDecoder(nn.Module):
         self.prior = [(mu.clone().detach(), log_sig.clone().detach()) for mu, log_sig in self._get_posterior()]
         for mu_sig in self.prior:
             nn.init.constant_(mu_sig[1], -6.0)
-            
+
 
     def KL_from_prior(self):
         params = [(*post, *prior) for (post, prior) in zip(self._get_posterior(), self.prior)]
@@ -364,24 +364,22 @@ def generate_pictures(task_models, n_pics=100):
 
 
 def main():
-    Train = True
+    Train = False
 
-    # Not sure if device does anything
     dec_shared = SharedDecoder(dec_shared_dims, dec_shared_activations)
 
     task_loaders = zip(create_mnist_single_digit_loaders(batch_size), create_mnist_single_digit_loaders(batch_size, train_data=False))
 
-    models = []
     test_loaders = []
-
-    evaluators =  [ evaluate_YvsX_log_like.Evaluation(),
+    models = []
+    #evaluators =  [ \
+    evaluators = [evaluate_YvsX_log_like.Evaluation(),
                   EvaluateClassifierUncertainty.EvaluateClassifierUncertainty('./classifier_params')] #classifier is loaded. asssumes already trained
 
     # A task corresponds to a digit
     for task_id, (train_loader, test_loader) in enumerate(task_loaders):
         print("starting task " + str(task_id))
         if (Train):
-            # Not sure if device does anything
             task_model = TaskModel((enc_dims, enc_activations), (dec_head_dims, dec_head_activations), dec_shared)
             models.append(task_model)
             task_model.train_model(n_epochs, train_loader)
@@ -395,9 +393,10 @@ def main():
                 for i, model in enumerate(models):
                     model.save_model(path(task_id, i))
             generate_pictures(models)
-            for test_task_id, test_loader in enumerate(test_loaders):
-                for evaluator in evaluators:
-                    evaluator(test_task_id, models[test_task_id], test_loader)
+            for evaluator in evaluators:
+                evaluator(task_id, task_model, test_loaders)
+
+        print()
 
 # In[137]:
 
