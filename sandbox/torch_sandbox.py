@@ -246,7 +246,7 @@ class TaskModel(nn.Module):
 
     @classmethod
     def load_model(cls, path, uninitialized_instance):
-        uninitialized_instance.load_state_dict(torch.load(path))
+        uninitialized_instance.load_state_dict(torch.load(path,map_location=device))
         uninitialized_instance.eval()
         return uninitialized_instance
 

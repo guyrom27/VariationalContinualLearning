@@ -66,7 +66,7 @@ class Classifier(nn.Module):
     @classmethod
     def load_model(cls, path):
         c = Classifier()
-        c.load_state_dict(torch.load(path))
+        c.load_state_dict(torch.load(path,map_location=device))
         c.eval()
         return c
 

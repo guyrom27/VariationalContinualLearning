@@ -5,4 +5,10 @@
 */data
 */mnist
 .ipynb_checkpoints/*
+./generative/figs/mnist_onlinevi_K10/*
+./generative/save/mnist_onlinevi_K10/*
+./generative/classifier/save/mnist_weights.h5
+./generative/alg/__pycache__/*
+./sandbox/figs/*
+./sandbox/checkpoint_params/*
 
