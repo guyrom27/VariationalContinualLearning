@@ -57,8 +57,8 @@ dec_shared_dims = [dimH, dimH, dimX]
 dec_shared_activations = [F.relu, torch.sigmoid]
 
 # Encoder
-enc_dims = [dimX, dimH, dimH, dimZ * 2]
-enc_activations = [F.relu, F.relu, lambda x: x]
+enc_dims = [dimX, dimH, dimH, dimH, dimZ * 2]
+enc_activations = [F.relu, F.relu, F.relu, lambda x: x]
 
 # Private decoder (Head)
 dec_head_dims = [dimZ, dimH, dimH]
@@ -186,7 +186,6 @@ class SharedDecoder(nn.Module):
         """
         Copy the current posterior to a constant tensor, which will be used as prior for the next task
         """
-        #self.prior = [(mu.clone().detach(), log_sig.clone().detach()) for mu, log_sig in self._get_posterior()]
         self.prior = [(mu.clone().detach(), log_sig.clone().detach()) for mu, log_sig in self._get_posterior()]
         for mu_sig in self.prior:
             nn.init.constant_(mu_sig[1], -6.0)
