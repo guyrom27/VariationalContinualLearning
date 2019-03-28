@@ -6,10 +6,19 @@
 import torch
 torch.manual_seed(123)
 
+
+output_path = None
+
+if (not output_path is None):
+    import sys
+    sys.stdout = open(output_path, mode='w')
+
 print(torch.cuda.is_available())
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 print("Using device:", device)
 torch.backends.cudnn.benchmark = True
+
+
 
 import itertools
 import numpy as np
@@ -27,6 +36,10 @@ import evaluate_YvsX_log_like
 import EvaluateClassifierUncertainty
 
 
+
+
+Train = True
+max_task = 10
 
 weight_print = False
 data_print = False
@@ -364,20 +377,20 @@ def generate_pictures(task_models, n_pics=100):
 
 
 def main():
-    Train = False
-
     dec_shared = SharedDecoder(dec_shared_dims, dec_shared_activations)
 
     task_loaders = zip(create_mnist_single_digit_loaders(batch_size), create_mnist_single_digit_loaders(batch_size, train_data=False))
 
     test_loaders = []
     models = []
-    #evaluators =  [ \
+
     evaluators = [evaluate_YvsX_log_like.Evaluation(),
                   EvaluateClassifierUncertainty.EvaluateClassifierUncertainty('./classifier_params')] #classifier is loaded. asssumes already trained
 
     # A task corresponds to a digit
     for task_id, (train_loader, test_loader) in enumerate(task_loaders):
+        if task_id>max_task:
+            break
         print("starting task " + str(task_id))
         if (Train):
             task_model = TaskModel((enc_dims, enc_activations), (dec_head_dims, dec_head_activations), dec_shared)
@@ -393,8 +406,9 @@ def main():
                 for i, model in enumerate(models):
                     model.save_model(path(task_id, i))
             generate_pictures(models)
-            for evaluator in evaluators:
-                evaluator(task_id, task_model, test_loaders)
+            for test_task_id, loader in enumerate(test_loaders):
+                for evaluator in evaluators:
+                    evaluator(test_task_id, models[test_task_id], loader)
 
         print()
 

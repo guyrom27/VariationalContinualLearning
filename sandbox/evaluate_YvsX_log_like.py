@@ -40,26 +40,23 @@ class Evaluation:
         self.should_print = should_print
         self.K = K
 
-    def __call__(self, task_id, task_model, loaders):
-        results = []
-        for i in range(len(loaders)):
-            loader = loaders[i]
-            N = 0
-            n_iter_vae = len(loader)
-            bound_tot = 0.0
-            bound_var = 0.0
-            begin = time.time()
-            for j, data in enumerate(loader):
-                inputs, labels = data
-                N += len(inputs)
-                logp_mean, logp_var = IS_estimate(inputs, task_model, self.K)
+    def __call__(self, task_id, task_model, loader):
+        N = 0
+        n_iter_vae = len(loader)
+        bound_tot = 0.0
+        bound_var = 0.0
+        begin = time.time()
+        for j, data in enumerate(loader):
+            inputs, labels = data
+            N += len(inputs)
+            logp_mean, logp_var = IS_estimate(inputs, task_model, self.K)
 
-                bound_tot += logp_mean / n_iter_vae
-                bound_var += logp_var / n_iter_vae
-            end = time.time()
-            if self.should_print:
-                print("model %d on task %d test_ll=%.2f, ste=%.2f, time=%.2f" \
-                      % (task_id, i, bound_tot, np.sqrt(bound_var / N), end - begin))
-            results.append((bound_tot, np.sqrt(bound_var / N)))
-        return results
+            bound_tot += logp_mean / n_iter_vae
+            bound_var += logp_var / n_iter_vae
+        end = time.time()
+        if self.should_print:
+            print("task %d test_ll=%.2f, ste=%.2f, time=%.2f" \
+                  % (task_id, bound_tot, np.sqrt(bound_var / N), end - begin))
+        return (bound_tot, np.sqrt(bound_var / N))
+
 
