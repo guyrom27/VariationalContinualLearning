@@ -88,6 +88,7 @@ def main(data_name, method, dimZ, dimH, n_channel, batch_size, K_mc, checkpoint,
     # now start fitting
     N_task = len(labels)
     gen_ops = []
+    gen_ops2 = []
     X_valid_list = []
     X_test_list = []
     eval_func_list = []
@@ -116,8 +117,10 @@ def main(data_name, method, dimZ, dimH, n_channel, batch_size, K_mc, checkpoint,
         X_test_list.append(X_test)
 
         # define the head net and the generator ops
-        dec = generator(generator_head(dimZ, dimH, n_layers_head, 'gen_%d' % task), dec_shared)
+        dec_head = generator_head(dimZ, dimH, n_layers_head, 'gen_%d' % task, sess)
+        dec = generator(dec_head, dec_shared)
         enc = encoder(dimX, dimH, dimZ, n_layers_enc, 'enc_%d' % task)
+        gen_ops2.append(construct_gen(dec_head, dimZ, sampling=False)(N_gen))
         gen_ops.append(construct_gen(dec, dimZ, sampling=False)(N_gen))
         print('construct eval function...')
         eval_func_list.append(construct_eval_func(X_ph, enc, dec, ll, \
@@ -159,6 +162,12 @@ def main(data_name, method, dimZ, dimH, n_channel, batch_size, K_mc, checkpoint,
                 new_params_shared, w_params_shared = fit(sess, X_train, n_iter, lr)
             else:
                 fit(sess, X_train, n_iter, lr)
+
+        #get partical dec eval
+        #print(sess.run(tf.random_normal(shape=(N_gen, dimZ))))
+        #x_gen_list2 = sess.run(gen_ops2, feed_dict={batch_size_ph: N_gen})
+        #for i in range(len(x_gen_list2)):
+        #    print(x_gen_list2)
 
         # plot samples
         x_gen_list = sess.run(gen_ops, feed_dict={batch_size_ph: N_gen})

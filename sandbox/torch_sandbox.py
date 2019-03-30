@@ -15,6 +15,7 @@ if (not output_path is None):
 
 print(torch.cuda.is_available())
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+device = "cpu"
 print("Using device:", device)
 torch.backends.cudnn.benchmark = True
 
@@ -50,15 +51,15 @@ dimX = 28 * 28
 dimH = 500
 dimZ = 50
 batch_size = 50
-n_epochs = 200
+n_epochs = 5
 
 # Shared decoder
 dec_shared_dims = [dimH, dimH, dimX]
 dec_shared_activations = [F.relu, torch.sigmoid]
 
 # Encoder
-enc_dims = [dimX, dimH, dimH, dimH, dimZ * 2]
-enc_activations = [F.relu, F.relu, F.relu, lambda x: x]
+enc_dims = [dimX, dimH, dimH, dimZ * 2]
+enc_activations = [F.relu, F.relu, lambda x: x]
 
 # Private decoder (Head)
 dec_head_dims = [dimZ, dimH, dimH]
@@ -355,7 +356,8 @@ def create_mnist_single_digit_loaders(b_size=10, train_data=True):
 
 
 def path(after, i):
-    return './checkpoint_params/after_task_' + str(after) + '_params_for_task_' + str(i) + '.pt'
+    return './arnaud5EPOCHS/after_task_' + str(after) + '_params_for_task_' + str(i) + '.pt'
+    #return './checkpoint_params/after_task_' + str(after) + '_params_for_task_' + str(i) + '.pt'
 
 def load_models(after):
     dec_shared = SharedDecoder(dec_shared_dims, dec_shared_activations)
@@ -370,7 +372,10 @@ import generative.models.visualisation
 def generate_pictures(task_models, n_pics=100):
     with torch.no_grad():
         for task_id, task_model in enumerate(task_models):
-            pics = task_model.sample_and_decode(torch.ones(n_pics, dimZ * 2, device=device))
+            sample = Normal(torch.zeros((n_pics, dimZ*2), device=device), torch.ones((n_pics, dimZ*2), device=device)).sample()
+            #pics = task_model.sample_and_decode(torch.ones(n_pics, dimZ * 2, device=device))
+            print(task_model.dec_head(task_model.sampler(sample)))
+            pics = task_model.sample_and_decode(sample)
             pics = pics.cpu()
             generative.models.visualisation.plot_images(pics, (28, 28), './figs/', 'after_task_'+str(len(task_models))+'_task_'+str(task_id))
 

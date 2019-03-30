@@ -5,6 +5,7 @@ import numpy as np
 
 #device = "cpu"
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+device = "cpu"
 
 def IS_estimate(x, task_model, K):
     x = x.view(-1, 28 ** 2)

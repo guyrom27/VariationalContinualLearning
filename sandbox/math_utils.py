@@ -2,7 +2,7 @@ import numpy as np
 import torch
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-
+device = "cpu"
 
 def KL_div_gaussian(mu_p, log_sig_p, mu_q, log_sig_q):
     # compute KL[p||q]
