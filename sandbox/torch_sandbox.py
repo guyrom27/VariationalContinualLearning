@@ -46,6 +46,10 @@ data_print = False
 loss_print = False
 
 
+scale_down_090 = True
+degenerate_dataset = False
+
+
 dimX = 28 * 28
 dimH = 500
 dimZ = 50
@@ -350,9 +354,10 @@ def single_digit_loader(X, label, b_size=10):
 
 def create_mnist_single_digit_loaders(b_size=10, train_data=True):
     import generative.models.mnist
-    scale_down_090 = True
     for i in range(10):
         X_train, X_test, Y_train, Y_test = generative.models.mnist.load_mnist(digits = [i])
+        if degenerate_dataset:
+            X_train = X_train[0,:].reshape(1,-1).repeat(X_train.shape[0], axis=0)
         if train_data:
             N_train = int(X_train.shape[0] * 0.9) if scale_down_090 else X_train.shape[0]
             X_train = X_train[:N_train]

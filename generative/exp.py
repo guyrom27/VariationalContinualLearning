@@ -23,6 +23,8 @@ train = False   # Trains a model if True, load parameters otherwise
 checkpoint = -1
 
 print_weights = False
+degenerate_dataset = False
+
 
 data_path = 'asdf'  # TODO
 
@@ -97,6 +99,10 @@ def main(data_name, method, dimZ, dimH, n_channel, batch_size, K_mc, checkpoint,
         N_train = int(X_train.shape[0] * 0.9)
         X_valid_list.append(X_train[N_train:])
         X_train = X_train[:N_train]
+
+        if degenerate_dataset:
+            X_train = X_train[0,:].reshape(1,-1).repeat(X_train.shape[0], axis=0)
+
         X_test_list.append(X_test)
 
         # define the head net and the generator ops
