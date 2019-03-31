@@ -190,9 +190,11 @@ class SharedDecoder(nn.Module):
         """
         Copy the current posterior to a constant tensor, which will be used as prior for the next task
         """
-        self.prior = [(mu.clone().detach(), log_sig.clone().detach()) for mu, log_sig in self._get_posterior()]
-        for mu_sig in self.prior:
-            nn.init.constant_(mu_sig[1], -6.0)
+        posterior = self._get_posterior()
+        self.prior = [(mu.clone().detach(), log_sig.clone().detach()) for mu, log_sig in posterior]
+        #update the new posterior's log_sig to -6
+        for mu_sig in posterior:
+            mu_sig[1].fill_(-6.0)
 
 
     def KL_from_prior(self):
