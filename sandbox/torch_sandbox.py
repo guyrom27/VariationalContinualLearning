@@ -193,8 +193,9 @@ class SharedDecoder(nn.Module):
         posterior = self._get_posterior()
         self.prior = [(mu.clone().detach(), log_sig.clone().detach()) for mu, log_sig in posterior]
         #update the new posterior's log_sig to -6
-        for mu_sig in posterior:
-            mu_sig[1].fill_(-6.0)
+        with torch.no_grad():
+            for mu_sig in posterior:
+                mu_sig[1].fill_(-6.0)
 
 
     def KL_from_prior(self):
@@ -346,7 +347,7 @@ def single_digit_loader(X, label, b_size=10):
     N = X.shape[0]
     for i in range(N//b_size):
         yield (torch.from_numpy(X[i*b_size:(i+1)*b_size,:]), torch.from_numpy(np.ones(b_size,dtype=int)))
-    if (N/b != 0.0):
+    if (N/b_size != 0.0):
         end = list(range((N//b_size)*b_size,X.shape[0]))
         n_missing = b_size - len(end)
         last_batch_ind = end + list(range(n_missing))

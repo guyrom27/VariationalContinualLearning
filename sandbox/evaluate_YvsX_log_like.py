@@ -42,17 +42,19 @@ class Evaluation:
 
     def __call__(self, task_id, task_model, loader):
         N = 0
-        n_iter_vae = len(loader)
         bound_tot = 0.0
         bound_var = 0.0
         begin = time.time()
+        j=0
         for j, data in enumerate(loader):
             inputs, labels = data
             N += len(inputs)
             logp_mean, logp_var = IS_estimate(inputs, task_model, self.K)
 
-            bound_tot += logp_mean / n_iter_vae
-            bound_var += logp_var / n_iter_vae
+            bound_tot += logp_mean
+            bound_var += logp_var
+        bound_tot /= j+1
+        bound_var /= j+1
         end = time.time()
         if self.should_print:
             print("task %d test_ll=%.2f, ste=%.2f, time=%.2f" \
