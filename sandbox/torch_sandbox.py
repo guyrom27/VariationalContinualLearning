@@ -282,12 +282,12 @@ class TaskModel(nn.Module):
         # no other priors should be updated. they are trained once.
         return
 
-    def train_model(self, n_epochs, task_trainloader):
+    def train_model(self, n_epochs, task_trainloader, DatasetSize):
         # We don't intend a TaskModel to be trained more than once
         assert (self.TrainGuard)
         self.TrainGuard = False
 
-        self.DatasetSize = len(task_trainloader.dataset)
+        self.DatasetSize = DatasetSize
 
         # loop over the dataset multiple times
         for epoch in range(n_epochs):
@@ -335,10 +335,37 @@ class PrintLayer(nn.Module):
 
 # In[135]:
 
+def single_digit_loader(X, label, b_size=10):
+    X.reshape(-1,dimX)
+    N = X.shape[0]
+    for i in range(N//b_size):
+        yield (torch.from_numpy(X[i*b_size:(i+1)*b_size,:]), torch.from_numpy(np.ones(b_size,dtype=int)))
+    if (N/b != 0.0):
+        end = list(range((N//b_size)*b_size,X.shape[0]))
+        n_missing = b_size - len(end)
+        last_batch_ind = end + list(range(n_missing))
+        yield (torch.from_numpy(X[last_batch_ind,:]), torch.from_numpy(np.ones(b_size,dtype=int)*label))
 
 
 
 def create_mnist_single_digit_loaders(b_size=10, train_data=True):
+    import generative.models.mnist
+    scale_down_090 = True
+    for i in range(10):
+        X_train, X_test, Y_train, Y_test = generative.models.mnist.load_mnist(digits = [i])
+        if train_data:
+            N_train = int(X_train.shape[0] * 0.9) if scale_down_090 else X_train.shape[0]
+            X_train = X_train[:N_train]
+            yield (X_train.shape[0], single_digit_loader(X_train, i, b_size))
+        else:
+            yield (X_test.shape[0], single_digit_loader(X_test, i, b_size))
+
+
+
+
+
+#the original code
+"""def create_mnist_single_digit_loaders(b_size=10, train_data=True):
     dataset = torchvision.datasets.MNIST(root='./data',    train=train_data, download=True,
                                          transform=torchvision.transforms.ToTensor())
 
@@ -348,8 +375,8 @@ def create_mnist_single_digit_loaders(b_size=10, train_data=True):
         # NOT Repeating the original "mistake"
         # train_idx = len(partial_trainset) * 0.9
         partial_loader = torch.utils.data.DataLoader(partial_dataset, batch_size=b_size, shuffle=True)
-        yield partial_loader
-
+        yield (len(partial_dataset), partial_loader)
+"""
 
 # In[136]:
 
@@ -387,14 +414,14 @@ def main():
                   EvaluateClassifierUncertainty.EvaluateClassifierUncertainty('./classifier_params')] #classifier is loaded. asssumes already trained
 
     # A task corresponds to a digit
-    for task_id, (train_loader, test_loader) in enumerate(task_loaders):
+    for task_id, ((N_train, train_loader),(N_test, test_loader)) in enumerate(task_loaders):
         if task_id>max_task:
             break
         print("starting task " + str(task_id))
         if (Train):
             task_model = TaskModel((enc_dims, enc_activations), (dec_head_dims, dec_head_activations), dec_shared)
             models.append(task_model)
-            task_model.train_model(n_epochs, train_loader)
+            task_model.train_model(n_epochs, train_loader, N_train)
         else:
             models = load_models(task_id)
             task_model = models[-1]
