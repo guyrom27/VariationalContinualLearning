@@ -143,7 +143,7 @@ def construct_optimizer(X_ph, enc, dec, ll, N_data, batch_size_ph, shared_prior_
         begin = time.time()
         n_iter_vae = int(N / batch_size)
         for iteration in range(1, n_iter + 1):
-            ind_s = np.random.permutation(list(range(N)))
+            ind_s = list(range(N)) #np.random.permutation(list(range(N)))
             bound_total = 0.0
             kl_total = 0.0
             print_counter = 0
