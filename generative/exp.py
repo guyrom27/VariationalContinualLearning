@@ -8,6 +8,11 @@ from encoder_no_shared import encoder, recon
 from utils import init_variables, save_params, load_params, load_data
 from alg.eval_test_ll import construct_eval_func
 
+from bayesian_generator import generator_head, generator_shared, \
+            generator, construct_gen
+from onlinevi import construct_optimizer, init_shared_prior, \
+            update_shared_prior, update_q_sigma
+
 dimZ = 50
 dimH = 500
 n_channel = 128
@@ -16,6 +21,8 @@ lr = 1e-4
 K_mc = 10
 train = False   # Trains a model if True, load parameters otherwise
 checkpoint = -1
+
+print_weights = False
 
 data_path = 'asdf'  # TODO
 
@@ -29,23 +36,6 @@ def main(data_name, method, dimZ, dimH, n_channel, batch_size, K_mc, checkpoint,
     if data_name == 'notmnist':
         from notmnist import load_notmnist
 
-    # import functionalities
-    if method == 'onlinevi':
-        from bayesian_generator import generator_head, generator_shared, \
-            generator, construct_gen
-        from onlinevi import construct_optimizer, init_shared_prior, \
-            update_shared_prior, update_q_sigma
-    if method in ['ewc', 'noreg', 'laplace', 'si']:
-        from generator import generator_head, generator_shared, generator, construct_gen
-        if method in ['ewc', 'noreg']:
-            from vae_ewc import construct_optimizer, lowerbound
-        if method == 'ewc': from vae_ewc import update_ewc_loss, compute_fisher
-        if method == 'laplace':
-            from vae_laplace import construct_optimizer, lowerbound
-            from vae_laplace import update_laplace_loss, compute_fisher, init_fisher_accum
-        if method == 'si':
-            from vae_si import construct_optimizer, lowerbound, update_si_reg
-
     # then define model
     n_layers_shared = 2
     batch_size_ph = tf.placeholder(tf.int32, shape=(), name='batch_size')
@@ -56,8 +46,6 @@ def main(data_name, method, dimZ, dimH, n_channel, batch_size, K_mc, checkpoint,
     config.gpu_options.allow_growth = True
     sess = tf.Session(config=config)
     string = method
-    if method in ['ewc', 'laplace', 'si']:
-        string = string + '_lbd%.1f' % lbd
     if method == 'onlinevi' and K_mc > 1:
         string = string + '_K%d' % K_mc
     path_name = data_name + '_%s/' % string
@@ -67,6 +55,15 @@ def main(data_name, method, dimZ, dimH, n_channel, batch_size, K_mc, checkpoint,
         os.mkdir('save/' + path_name)
         print('create path save/' + path_name)
     filename = 'save/' + path_name + 'checkpoint'
+    path = 'figs/' + path_name
+    if not os.path.isdir('figs/'):
+        os.mkdir('figs/')
+    if not os.path.isdir(path):
+        os.mkdir(path)
+        print('create path ' + path)
+
+
+
     if train:
         print('training from scratch')
         old_var_list = init_variables(sess)
@@ -77,12 +74,7 @@ def main(data_name, method, dimZ, dimH, n_channel, batch_size, K_mc, checkpoint,
 
     # visualise the samples
     N_gen = 10 ** 2
-    path = 'figs/' + path_name
-    if not os.path.isdir('figs/'):
-        os.mkdir('figs/')
-    if not os.path.isdir(path):
-        os.mkdir(path)
-        print('create path ' + path)
+
     X_ph = tf.placeholder(tf.float32, shape=(batch_size, dimX), name='x_ph')
 
     # now start fitting
@@ -94,14 +86,6 @@ def main(data_name, method, dimZ, dimH, n_channel, batch_size, K_mc, checkpoint,
     result_list = []
     if method == 'onlinevi':
         shared_prior_params = init_shared_prior()
-    if method in ['ewc', 'noreg']:
-        ewc_loss = 0.0
-    if method == 'laplace':
-        F_accum = init_fisher_accum()
-        laplace_loss = 0.0
-    if method == 'si':
-        old_params_shared = None
-        si_reg = None
     n_layers_head = 2
     n_layers_enc = n_layers_shared + n_layers_head - 1
     for task in range(1, N_task + 1):
@@ -132,33 +116,27 @@ def main(data_name, method, dimZ, dimH, n_channel, batch_size, K_mc, checkpoint,
             if method == 'onlinevi':
                 fit = construct_optimizer(X_ph, enc, dec, ll, X_train.shape[0], batch_size_ph, \
                                           shared_prior_params, task, K_mc)
-            if method in ['ewc', 'noreg']:
-                bound = lowerbound(X_ph, enc, dec, ll)
-                fit = construct_optimizer(X_ph, batch_size_ph, bound, X_train.shape[0], ewc_loss)
-                if method == 'ewc':
-                    fisher, var_list = compute_fisher(X_ph, batch_size_ph, bound, X_train.shape[0])
 
-            if method == 'laplace':
-                bound = lowerbound(X_ph, enc, dec, ll)
-                fit = construct_optimizer(X_ph, batch_size_ph, bound, X_train.shape[0], laplace_loss)
-                fisher, var_list = compute_fisher(X_ph, batch_size_ph, bound, X_train.shape[0])
-
-            if method == 'si':
-                bound = lowerbound(X_ph, enc, dec, ll)
-                fit, shared_var_list = construct_optimizer(X_ph, batch_size_ph, bound, X_train.shape[0],
-                                                           si_reg, old_params_shared, lbd)
-                if old_params_shared is None:
-                    old_params_shared = sess.run(shared_var_list)
-
-        # initialise all the uninitialised stuff
+        # initialsise all the uninitialised stuff
         old_var_list = init_variables(sess, old_var_list)
 
         if train:
             # start training for each task
-            if method == 'si':
-                new_params_shared, w_params_shared = fit(sess, X_train, n_iter, lr)
-            else:
-                fit(sess, X_train, n_iter, lr)
+            fit(sess, X_train, n_iter, lr)
+
+        if print_weights:
+            #Print weight statistics
+            print('SharedDec after task ', task, ":")
+            for ind, l in enumerate(dec_shared.layers):
+                muWmean, muWvar = [str(int(x.eval(session=sess)*100)/100) for x in tf.nn.moments(l.mu_W.value(), axes=[0, 1])]
+                muBmean, muBvar = [str(int(x.eval(session=sess) * 100) / 100) for x in
+                                   tf.nn.moments(l.mu_b.value(), axes=[0])]
+                sigWmean, sigWvar = [str(int(x.eval(session=sess) * 100) / 100) for x in
+                                   tf.nn.moments(l.log_sig_W.value(), axes=[0, 1])]
+                sigBmean, sigBvar = [str(int(x.eval(session=sess) * 100) / 100) for x in
+                                   tf.nn.moments(l.log_sig_b.value(), axes=[0])]
+                print("Layer ",str(ind),": W = "+muWmean+"("+muWvar+")+-",sigWmean,"("+sigWvar+")  b="+muBmean+"("+muBvar+")+-",sigBmean,"("+sigBvar+")")
+
 
         # plot samples
         x_gen_list = sess.run(gen_ops, feed_dict={batch_size_ph: N_gen})
@@ -189,29 +167,12 @@ def main(data_name, method, dimZ, dimH, n_channel, batch_size, K_mc, checkpoint,
         checkpoint += 1
 
         # update regularisers/priors
-        if method == 'ewc':
-            # update EWC loss
-            print('update ewc loss...')
-            X_batch = X_train[np.random.permutation(list(range(X_train.shape[0])))[:batch_size]]
-            ewc_loss = update_ewc_loss(sess, ewc_loss, var_list, fisher, lbd, X_batch)
-        if method == 'laplace':
-            # update EWC loss
-            print('update laplace loss...')
-            X_batch = X_train[np.random.permutation(list(range(X_train.shape[0])))[:batch_size]]
-            laplace_loss, F_accum = update_laplace_loss(sess, F_accum, var_list, fisher, lbd, X_batch)
         if method == 'onlinevi':
             # update prior
             print('update prior...')
             shared_prior_params = update_shared_prior(sess, shared_prior_params)
             # reset the variance of q
             update_q_sigma(sess)
-
-        if method == 'si':
-            # update regularisers/priors
-            print('update SI big omega matrices...')
-            si_reg, _ = update_si_reg(sess, si_reg, new_params_shared, \
-                                      old_params_shared, w_params_shared)
-            old_params_shared = new_params_shared
 
         print()
 
