@@ -76,7 +76,8 @@ class mlp_layer(nn.Module):
         """
         super().__init__()
         self.mu = nn.Linear(d_in, d_out).to(device=device)
-        self._init_weights(d_in, d_out)
+        with torch.no_grad():
+            self._init_weights(d_in, d_out)
         self.activation = activation
 
     def forward(self, x):
@@ -113,7 +114,8 @@ class bayesian_mlp_layer(mlp_layer):
         """
         super().__init__(d_in, d_out, activation)
         self.log_sigma = nn.Linear(d_in, d_out).to(device=device)
-        self._init_log_sigma()
+        with torch.no_grad():
+            self._init_log_sigma()
         # mu is initialized the same as non-Bayesian mlp
 
         self.w_standard_normal_sampler = Normal(torch.zeros(self.mu.weight.shape, device=device), torch.ones(self.mu.weight.shape, device=device))
@@ -185,6 +187,9 @@ class SharedDecoder(nn.Module):
         which is standard normal
         """
         self.prior = [(torch.zeros(mu.shape, device=device), torch.zeros(log_sig.shape, device=device)) for mu, log_sig in self._get_posterior()]
+        for mu, log_sig in self.prior:
+            mu.requires_grad = False
+            log_sig.requires_grad = False
 
     def update_prior(self):
         """
