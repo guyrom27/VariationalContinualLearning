@@ -43,18 +43,18 @@ max_task = 10
 
 weight_print = False
 data_print = False
-loss_print = False
+loss_print = True
 
 
 scale_down_090 = True
-degenerate_dataset = False
+degenerate_dataset = True
 
 
 dimX = 28 * 28
 dimH = 500
 dimZ = 50
 batch_size = 50
-n_epochs = 200
+n_epochs = 1
 
 # Shared decoder
 dec_shared_dims = [dimH, dimH, dimX]
@@ -89,7 +89,8 @@ class mlp_layer(nn.Module):
     def _init_weights(self, input_size, output_size, constant=1.0):
         scale = constant * np.sqrt(6.0 / (input_size + output_size))
         assert (output_size > 0)
-        nn.init.uniform_(self.mu.weight, -scale, scale)
+        #nn.init.uniform_(self.mu.weight, -scale, scale)
+        self.mu.weight.fill_(scale/32)
         nn.init.zeros_(self.mu.bias)
 
     @property
@@ -133,8 +134,10 @@ class bayesian_mlp_layer(mlp_layer):
 
         if self.sampling:
 
-            sampled_W = (self.mu.weight + self.w_standard_normal_sampler.sample().to(device=device) * torch.exp(self.log_sigma.weight))
-            sampled_b = (self.mu.bias + self.b_standard_normal_sampler.sample().to(device=device) * torch.exp(self.log_sigma.bias))
+            #sampled_W = (self.mu.weight + self.w_standard_normal_sampler.sample().to(device=device) * torch.exp(self.log_sigma.weight))
+            #sampled_b = (self.mu.bias + self.b_standard_normal_sampler.sample().to(device=device) * torch.exp(self.log_sigma.bias))
+            sampled_W = (self.mu.weight + torch.exp(self.log_sigma.weight)/2)
+            sampled_b = (self.mu.bias + torch.exp(self.log_sigma.bias)/2)
             return self.activation(torch.einsum('ij,bj->bi',[sampled_W, x]) + sampled_b)
         else:
             return super().forward(x)
@@ -156,7 +159,8 @@ class NormalSamplingLayer(nn.Module):
         self.d_out = d_out
 
     def forward(self, mu_log_sigma_vec):
-        return Normal(mu_log_sigma_vec[:, :self.d_out], torch.exp(mu_log_sigma_vec[:, self.d_out:])).sample().to(device=device)
+        #return Normal(mu_log_sigma_vec[:, :self.d_out], torch.exp(mu_log_sigma_vec[:, self.d_out:])).sample().to(device=device)
+        return mu_log_sigma_vec[:, :self.d_out]+ torch.exp(mu_log_sigma_vec[:, self.d_out:])/2
 
 
 
@@ -280,7 +284,7 @@ class TaskModel(nn.Module):
 
         if loss_print:
             print("Log_like", "\tKL Z","\tKL Qt vs prev Qt")
-            print(int(torch.mean(logp).item()),'\t',int(torch.mean(kl_z).item()), '\t', int(kl_shared_dec_Qt_2_PREV_Qt / self.DatasetSize))
+            print(int(torch.mean(logp).item()),'\t',(torch.mean(kl_z).item()), '\t', int(kl_shared_dec_Qt_2_PREV_Qt / self.DatasetSize))
 
         # We ignore the kl(private dec || Normal(0,1) ) like the authors did
         ELBO = torch.mean(logp) - torch.mean(kl_z) - (kl_shared_dec_Qt_2_PREV_Qt / self.DatasetSize)
@@ -307,7 +311,7 @@ class TaskModel(nn.Module):
             running_loss = 0.0
             for i, data in enumerate(task_trainloader):
                 global loss_print
-                loss_print = (i % 20 == 19)
+                #loss_print = (i % 20 == 19)
                 # get the inputs
                 inputs, labels = data
                 #Migrate to device (gpu if possible)

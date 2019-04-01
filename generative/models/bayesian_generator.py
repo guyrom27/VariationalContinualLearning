@@ -20,8 +20,10 @@ class bayesian_mlp_layer:
 
     def __call__(self, x, sampling=True):
         if sampling:
-            W = sample_gaussian(self.mu_W, self.log_sig_W)
-            b = sample_gaussian(self.mu_b, self.log_sig_b)
+            W = self.mu_W + tf.exp( self.log_sig_W)/2
+            b = self.mu_b + tf.exp(self.log_sig_b)/2
+            #W = sample_gaussian(self.mu_W, self.log_sig_W)
+            #b = sample_gaussian(self.mu_b, self.log_sig_b)
         else:
             print('use mean of q(theta)...')
             W = self.mu_W; b = self.mu_b

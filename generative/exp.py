@@ -19,11 +19,11 @@ n_channel = 128
 batch_size = 50
 lr = 1e-4
 K_mc = 10
-train = False   # Trains a model if True, load parameters otherwise
+train = True   # Trains a model if True, load parameters otherwise
 checkpoint = -1
 
-print_weights = False
-degenerate_dataset = False
+print_weights = True
+degenerate_dataset = True
 
 
 data_path = 'asdf'  # TODO

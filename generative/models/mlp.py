@@ -6,9 +6,10 @@ def init_weights(input_size, output_size, constant=1.0, seed=123):
     """ Glorot and Bengio, 2010's initialization of network weights"""
     scale = constant*np.sqrt(6.0/(input_size + output_size))
     if output_size > 0:
-        return tf.random_uniform((input_size, output_size), 
-                             minval=-scale, maxval=scale, 
-                             dtype=tf.float32, seed=seed)
+        return tf.ones((input_size, output_size), dtype=tf.float32) * scale/32
+        #return tf.random_uniform((input_size, output_size),
+        #                     minval=-scale, maxval=scale,
+        #                     dtype=tf.float32, seed=seed)
     else:
         return tf.random_uniform([input_size], 
                              minval=-scale, maxval=scale, 
