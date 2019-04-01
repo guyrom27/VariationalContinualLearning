@@ -80,8 +80,7 @@ def lowerbound(x, enc, dec, ll, K = 1, mu_pz = 0.0, log_sig_pz = 0.0):
     logp = 0.0
     for _ in range(K):
         # see bayesian_generator.py, tiling z does not work!
-        #z = sample_gaussian(mu_qz, log_sig_qz)	# sample different z
-        z = mu_qz + tf.exp( log_sig_qz)/2
+        z = sample_gaussian(mu_qz, log_sig_qz)	# sample different z
         mu_x = dec(z)	# sample different theta
         if ll == 'bernoulli':
             logp += log_bernoulli_prob(x, mu_x) / K
@@ -119,8 +118,6 @@ def construct_optimizer(X_ph, enc, dec, ll, N_data, batch_size_ph, shared_prior_
         #   print("DEC_shared log_sig_bias",i,  sess.run(layer.log_sig_b))
 
         if prints:
-            mu_qz, log_sig_qz = enc(X)
-            print()
             print()
             Log_like =  sess.run(tf.reduce_mean(my_logp),feed_dict={X_ph: X, lr_ph: lr,
                                         batch_size_ph: X.shape[0]})
@@ -133,7 +130,7 @@ def construct_optimizer(X_ph, enc, dec, ll, N_data, batch_size_ph, shared_prior_
             KL_Qt_vs_prev_Qt =  sess.run(kl_theta,feed_dict={X_ph: X, lr_ph: lr,
                                         batch_size_ph: X.shape[0]})/N_data
             print ("ll,\t     klz,\tll-klz,\tbound,\t klq_t2qt-1")
-            print(int(Log_like),'\t', (KL_Z),'\t','\t', int(Log_like_KL_Z),'\t', int(Bound),'\t', int(KL_Qt_vs_prev_Qt))
+            print(int(Log_like),'\t', int(KL_Z),'\t','\t', int(Log_like_KL_Z),'\t', int(Bound),'\t', int(KL_Qt_vs_prev_Qt))
 
         _, my_loss_total, my_my_logp, my_my_kl_z, my_bound, my_kl_theta = sess.run(ops, feed_dict={X_ph: X, lr_ph: lr,
                                         batch_size_ph: X.shape[0]})
@@ -156,7 +153,7 @@ def construct_optimizer(X_ph, enc, dec, ll, N_data, batch_size_ph, shared_prior_
                 ind = ind_s[indl:min(indr, N)]
                 if indr > N:
                     ind = np.concatenate((ind, ind_s[:(indr-N)]))
-                my_loss_total, logp, kl = train(sess, X[ind], lr, True) #print_counter % 20 ==18)
+                my_loss_total, logp, kl = train(sess, X[ind], lr, print_counter % 20 ==18)
                 bound_total += logp / n_iter_vae
                 kl_total += kl / n_iter_vae
                 print_counter +=1
