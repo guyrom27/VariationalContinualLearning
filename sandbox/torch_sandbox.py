@@ -309,11 +309,11 @@ class TaskModel(nn.Module):
         for epoch in range(n_epochs):
             print("starting epoch " + str(epoch))
             running_loss = 0.0
-            for i, data in enumerate(task_trainloader):
+            for i in range(len(task_trainloader)):
                 global loss_print
                 #loss_print = (i % 20 == 19)
                 # get the inputs
-                inputs, labels = data
+                inputs, labels = task_trainloader[i]
                 #Migrate to device (gpu if possible)
                 inputs = inputs.to(device=device)
                 # step
@@ -351,6 +351,33 @@ class PrintLayer(nn.Module):
 
 # In[135]:
 
+class BatchWrapper:
+    def __init__(self, X, label, b_size):
+        self.X = X.reshape(-1, dimX)
+        self.N = X.shape[0]
+        self.label = label
+        self.b_size = b_size
+
+    def flat_size(self):
+        return self.X.shape[0]
+
+    def __len__(self):
+        if (self.N % self.b_size ==0):
+            return self.N//self.b_size
+        else:
+            return (self.N//self.b_size) +1
+
+    def __getitem__(self, i):
+        assert(i>=0 and i < len(self))
+        if i == len(self) - 1:
+            end = list(range((self.N // self.b_size) * self.b_size, self.N))
+            n_missing = self.b_size - len(end)
+            last_batch_ind = end + list(range(n_missing))
+            return (torch.from_numpy(self.X[last_batch_ind, :]), torch.from_numpy(np.ones(self.b_size, dtype=int) * self.label))
+        else:
+            return (torch.from_numpy(self.X[i*self.b_size:(i+1)*self.b_size,:]), torch.from_numpy(np.ones(self.b_size,dtype=int)))
+
+
 def single_digit_loader(X, label, b_size=10):
     X.reshape(-1,dimX)
     N = X.shape[0]
@@ -366,6 +393,7 @@ def single_digit_loader(X, label, b_size=10):
 
 def create_mnist_single_digit_loaders(b_size=10, train_data=True):
     import generative.models.mnist
+    loaders = []
     for i in range(10):
         X_train, X_test, Y_train, Y_test = generative.models.mnist.load_mnist(digits = [i])
         if degenerate_dataset:
@@ -373,9 +401,11 @@ def create_mnist_single_digit_loaders(b_size=10, train_data=True):
         if train_data:
             N_train = int(X_train.shape[0] * 0.9) if scale_down_090 else X_train.shape[0]
             X_train = X_train[:N_train]
-            yield (X_train.shape[0], single_digit_loader(X_train, i, b_size))
+            loaders.append(BatchWrapper(X_train,i,b_size))
         else:
-            yield (X_test.shape[0], single_digit_loader(X_test, i, b_size))
+            loaders.append(BatchWrapper(X_test, i, b_size))
+    return loaders
+
 
 
 
@@ -431,14 +461,14 @@ def main():
                   EvaluateClassifierUncertainty.EvaluateClassifierUncertainty('./classifier_params')] #classifier is loaded. asssumes already trained
 
     # A task corresponds to a digit
-    for task_id, ((N_train, train_loader),(N_test, test_loader)) in enumerate(task_loaders):
+    for task_id,  (train_loader, test_loader) in enumerate(task_loaders):
         if task_id>max_task:
             break
         print("starting task " + str(task_id))
         if (Train):
             task_model = TaskModel((enc_dims, enc_activations), (dec_head_dims, dec_head_activations), dec_shared)
             models.append(task_model)
-            task_model.train_model(n_epochs, train_loader, N_train)
+            task_model.train_model(n_epochs, train_loader, train_loader.flat_size())
         else:
             models = load_models(task_id)
             task_model = models[-1]

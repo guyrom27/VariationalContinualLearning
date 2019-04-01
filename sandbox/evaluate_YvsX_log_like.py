@@ -45,16 +45,14 @@ class Evaluation:
         bound_tot = 0.0
         bound_var = 0.0
         begin = time.time()
-        j=0
-        for j, data in enumerate(loader):
-            inputs, labels = data
+        batches = len(loader)
+        for j in range(len(loader)):
+            inputs, labels = loader[j]
             N += len(inputs)
             logp_mean, logp_var = IS_estimate(inputs, task_model, self.K)
 
-            bound_tot += logp_mean
-            bound_var += logp_var
-        bound_tot /= j+1
-        bound_var /= j+1
+            bound_tot += logp_mean / batches
+            bound_var += logp_var / batches
         end = time.time()
         if self.should_print:
             print("task %d test_ll=%.2f, ste=%.2f, time=%.2f" \
