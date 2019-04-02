@@ -135,7 +135,7 @@ def construct_optimizer(X_ph, enc, dec, ll, N_data, batch_size_ph, shared_prior_
         begin = time.time()
         n_iter_vae = int(N / batch_size)
         for iteration in range(1, n_iter + 1):
-            ind_s = list(range(N)) #np.random.permutation(list(range(N)))
+            ind_s = np.random.permutation(list(range(N)))
             bound_total = 0.0
             kl_total = 0.0
             print_counter = 0
@@ -145,7 +145,7 @@ def construct_optimizer(X_ph, enc, dec, ll, N_data, batch_size_ph, shared_prior_
                 ind = ind_s[indl:min(indr, N)]
                 if indr > N:
                     ind = np.concatenate((ind, ind_s[:(indr-N)]))
-                my_loss_total, logp, kl = train(sess, X[ind], lr, print_counter % 20 ==18)
+                my_loss_total, logp, kl = train(sess, X[ind], lr, True) # print_counter % 20 ==18)
                 bound_total += logp / n_iter_vae
                 kl_total += kl / n_iter_vae
                 print_counter +=1
