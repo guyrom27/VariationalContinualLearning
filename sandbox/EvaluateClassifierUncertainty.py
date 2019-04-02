@@ -86,7 +86,7 @@ class EvaluateClassifierUncertainty:
         loss_mu = 0.0
         loss_var = 0.0
         for _ in range(num_iter):
-            Zs_params = torch.ones(samples_per_iter, dimZ*2, device=device)
+            Zs_params = torch.zeros(samples_per_iter, dimZ*2, device=device)
             reconstructed_Xs = task_model.sample_and_decode(Zs_params)
             true_Ys = torch.ones(samples_per_iter, dtype=torch.long, device=device) * task_id # these are the labels for the generated pictures
             cross_entropies = F.cross_entropy(self.classifier(reconstructed_Xs), true_Ys, reduction='none')

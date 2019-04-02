@@ -444,7 +444,9 @@ import generative.models.visualisation
 def generate_pictures(task_models, n_pics=100):
     with torch.no_grad():
         for task_id, task_model in enumerate(task_models):
-            pics = task_model.sample_and_decode(torch.ones(n_pics, dimZ * 2, device=device))
+            task_model.set_sampling(False)
+            pics = task_model.sample_and_decode(torch.zeros(n_pics, dimZ * 2, device=device))
+            task_model.set_sampling(True)
             pics = pics.cpu()
             generative.models.visualisation.plot_images(pics, (28, 28), './figs/', 'after_task_'+str(len(task_models))+'_task_'+str(task_id))
 
