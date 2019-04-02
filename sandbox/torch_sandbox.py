@@ -132,9 +132,8 @@ class bayesian_mlp_layer(mlp_layer):
             print("bias of log_sig DEC ", self.log_sigma.bias)
 
         if self.sampling:
-
-            sampled_W = (self.mu.weight + self.w_standard_normal_sampler.sample().to(device=device) * torch.exp(self.log_sigma.weight))
-            sampled_b = (self.mu.bias + self.b_standard_normal_sampler.sample().to(device=device) * torch.exp(self.log_sigma.bias))
+            sampled_W = (self.mu.weight + torch.randn_like(self.mu.weight) * torch.exp(self.log_sigma.weight))
+            sampled_b = (self.mu.bias + torch.randn_like(self.mu.bias) * torch.exp(self.log_sigma.bias))
             return self.activation(torch.einsum('ij,bj->bi',[sampled_W, x]) + sampled_b)
         else:
             return super().forward(x)
@@ -156,7 +155,9 @@ class NormalSamplingLayer(nn.Module):
         self.d_out = d_out
 
     def forward(self, mu_log_sigma_vec):
-        return Normal(mu_log_sigma_vec[:, :self.d_out], torch.exp(mu_log_sigma_vec[:, self.d_out:])).sample().to(device=device)
+        mu = mu_log_sigma_vec[:, :self.d_out]
+        return mu + torch.randn_like(mu) * torch.exp(mu_log_sigma_vec[:, self.d_out:])
+
 
 
 
@@ -278,12 +279,15 @@ class TaskModel(nn.Module):
         logp, kl_z = math_utils.log_P_y_GIVEN_x(Xs, self.enc, self.sample_and_decode)
         kl_shared_dec_Qt_2_PREV_Qt = self.dec_shared.KL_from_prior()
 
+        # We ignore the kl(private dec || Normal(0,1) ) like the authors did
+        logp_mean = torch.mean(logp)
+        kl_z_mean = torch.mean(kl_z)
+        kl_Qt_normalized = (kl_shared_dec_Qt_2_PREV_Qt / self.DatasetSize)
+        ELBO = logp_mean - kl_z_mean - kl_Qt_normalized
         if loss_print:
             print("Log_like", "\tKL Z","\tKL Qt vs prev Qt")
-            print(int(torch.mean(logp).item()),'\t',int(torch.mean(kl_z).item()), '\t', int(kl_shared_dec_Qt_2_PREV_Qt / self.DatasetSize))
+            print('%.2f\t%.2f\t%.2f' % (logp_mean, kl_z_mean, kl_Qt_normalized))
 
-        # We ignore the kl(private dec || Normal(0,1) ) like the authors did
-        ELBO = torch.mean(logp) - torch.mean(kl_z) - (kl_shared_dec_Qt_2_PREV_Qt / self.DatasetSize)
         return -ELBO
 
     def _create_optimizer(self, learning_rate):
