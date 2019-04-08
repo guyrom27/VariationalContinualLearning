@@ -38,7 +38,7 @@ import EvaluateClassifierUncertainty
 
 
 
-Train = True
+Train = False
 max_task = 10
 
 weight_print = False
@@ -58,15 +58,15 @@ n_epochs = 200
 
 # Shared decoder
 dec_shared_dims = [dimH, dimH, dimX]
-dec_shared_activations = [F.relu, torch.sigmoid]
+dec_shared_activations = [F.relu_, torch.sigmoid]
 
 # Encoder
 enc_dims = [dimX, dimH, dimH, dimH, dimZ * 2]
-enc_activations = [F.relu, F.relu, F.relu, lambda x: x]
+enc_activations = [F.relu_, F.relu_, F.relu_, lambda x: x]
 
 # Private decoder (Head)
 dec_head_dims = [dimZ, dimH, dimH]
-dec_head_activations = [F.relu, F.relu]
+dec_head_activations = [F.relu_, F.relu_]
 
 
 class mlp_layer(nn.Module):
@@ -429,7 +429,7 @@ def create_mnist_single_digit_loaders(b_size=10, train_data=True):
 
 
 def path(after, i):
-    return './checkpoint_params/after_task_' + str(after) + '_params_for_task_' + str(i) + '.pt'
+    return './BestParamsBackup/after_task_' + str(after) + '_params_for_task_' + str(i) + '.pt'
 
 def load_models(after):
     dec_shared = SharedDecoder(dec_shared_dims, dec_shared_activations)
@@ -450,8 +450,21 @@ def generate_pictures(task_models, n_pics=100):
             pics = pics.cpu()
             generative.models.visualisation.plot_images(pics, (28, 28), './figs/', 'after_task_'+str(len(task_models))+'_task_'+str(task_id))
 
+def generate_all_picture_row(task_models, n_pics=10):
+    row = np.zeros([n_pics, dimX])
+    with torch.no_grad():
+        for task_id, task_model in enumerate(task_models):
+            task_model.set_sampling(False)
+            pic = task_model.sample_and_decode(torch.zeros(1, dimZ * 2, device=device))
+            task_model.set_sampling(True)
+            pic = pic.cpu()
+            row[task_id] = pic
+    return row
+
+
 
 def main():
+    result_path = "./results/MNIST_Torch_cla_results"
     dec_shared = SharedDecoder(dec_shared_dims, dec_shared_activations)
 
     task_loaders = zip(create_mnist_single_digit_loaders(batch_size), create_mnist_single_digit_loaders(batch_size, train_data=False))
@@ -460,7 +473,9 @@ def main():
     models = []
 
     evaluators = [evaluate_YvsX_log_like.Evaluation(),
-                  EvaluateClassifierUncertainty.EvaluateClassifierUncertainty('./classifier_params')] #classifier is loaded. asssumes already trained
+                  EvaluateClassifierUncertainty.EvaluateClassifierUncertainty('./classifier_params')] #classifier is loaded. assumes already trained
+
+    results = np.zeros((len(evaluators), max_task, max_task))
 
     # A task corresponds to a digit
     for task_id,  (train_loader, test_loader) in enumerate(task_loaders):
@@ -481,11 +496,24 @@ def main():
                 for i, model in enumerate(models):
                     model.save_model(path(task_id, i))
             generate_pictures(models)
+            tmp = generate_all_picture_row(models)
+            if task_id == 0:
+                all_pic = tmp
+            else:
+                all_pic = np.concatenate([all_pic, tmp], 0)
+
+
             for test_task_id, loader in enumerate(test_loaders):
-                for evaluator in evaluators:
-                    evaluator(test_task_id, models[test_task_id], loader)
+                for eval_idx, evaluator in enumerate(evaluators):
+                    results[eval_idx,task_id, test_task_id], _ = evaluator(test_task_id, models[test_task_id], loader)
 
         print()
+
+    np.save(result_path, results)
+    with torch.no_grad():
+        generative.models.visualisation.plot_images(all_pic, (28, 28), './figs/',
+                                                    'all_models_after_each_tasks')
+
 
 # In[137]:
 
