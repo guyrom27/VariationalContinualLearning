@@ -7,7 +7,7 @@ config = tf.ConfigProto()
 config.gpu_options.allow_growth = True
 sess = tf.Session(config=config)
 keras.backend.set_session(sess)
-mnist_cla = load_model("mnist", '../generative/classifier/save/')
+mnist_cla = load_model("notmnist", '../generative/classifier/save/')
 
 def eval_for_torch_data(x_gen, task, sample_per_iter=100):
     x_gen = tf.convert_to_tensor(x_gen.numpy())
