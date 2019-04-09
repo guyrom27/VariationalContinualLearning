@@ -11,6 +11,8 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 PATH = './classifier_params'
 
+use_Tensorflow_Classifier = False
+
 class Classifier(nn.Module):
     dimX = 28*28
     dimH = 1000
@@ -85,18 +87,35 @@ class EvaluateClassifierUncertainty:
         num_iter = 10
         loss_mu = 0.0
         loss_var = 0.0
-        for _ in range(num_iter):
-            Zs_params = torch.zeros(samples_per_iter, dimZ*2, device=device)
-            reconstructed_Xs = task_model.sample_and_decode(Zs_params)
-            true_Ys = torch.ones(samples_per_iter, dtype=torch.long, device=device) * task_id # these are the labels for the generated pictures
-            cross_entropies = F.cross_entropy(self.classifier(reconstructed_Xs), true_Ys, reduction='none')
-            loss_mu += torch.mean(cross_entropies) / num_iter
-            loss_var += torch.mean((cross_entropies - loss_mu)**2) / num_iter
 
-        if self.should_print:
-            print("test_classifier=%.2f, std=%.2f" \
-                  % (loss_mu, np.sqrt(loss_var.cpu() / (num_iter*samples_per_iter))))
-        return loss_mu, np.sqrt(loss_var.cpu() / (num_iter*samples_per_iter))
+        if use_Tensorflow_Classifier:
+            import generative.alg.eval_test_class_torch
+            for _ in range(num_iter):
+                Zs_params = torch.zeros(samples_per_iter, dimZ * 2, device=device)
+                reconstructed_Xs = task_model.sample_and_decode(Zs_params)
+                iter_mu, iter_var = generative.alg.eval_test_class_torch.eval_for_torch_data(reconstructed_Xs, task_id)
+                iter_mu = iter_mu
+                loss_mu += iter_mu / num_iter
+                loss_var += iter_var / num_iter
+
+            if self.should_print:
+                print("test_classifier=%.2f, std=%.2f" \
+                      % (loss_mu, np.sqrt(loss_var / (num_iter * samples_per_iter))))
+            return loss_mu, np.sqrt(loss_var / (num_iter * samples_per_iter))
+
+        else:
+            for _ in range(num_iter):
+                Zs_params = torch.zeros(samples_per_iter, dimZ*2, device=device)
+                reconstructed_Xs = task_model.sample_and_decode(Zs_params)
+                true_Ys = torch.ones(samples_per_iter, dtype=torch.long, device=device) * task_id # these are the labels for the generated pictures
+                cross_entropies = F.cross_entropy(self.classifier(reconstructed_Xs), true_Ys, reduction='none')
+                loss_mu += torch.mean(cross_entropies) / num_iter
+                loss_var += torch.mean((cross_entropies - loss_mu)**2) / num_iter
+
+            if self.should_print:
+                print("test_classifier=%.2f, std=%.2f" \
+                      % (loss_mu, np.sqrt(loss_var.cpu() / (num_iter*samples_per_iter))))
+            return loss_mu, np.sqrt(loss_var.cpu() / (num_iter*samples_per_iter))
 
 
 if __name__ == '__main__':

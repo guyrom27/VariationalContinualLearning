@@ -6,7 +6,7 @@ sys.path.extend(['alg/', 'models/', 'utils/'])
 from visualisation import plot_images
 from encoder_no_shared import encoder, recon
 from utils import init_variables, save_params, load_params, load_data
-from eval_test_class import construct_eval_func
+from eval_test_class import construct_eval_func2
 from load_classifier import load_model
 
 dimZ = 50
@@ -48,8 +48,8 @@ def main(data_name, method, dimZ, dimH, n_channel, batch_size, K_mc, checkpoint,
         string = string + '_lbd%.1f' % lbd
     if method == 'onlinevi' and K_mc > 1:
         string = string + '_K%d' % K_mc
-    path_name = data_name + '_%s_no_share_enc/' % string
-    assert os.path.isdir('save/'+path_name)
+    path_name = data_name + '_%s/' % string
+    #assert os.path.isdir('save/'+path_name)
     filename = 'save/' + path_name + 'checkpoint'
     # load the classifier
     cla = load_model(data_name)
@@ -64,14 +64,14 @@ def main(data_name, method, dimZ, dimH, n_channel, batch_size, K_mc, checkpoint,
     
     for task in range(1):
         if data_name == 'mnist':
-            from .classifier.mnist import load_mnist
+            from classifier.mnist import load_mnist
             _, X_test, _, Y_test = load_mnist([task])
         if data_name == 'notmnist':
-            from .classifier.notmnist import load_notmnist
+            from classifier.notmnist import load_notmnist
             _, X_test, _, Y_test = load_notmnist(data_path, [task], conv = False)
         test_acc = 0.0; test_kl = 0.0
         N_test = X_test.shape[0]
-        for i in range(N_test / batch_size):
+        for i in range(N_test // batch_size):
             indl = i * batch_size; indr = min((i+1)*batch_size, N_test)
             tmp1, tmp2 = sess.run((acc, kl), feed_dict={X_ph: X_test[indl:indr],
                                        y_ph: Y_test[indl:indr],
@@ -92,7 +92,7 @@ def main(data_name, method, dimZ, dimH, n_channel, batch_size, K_mc, checkpoint,
         
         # define the head net and the generator ops
         dec = generator(generator_head(dimZ, dimH, n_layers_head, 'gen_%d' % task), dec_shared)
-        eval_func_list.append(construct_eval_func(dec, cla, batch_size_ph, \
+        eval_func_list.append(construct_eval_func2(dec, cla, batch_size_ph, \
                                                   dimZ, task-1, sample_W = True))
         
         # then load the trained model

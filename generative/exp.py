@@ -1,5 +1,6 @@
 import numpy as np
 import tensorflow as tf
+import keras
 import sys, os
 
 sys.path.extend(['alg/', 'models/'])
@@ -7,6 +8,8 @@ from visualisation import plot_images
 from encoder_no_shared import encoder, recon
 from utils import init_variables, save_params, load_params, load_data
 from alg.eval_test_ll import construct_eval_func
+from alg.eval_test_class import construct_eval_func2
+from load_classifier import load_model
 
 from bayesian_generator import generator_head, generator_shared, \
             generator, construct_gen
@@ -26,7 +29,7 @@ print_weights = False
 degenerate_dataset = False
 
 
-data_path = 'asdf'  # TODO
+data_path = './classifier/'
 
 
 def main(data_name, method, dimZ, dimH, n_channel, batch_size, K_mc, checkpoint, lbd):
@@ -36,7 +39,7 @@ def main(data_name, method, dimZ, dimH, n_channel, batch_size, K_mc, checkpoint,
     if data_name == 'mnist':
         from mnist import load_mnist
     if data_name == 'notmnist':
-        from notmnist import load_notmnist
+        from generative.classifier.notmnist import load_notmnist
 
     # then define model
     n_layers_shared = 2
@@ -47,6 +50,7 @@ def main(data_name, method, dimZ, dimH, n_channel, batch_size, K_mc, checkpoint,
     config = tf.ConfigProto()
     config.gpu_options.allow_growth = True
     sess = tf.Session(config=config)
+    keras.backend.set_session(sess)
     string = method
     if method == 'onlinevi' and K_mc > 1:
         string = string + '_K%d' % K_mc
@@ -84,8 +88,10 @@ def main(data_name, method, dimZ, dimH, n_channel, batch_size, K_mc, checkpoint,
     gen_ops = []
     X_valid_list = []
     X_test_list = []
-    eval_func_list = []
-    result_list = []
+    eval_func_list_ll = []
+    eval_func_list_cla = []
+    cla = load_model(data_name)
+    result_list = np.zeros((2,10,10))
     if method == 'onlinevi':
         shared_prior_params = init_shared_prior()
     n_layers_head = 2
@@ -110,8 +116,10 @@ def main(data_name, method, dimZ, dimH, n_channel, batch_size, K_mc, checkpoint,
         enc = encoder(dimX, dimH, dimZ, n_layers_enc, 'enc_%d' % task)
         gen_ops.append(construct_gen(dec, dimZ, sampling=False)(N_gen))
         print('construct eval function...')
-        eval_func_list.append(construct_eval_func(X_ph, enc, dec, ll, \
+        eval_func_list_ll.append(construct_eval_func(X_ph, enc, dec, ll, \
                                                   batch_size_ph, K=100, sample_W=False))
+        eval_func_list_cla.append(construct_eval_func2(dec, cla, batch_size_ph, dimZ, task-1, sample_W=False))
+
         if not train:
             load_params(sess, filename, task - 1)
             old_var_list = init_variables(sess, set(tf.trainable_variables()))
@@ -161,11 +169,14 @@ def main(data_name, method, dimZ, dimH, n_channel, batch_size, K_mc, checkpoint,
 
         # print test-ll on all tasks
         tmp_list = []
-        for i in range(len(eval_func_list)):
+        for i in range(len(eval_func_list_ll)):
             print('task %d' % (i + 1), end=' ')
-            test_ll = eval_func_list[i](sess, X_valid_list[i])
-            tmp_list.append(test_ll)
-        result_list.append(tmp_list)
+            result_list[0,task -1,i],_ = eval_func_list_ll[i](sess, X_valid_list[i])
+
+        for i in range(len(eval_func_list_cla)):
+            print('task %d' % (i + 1), end=' ')
+            result_list[1,task -1,i],_ = eval_func_list_cla[i](sess)
+
 
         # save param values
         if train:
@@ -188,10 +199,9 @@ def main(data_name, method, dimZ, dimH, n_channel, batch_size, K_mc, checkpoint,
         print(result_list[i])
 
     # save results
-    fname = 'results/' + data_name + '_%s.pkl' % string
-    import pickle
-    pickle.dump(result_list, open(fname, 'wb'))
-    print('test-ll results saved in', fname)
+    fname = 'results/' + data_name + '_TF'
+    np.save(fname, result_list)
+    print('test-ll and test-cla results saved in', fname)
 
 
 if __name__ == '__main__':

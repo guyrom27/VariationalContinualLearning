@@ -9,9 +9,7 @@ from tensorflow.python.platform import app
 from tensorflow.python.platform import flags
 FLAGS = flags.FLAGS
 
-def load_model(data_name = 'mnist'):
-
-    path = 'classifier/save/'
+def load_model(data_name = 'mnist', path ='classifier/save/'):
     file_name = path + data_name
     model = Sequential()
     dimH = 1000
@@ -25,6 +23,6 @@ def load_model(data_name = 'mnist'):
     model.add(Dense(num_classes, activation='softmax'))
     model.load_weights(file_name+'_weights.h5', by_name=True)
     print("model loaded from "+file_name+' weights.h5')
-    
+
     return model
 
