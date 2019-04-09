@@ -14,7 +14,7 @@ def KL_generated_images(dec, cla, N, dimZ, task, sample_W = True):
     kl_var = tf.reduce_mean((kl - kl_mean)**2)
     return kl_mean, kl_var
     
-def construct_eval_func(dec, cla, batch_size_ph, dimZ, task, sample_W = True):
+def construct_eval_func2(dec, cla, batch_size_ph, dimZ, task, sample_W = True):
     N_gen = 100
     kl_mean, kl_var = KL_generated_images(dec, cla, N_gen, dimZ, task, sample_W)
     ops = [kl_mean, kl_var]

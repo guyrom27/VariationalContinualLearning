@@ -20,13 +20,13 @@ sess = tf.Session(config=config)
 keras.backend.set_session(sess)
 
 # the data, shuffled and split between train and test sets
-data_name = 'mnist'
+data_name = 'notmnist'
 if data_name == 'mnist':
     from mnist import load_mnist
     x_train, x_test, y_train, y_test = load_mnist()
 if data_name == 'notmnist':
-    from .notmnist import load_notmnist
-    data_path = 'asdf' # TODO
+    from notmnist import load_notmnist
+    data_path = './'
     x_train, x_test, y_train, y_test = [], [], [], []
     for i in range(10):
         a, b, c, d = load_notmnist(data_path, [i], ratio=0.995)
