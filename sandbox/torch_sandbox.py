@@ -7,11 +7,11 @@ import torch
 torch.manual_seed(123)
 
 
-output_path = None
+output_path = '400EpochsNotMNIST.txt'
 
 if (not output_path is None):
     import sys
-    sys.stdout = open(output_path, mode='w')
+    sys.stdout = open(output_path, mode='w', buffering=1)
 
 print(torch.cuda.is_available())
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -34,6 +34,7 @@ import torchvision
 import math_utils
 import evaluate_YvsX_log_like
 import EvaluateClassifierUncertainty
+import generative.models.notmnist
 
 
 
@@ -54,7 +55,7 @@ dimX = 28 * 28
 dimH = 500
 dimZ = 50
 batch_size = 50
-n_epochs = 200
+n_epochs = 400
 
 # Shared decoder
 dec_shared_dims = [dimH, dimH, dimX]
@@ -308,10 +309,11 @@ class TaskModel(nn.Module):
         # loop over the dataset multiple times
         for epoch in range(n_epochs):
             print("starting epoch " + str(epoch))
+            task_trainloader.shuffle()
             running_loss = 0.0
             for i in range(len(task_trainloader)):
                 global loss_print
-                loss_print = (i % 20 == 19)
+                loss_print = True #(i % 20 == 19)
                 # get the inputs
                 inputs, labels = task_trainloader[i]
                 #Migrate to device (gpu if possible)
@@ -353,10 +355,13 @@ class PrintLayer(nn.Module):
 
 class BatchWrapper:
     def __init__(self, X, label, b_size):
-        self.X = X.reshape(-1, dimX)
+        self.X = X.reshape(-1, dimX).astype('float32')
         self.N = X.shape[0]
         self.label = label
         self.b_size = b_size
+
+    def shuffle(self):
+        np.random.shuffle(self.X)
 
     def flat_size(self):
         return self.X.shape[0]
@@ -395,7 +400,7 @@ def create_mnist_single_digit_loaders(b_size=10, train_data=True):
     import generative.models.mnist
     loaders = []
     for i in range(10):
-        X_train, X_test, Y_train, Y_test = generative.models.mnist.load_mnist(digits = [i])
+        X_train, X_test, Y_train, Y_test = generative.models.notmnist.load_notmnist('../generative/',digits = [i])
         if degenerate_dataset:
             X_train = X_train[0,:].reshape(1,-1).repeat(X_train.shape[0], axis=0)
         if train_data:
