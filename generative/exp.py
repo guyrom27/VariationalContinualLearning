@@ -3,6 +3,9 @@ import tensorflow as tf
 import keras
 import sys, os
 
+sys.stdout = open('coreset_session1004.txt.3',mode='w',buffering=1)
+np.random.seed(42)
+
 sys.path.extend(['alg/', 'models/'])
 from visualisation import plot_images
 from encoder_no_shared import encoder, recon
@@ -14,7 +17,7 @@ from load_classifier import load_model
 from bayesian_generator import generator_head, generator_shared, \
             generator, construct_gen
 from onlinevi import construct_optimizer, init_shared_prior, \
-            update_shared_prior, update_q_sigma
+            update_shared_prior, update_q_sigma, update_headnet_prior
 
 dimZ = 50
 dimH = 500
@@ -25,9 +28,12 @@ K_mc = 10
 train = False   # Trains a model if True, load parameters otherwise
 checkpoint = -1
 
+coreset_size = 100
+n_coreset_iter = 33
+
 print_weights = False
 degenerate_dataset = False
-
+coreset_session = True
 
 data_path = './classifier/'
 
@@ -90,6 +96,8 @@ def main(data_name, method, dimZ, dimH, n_channel, batch_size, K_mc, checkpoint,
     X_test_list = []
     eval_func_list_ll = []
     eval_func_list_cla = []
+    fits = []
+    coresets = []
     cla = load_model(data_name)
     result_list = np.zeros((2,10,10))
     if method == 'onlinevi':
@@ -102,9 +110,13 @@ def main(data_name, method, dimZ, dimH, n_channel, batch_size, K_mc, checkpoint,
             X_train, X_test, _, _ = load_mnist(digits=labels[task - 1], conv=False)
         if data_name == 'notmnist':
             X_train, X_test, _, _ = load_notmnist(data_path, digits=labels[task - 1], conv=False)
-        N_train = int(X_train.shape[0] * 0.9)
-        X_valid_list.append(X_train[N_train:])
-        X_train = X_train[:N_train]
+        N_train = int(X_train.shape[0] * 0.9) - coreset_size
+        np.random.shuffle(X_train)
+        X_valid_list.append(X_train[N_train+coreset_size:])
+        X_coreset = X_train[:coreset_size]
+        coresets.append(X_coreset)
+        X_train = X_train[coreset_size:N_train+coreset_size]
+
 
         if degenerate_dataset:
             X_train = X_train[0,:].reshape(1,-1).repeat(X_train.shape[0], axis=0)
@@ -130,13 +142,29 @@ def main(data_name, method, dimZ, dimH, n_channel, batch_size, K_mc, checkpoint,
             if method == 'onlinevi':
                 fit = construct_optimizer(X_ph, enc, dec, ll, X_train.shape[0], batch_size_ph, \
                                           shared_prior_params, task, K_mc)
-
+        elif coreset_session:
+            shared_prior_params = update_shared_prior(sess, shared_prior_params)
+            private_prior_params = update_headnet_prior(sess, task)
+            fit = construct_optimizer(X_ph, enc, dec, ll, X_coreset.shape[0], batch_size_ph, \
+                                      shared_prior_params, task, K_mc,private_prior_params)
+            fits.append(fit)
         # initialsise all the uninitialised stuff
         old_var_list = init_variables(sess, old_var_list)
 
         if train:
             # start training for each task
             fit(sess, X_train, n_iter, lr)
+        elif coreset_session:
+            for t in range(task):
+                print("Coreset training for ", t)
+                #fits[t](sess, coresets[t], n_coreset_iter, lr)
+                print('task %d' % (t + 1), end=' ')
+                result_list[0, task - 1, t], _ = eval_func_list_ll[t](sess, X_valid_list[t])
+
+                print('task %d' % (t + 1), end=' ')
+                result_list[1, task - 1, t], _ = eval_func_list_cla[t](sess)
+                load_params(sess, filename, task - 1)
+
 
         if print_weights:
             #Print weight statistics
@@ -169,13 +197,14 @@ def main(data_name, method, dimZ, dimH, n_channel, batch_size, K_mc, checkpoint,
 
         # print test-ll on all tasks
         tmp_list = []
-        for i in range(len(eval_func_list_ll)):
-            print('task %d' % (i + 1), end=' ')
-            result_list[0,task -1,i],_ = eval_func_list_ll[i](sess, X_valid_list[i])
+        if not coreset_session:
+            for i in range(len(eval_func_list_ll)):
+                print('task %d' % (i + 1), end=' ')
+                result_list[0,task -1,i],_ = eval_func_list_ll[i](sess, X_valid_list[i])
 
-        for i in range(len(eval_func_list_cla)):
-            print('task %d' % (i + 1), end=' ')
-            result_list[1,task -1,i],_ = eval_func_list_cla[i](sess)
+            for i in range(len(eval_func_list_cla)):
+                print('task %d' % (i + 1), end=' ')
+                result_list[1,task -1,i],_ = eval_func_list_cla[i](sess)
 
 
         # save param values

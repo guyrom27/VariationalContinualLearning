@@ -18,7 +18,16 @@ def get_headnet_params(task):
     for var in var_list:
         param_dict[var.name] = var	# make sure here is not a copy!
     return param_dict
-    
+
+
+def update_headnet_prior(sess, task):
+    prior = {}
+    q_params = get_headnet_params(task)
+    for name, tensor in list(q_params.items()):
+        prior[name] = tf.Variable(sess.run(tensor), trainable=False)
+
+    return prior
+
 def init_shared_prior():
     q_params = get_q_theta_params()
     prior_params = {}
@@ -43,7 +52,7 @@ def update_q_sigma(sess):
             sess.run(tf.assign(q_params[name], np.ones(shape)*-6))
     print('reset the log sigma of q to -5')
     
-def KL_param(shared_prior_params, task, regularise_headnet=False):
+def KL_param(shared_prior_params, task, headnet_prior=None):
     # first get q params
     shared_q_params = get_q_theta_params()
     N_layer = int(len(list(shared_q_params.keys())) / 4)	# one layer has for params
@@ -60,14 +69,14 @@ def KL_param(shared_prior_params, task, regularise_headnet=False):
             kl_total += tf.reduce_sum(KL(mu_q, log_sig_q, mu_p, log_sig_p))
 
     # for the head network
-    if regularise_headnet:
+    if headnet_prior:
         head_q_params = get_headnet_params(task)
-        N_layer = len(list(head_q_params.keys())) / 4	# one layer has for params
+        N_layer = int(len(list(head_q_params.keys())) / 4)	# one layer has for params
         for l in range(N_layer):
             for suffix in ['W', 'b']:
-                mu_q = shared_q_params['gen_head%d_l%d_mu_' % (task, l) + suffix + ':0']
-                log_sig_q = shared_q_params['gen_head%d_l%d_log_sig_' % (task, l) + suffix + ':0']
-                kl_total += tf.reduce_sum(KL(mu_q, log_sig_q, 0.0, 0.0))
+                mu_q = head_q_params['gen_%d_head_l%d_mu_' % (task, l) + suffix + ':0']
+                log_sig_q = head_q_params['gen_%d_head_l%d_log_sig_' % (task, l) + suffix + ':0']
+                kl_total += tf.reduce_sum(KL(mu_q, log_sig_q, headnet_prior[mu_q.name], headnet_prior[log_sig_q.name]))
             
     return kl_total
 
@@ -90,7 +99,7 @@ def lowerbound(x, enc, dec, ll, K = 1, mu_pz = 0.0, log_sig_pz = 0.0):
             logp += log_l1_prob(x, mu_x) / K
     return logp, kl_z
 
-def construct_optimizer(X_ph, enc, dec, ll, N_data, batch_size_ph, shared_prior_params, task, K):
+def construct_optimizer(X_ph, enc, dec, ll, N_data, batch_size_ph, shared_prior_params, task, K, private_prior_params = None):
 
     # loss function
     my_logp, my_kl_z= lowerbound(X_ph, enc, dec, ll, K)
@@ -98,7 +107,7 @@ def construct_optimizer(X_ph, enc, dec, ll, N_data, batch_size_ph, shared_prior_
     kl_z_mean = tf.reduce_mean(my_kl_z)
     bound = logp_mean - kl_z_mean
 
-    kl_theta = KL_param(shared_prior_params, task)
+    kl_theta = KL_param(shared_prior_params, task, private_prior_params)
     kl_theta_normalized = kl_theta / N_data
     loss_total = -bound + kl_theta_normalized
     batch_size = X_ph.get_shape().as_list()[0]
