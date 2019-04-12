@@ -7,7 +7,7 @@ import torch
 torch.manual_seed(123)
 
 
-output_path = '400EpochsNotMNIST.txt'
+output_path = None
 
 if (not output_path is None):
     import sys
@@ -37,9 +37,11 @@ import EvaluateClassifierUncertainty
 import generative.models.notmnist
 
 
+DATASET = 'mnist'
+notMNIST_path = '../generative/'
 
 
-Train = False
+Train = True
 max_task = 10
 
 weight_print = False
@@ -400,7 +402,11 @@ def create_mnist_single_digit_loaders(b_size=10, train_data=True):
     import generative.models.mnist
     loaders = []
     for i in range(10):
-        X_train, X_test, Y_train, Y_test = generative.models.notmnist.load_notmnist('../generative/',digits = [i])
+        if (DATASET == 'mnist'):
+            X_train, X_test, Y_train, Y_test = generative.models.mnist.load_mnist(digits = [i])
+        else:
+            assert(DATASET == 'notmnist')
+            X_train, X_test, Y_train, Y_test = generative.models.notmnist.load_notmnist(notMNIST_path, digits=[i])
         if degenerate_dataset:
             X_train = X_train[0,:].reshape(1,-1).repeat(X_train.shape[0], axis=0)
         if train_data:
@@ -415,20 +421,6 @@ def create_mnist_single_digit_loaders(b_size=10, train_data=True):
 
 
 
-
-#the original code
-"""def create_mnist_single_digit_loaders(b_size=10, train_data=True):
-    dataset = torchvision.datasets.MNIST(root='./data',    train=train_data, download=True,
-                                         transform=torchvision.transforms.ToTensor())
-
-    for i in range(10):
-        partial_dataset = torch.utils.data.Subset(dataset, torch.nonzero(dataset.targets == i).squeeze())
-
-        # NOT Repeating the original "mistake"
-        # train_idx = len(partial_trainset) * 0.9
-        partial_loader = torch.utils.data.DataLoader(partial_dataset, batch_size=b_size, shuffle=True)
-        yield (len(partial_dataset), partial_loader)
-"""
 
 # In[136]:
 
