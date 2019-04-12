@@ -17,6 +17,11 @@ An implementation of the Variational Continual Learning (VCL) algorithms propose
 
 	python run_split.py
 	
+**To run the Generative MNIST experiment:**
+    
+    python sandbox/torch_generative.py
+
+
 **Requirements:**
 <ul> 
 	<li> Torch 1.0 </li>
@@ -37,3 +42,7 @@ Split MNIST
 ![](/discriminative/misc/split_mnist_main_part2.png)
 ... with Variational Generative Replay (VGR):<br/>
 ![](/discriminative/misc/VGR.png)
+
+## Results
+### VCL in Deep Generative models
+![](/generative_figures/MNIST_LL.png)
